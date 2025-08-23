@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { supabase } from '../../../lib/supabase/client';
-import { useToast } from '../../components/ui/useToast';
+import { useToast } from '@/features/ui/useToast';
 
 interface StudentProfileModalProps {
   show: boolean;

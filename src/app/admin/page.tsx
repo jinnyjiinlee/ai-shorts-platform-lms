@@ -1,4 +1,4 @@
-import DashboardView from '../components/admin/dashboard/DashboardView';
+import DashboardView from '@/features/dashboard/admin/DashboardView';
 
 export default function AdminDashboardPage() {
   return <DashboardView />;

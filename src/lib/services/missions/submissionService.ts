@@ -2,9 +2,7 @@ import { supabase } from '../../supabase/client';
 
 export interface SubmissionData {
   missionId: string;
-  submissionType: 'file' | 'text';
-  content?: string;
-  file?: File;
+  content: string;
 }
 
 // 네트워크 연결 확인
@@ -32,38 +30,10 @@ export const submitMission = async (data: SubmissionData): Promise<void> => {
       throw new Error('로그인이 필요합니다.');
     }
 
-    let fileUrl = null;
-    let fileName = null;
-    let fileSize = null;
-
-    // 파일 업로드 처리
-    if (data.file && data.submissionType === 'file') {
-      const fileExt = data.file.name.split('.').pop();
-      const filePath = `${user.id}/${data.missionId}/${Date.now()}.${fileExt}`;
-      
-      const { data: fileData, error: uploadError } = await supabase.storage
-        .from('mission-files')
-        .upload(filePath, data.file);
-
-      if (uploadError) {
-        console.error('파일 업로드 오류:', uploadError);
-        throw new Error(`파일 업로드 오류: ${uploadError.message}`);
-      }
-
-      // 파일 URL 가져오기
-      const { data: { publicUrl } } = supabase.storage
-        .from('mission-files')
-        .getPublicUrl(fileData.path);
-
-      fileUrl = publicUrl;
-      fileName = data.file.name;
-      fileSize = data.file.size;
-    }
-
-    // 기존 제출물이 있는지 확인 (이전 파일 정보도 가져오기)
+    // 기존 제출물이 있는지 확인
     const { data: existingSubmission, error: checkError } = await supabase
       .from('mission_submissions')
-      .select('id, file_url, file_name')
+      .select('id')
       .eq('mission_id', data.missionId)
       .eq('student_id', user.id)
       .single();
@@ -73,26 +43,6 @@ export const submitMission = async (data: SubmissionData): Promise<void> => {
       throw new Error('제출 상태 확인 중 오류가 발생했습니다.');
     }
 
-    // 재제출 시 이전 파일 삭제
-    if (existingSubmission && existingSubmission.file_url && data.file) {
-      try {
-        // 이전 파일의 경로 추출 (URL에서 파일 경로 부분만)
-        const oldFileUrl = existingSubmission.file_url;
-        const urlParts = oldFileUrl.split('/');
-        const bucketIndex = urlParts.findIndex((part: string) => part === 'mission-files');
-        if (bucketIndex !== -1 && urlParts.length > bucketIndex + 1) {
-          const oldFilePath = urlParts.slice(bucketIndex + 1).join('/');
-          
-          // 이전 파일 삭제 (에러가 나도 제출은 계속 진행)
-          await supabase.storage
-            .from('mission-files')
-            .remove([oldFilePath]);
-        }
-      } catch (deleteError) {
-        console.warn('이전 파일 삭제 실패 (제출은 계속 진행):', deleteError);
-      }
-    }
-
     let error;
     
     if (existingSubmission) {
@@ -100,11 +50,7 @@ export const submitMission = async (data: SubmissionData): Promise<void> => {
       const { error: updateError } = await supabase
         .from('mission_submissions')
         .update({
-          submission_type: data.submissionType,
-          content: data.content || null,
-          file_url: fileUrl,
-          file_name: fileName,
-          file_size: fileSize,
+          content: data.content,
           status: 'submitted',
           submitted_at: new Date().toISOString() // 제출 시간 업데이트
         })
@@ -118,11 +64,7 @@ export const submitMission = async (data: SubmissionData): Promise<void> => {
         .insert({
           mission_id: data.missionId,
           student_id: user.id,
-          submission_type: data.submissionType,
-          content: data.content || null,
-          file_url: fileUrl,
-          file_name: fileName,
-          file_size: fileSize,
+          content: data.content,
           status: 'submitted'
         });
       

@@ -10,8 +10,7 @@ export const useModalState = () => {
     description: '',
     due_date: '',
     cohort: 1,
-    week: 1,
-    submission_type: 'text' as const 
+    week: 1
   });
 
   const resetFormData = () => {
@@ -20,8 +19,7 @@ export const useModalState = () => {
       description: '',
       due_date: '',
       cohort: 1,
-      week: 1,
-      submission_type: 'text' as const
+      week: 1
     });
   };
 
@@ -40,8 +38,7 @@ export const useModalState = () => {
       description: mission.description,
       due_date: localDueDate,
       cohort: mission.cohort,
-      week: mission.week,
-      submission_type: mission.submission_type
+      week: mission.week
     });
   };
 

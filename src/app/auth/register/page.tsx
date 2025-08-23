@@ -1,7 +1,7 @@
 'use client';
 
-import RegisterForm from '../../components/auth/register/RegisterForm';
-import TermsModal from '../../components/auth/register/TermsModal';
+import RegisterForm from '@/features/auth/register/RegisterForm';
+import TermsModal from '@/features/auth/register/TermsModal';
 import RegisterBackground from './components/RegisterBackground';
 import RegisterHeader from './components/RegisterHeader';
 import RegisterFooter from './components/RegisterFooter';

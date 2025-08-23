@@ -6,7 +6,7 @@ import { useAuth } from '../../lib/hooks/common/useAuth';
 import StudentSidebar from './components/StudentSidebar';
 import StudentHeader from './components/StudentHeader';
 import StudentContent from './components/StudentContent';
-import SkipToContent from '../components/ui/SkipToContent';
+import SkipToContent from '@/features/ui/SkipToContent';
 
 export default function StudentPage() {
   const { user, loading } = useAuth('student');
@@ -70,7 +70,7 @@ export default function StudentPage() {
       )}
 
       {/* 메인 콘텐츠 영역 */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col">
         <StudentHeader 
           showMobileMenu={showMobileMenu}
           onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)}

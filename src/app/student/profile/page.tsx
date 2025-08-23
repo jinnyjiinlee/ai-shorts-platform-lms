@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import StudentSidebar from '../components/StudentSidebar';
-import StudentHeader from '../components/StudentHeader';
-import ProfileManagement from '../../components/shared/ProfileManagement';
-import SkipToContent from '../../components/ui/SkipToContent';
+import StudentSidebar from '@/app/student/components/StudentSidebar';
+import StudentHeader from '@/app/student/components/StudentHeader';
+import ProfileManagement from '@/features/shared/ProfileManagement';
+import SkipToContent from '@/features/ui/SkipToContent';
 
 export default function StudentProfilePage() {
   const [activeMenu, setActiveMenu] = useState('profile');

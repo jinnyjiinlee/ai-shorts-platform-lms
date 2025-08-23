@@ -178,7 +178,7 @@ export default function StudentSidebar({ activeMenu, onMenuClick, className = ''
           </div>
           <div>
             <h1 className="text-lg font-bold text-slate-900 tracking-tight">
-              숏폼 마케팅
+              숏폼 수익화 부스트
             </h1>
             <p className="text-sm text-slate-500 font-medium">하대표 Academy</p>
           </div>
