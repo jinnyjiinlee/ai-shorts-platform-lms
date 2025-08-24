@@ -8,7 +8,7 @@ interface TrackingHeaderProps {
   onCohortChange: (cohort: number) => void;
 }
 
-export default function TrackingHeader({ 
+export default function DashboardHeader({ 
   selectedCohort, 
   availableCohorts, 
   onCohortChange 

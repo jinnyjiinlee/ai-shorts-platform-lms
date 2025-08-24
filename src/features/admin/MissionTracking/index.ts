@@ -1,11 +1,11 @@
-export { default as MissionTrackingView } from './views/MissionTrackingView';
-export { default as StudentSubmissionTable } from './views/StudentSubmissionTable';
-export { default as SubmissionDetailPanel } from './views/SubmissionDetailPanel';
-export { default as TrackingHeader } from './views/TrackingHeader';
-export { default as TrackingStats } from './views/TrackingStats';
+export { default as MissionDashboard } from './view/MissionDashboard';
+export { default as StudentTable } from './view/StudentTable';
+export { default as DetailPanel } from './view/DetailPanel';
+export { default as DashboardHeader } from './view/DashboardHeader';
+export { default as StatsCards } from './view/StatsCards';
 
-export { useTrackingData } from './controllers/useTrackingData';
+export { useMissionData } from './controller/useMissionData';
 
-export * from './models/types';
-export * from './models/trackingService';
-export * from './models/trackingCalculations';
+export * from './model/mission.types';
+export * from './model/mission.service';
+export * from './model/mission.calculator';

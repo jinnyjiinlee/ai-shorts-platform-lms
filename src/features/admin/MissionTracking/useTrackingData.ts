@@ -1,12 +1,11 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import {
   fetchMissionTrackingData,
   fetchAvailableCohorts,
   fetchMissionStudentDetails,
-} from '../models/trackingService';
-import { WeeklyData, StudentSubmissionDetail } from '../models/types';
+  WeeklyData,
+  StudentSubmissionDetail,
+} from './trackingService';
 
 export function useTrackingData(selectedCohort: number) {
   const [weeklyData, setWeeklyData] = useState<WeeklyData[]>([]);

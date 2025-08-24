@@ -11,7 +11,7 @@ interface SubmissionDetailPanelProps {
   selectedSubmission: SelectedSubmission | null;
 }
 
-export default function SubmissionDetailPanel({ selectedSubmission }: SubmissionDetailPanelProps) {
+export default function DetailPanel({ selectedSubmission }: SubmissionDetailPanelProps) {
   return (
     <div className="w-96">
       <div className="p-6 border-b border-slate-200">

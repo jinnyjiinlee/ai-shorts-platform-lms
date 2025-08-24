@@ -3,7 +3,7 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/auth/register',
   RESET_PASSWORD: '/auth/reset-password',
-  
+
   // Admin routes
   ADMIN: '/admin',
   ADMIN_DASHBOARD: '/admin',
@@ -14,7 +14,7 @@ export const ROUTES = {
   ADMIN_SETTINGS: '/admin/settings',
   ADMIN_PROFILE: '/admin/profile',
   ADMIN_COMMUNITY: '/admin/community',
-  
+
   // Student routes
   STUDENT: '/student',
   STUDENT_DASHBOARD: '/student',

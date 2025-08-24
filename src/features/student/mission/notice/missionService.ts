@@ -1,5 +1,5 @@
-import { supabase } from '../../../lib/supabase/client';
-import { Mission } from '@/features/student/mission/types';
+import { supabase } from '@/lib/supabase/client';
+import { Mission } from '../shared/types';
 
 export const fetchStudentMissions = async (studentCohort: number): Promise<Mission[]> => {
   try {
@@ -56,7 +56,7 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
       }),
       status: 'submitted' as const,
       submission_type: mission.submission_type || 'file',
-      feedback: undefined, // TODO: 피드백 데이터 연동
+      feedback: undefined,
     }));
 
     // 모든 미션 가져오기 (제출 여부 상관없이)
@@ -94,7 +94,7 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
       }));
 
     // 제출된 것과 안된 것 합치기
-    return [...submittedMissions, ...unsubmittedMissions].sort((a, b) => b.week - a.week); // 주차별 정렬
+    return [...submittedMissions, ...unsubmittedMissions].sort((a, b) => b.week - a.week);
   } catch (error) {
     console.error('학생 미션 데이터 가져오기 오류:', error);
     if (error instanceof Error) {

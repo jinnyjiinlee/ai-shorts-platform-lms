@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { Mission } from './types';
-import MissionHeader from './MissionHeader';
-import ProgressCards from '../dashboard/ProgressCards';
-import MissionCard from './MissionCard';
-import MissionList from './MissionList';
-import MissionModal from './MissionModal';
-import { useStudentMissions } from '@/features/student/mission/useStudentMissions';
+import MissionHeader from '../notice/MissionHeader';
+import ProgressCards from '../../dashboard/ProgressCards';
+import MissionCard from '../notice/MissionCard';
+import MissionList from '../notice/MissionList';
+import MissionModal from '../submission/MissionModal';
+import { useStudentMissions } from './useMissions';
 
 export default function StudentMissionManagement() {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(1);
@@ -16,17 +16,16 @@ export default function StudentMissionManagement() {
   const { missions, isLoading, studentCohort, missionsByWeek, stats, refreshMissions } = useStudentMissions();
 
   const handleSubmitMission = (_missionId: string) => {
-    // 실제 제출 처리는 MissionModal에서 담당
     setSelectedMission(null);
   };
 
-  const getStatusColor = (status: string, isSubmitted: boolean) => {
+  const getStatusColor = (status: string, isSubmitted?: boolean) => {
     if (isSubmitted && status === 'completed') return 'text-green-600 bg-green-100';
     if (isSubmitted) return 'text-blue-600 bg-blue-100';
     return 'text-orange-600 bg-orange-100';
   };
 
-  const getStatusText = (status: string, isSubmitted: boolean) => {
+  const getStatusText = (status: string, isSubmitted?: boolean) => {
     if (isSubmitted && status === 'completed') return '완료';
     if (isSubmitted) return '제출 완료';
     return '제출 대기';
@@ -46,7 +45,11 @@ export default function StudentMissionManagement() {
   return (
     <div className='space-y-6'>
       {/* 헤더 - 모티베이션 중심 */}
-      <MissionHeader selectedWeek={selectedWeek} onWeekChange={setSelectedWeek} missionsByWeek={missionsByWeek} />
+      <MissionHeader 
+        selectedWeek={selectedWeek} 
+        onWeekChange={setSelectedWeek} 
+        missionsByWeek={missionsByWeek} 
+      />
 
       {/* 진행률 카드 - 모티베이션 중심 재디자인 */}
       <ProgressCards stats={stats} />
@@ -75,12 +78,10 @@ export default function StudentMissionManagement() {
               <p className='text-sm text-slate-500'>관리자가 미션을 등록하면 여기에 표시됩니다.</p>
             </div>
           ) : (
-            missions.map((mission, index) => (
+            missions.map((mission) => (
               <MissionCard
                 key={mission.id}
                 mission={mission}
-                index={index}
-                totalMissions={missions.length}
                 onClick={setSelectedMission}
               />
             ))

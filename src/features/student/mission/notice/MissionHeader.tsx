@@ -1,6 +1,6 @@
 'use client';
 
-import { WeekSelectorProps } from './types';
+import { WeekSelectorProps } from '../shared/types';
 
 export default function MissionHeader({ 
   selectedWeek, 

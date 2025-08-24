@@ -1,5 +1,5 @@
-import { MissionTrackingView } from '@/features/admin/MissionTracking';
+import { MissionDashboard } from '@/features/admin/missionTracking';
 
 export default function MissionTrackingPage() {
-  return <MissionTrackingView />;
+  return <MissionDashboard />;
 }

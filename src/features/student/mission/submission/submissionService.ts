@@ -1,4 +1,4 @@
-import { supabase } from '../../../lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export interface SubmissionData {
   missionId: string;
@@ -112,6 +112,33 @@ export const submitMission = async (data: SubmissionData): Promise<void> => {
     }
 
     throw new Error('미션 제출 중 예상치 못한 오류가 발생했습니다. 네트워크 연결을 확인하고 다시 시도해주세요.');
+  }
+};
+
+// 기존 제출 내용 조회
+export const getExistingSubmission = async (missionId: string): Promise<string | null> => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from('mission_submissions')
+      .select('content')
+      .eq('mission_id', missionId)
+      .eq('student_id', user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('제출 내용 조회 오류:', error);
+      return null;
+    }
+
+    return data?.content || null;
+  } catch (error) {
+    console.error('제출 내용 조회 중 오류:', error);
+    return null;
   }
 };
 

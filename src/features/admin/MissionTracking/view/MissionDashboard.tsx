@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import TrackingHeader from './TrackingHeader';
-import TrackingStats from './TrackingStats';
-import StudentSubmissionTable from './StudentSubmissionTable';
-import SubmissionDetailPanel from './SubmissionDetailPanel';
-import { useTrackingData } from '../controllers/useTrackingData';
-import { calculateOverallStats } from '../models/trackingCalculations';
+import DashboardHeader from './DashboardHeader';
+import StatsCards from './StatsCards';
+import StudentTable from './StudentTable';
+import DetailPanel from './DetailPanel';
+import { useMissionData } from '../controller/useMissionData';
+import { calculateOverallStats } from '../model/mission.calculator';
 
-export default function MissionTrackingView() {
+export default function MissionDashboard() {
   const [selectedCohort, setSelectedCohort] = useState<number>(1);
   const [selectedSubmission, setSelectedSubmission] = useState<{
     studentName: string;
@@ -20,7 +20,7 @@ export default function MissionTrackingView() {
   } | null>(null);
 
   const { weeklyData, availableCohorts, isLoading, error, allStudents, studentSubmissions } =
-    useTrackingData(selectedCohort);
+    useMissionData(selectedCohort);
 
   // 전체 제출률 계산 (model 함수 사용)
   const { totalSubmissions, totalExpected, overallRate } = calculateOverallStats(weeklyData);
@@ -63,13 +63,13 @@ export default function MissionTrackingView() {
 
   return (
     <div className='space-y-6'>
-      <TrackingHeader
+      <DashboardHeader
         selectedCohort={selectedCohort}
         availableCohorts={availableCohorts}
         onCohortChange={setSelectedCohort}
       />
 
-      <TrackingStats overallRate={overallRate} totalSubmissions={totalSubmissions} totalMissions={weeklyData.length} />
+      <StatsCards overallRate={overallRate} totalSubmissions={totalSubmissions} totalMissions={weeklyData.length} />
 
       <div className='bg-white rounded-2xl border border-slate-200 shadow-sm'>
         <div className='flex h-[800px]'>
@@ -80,7 +80,7 @@ export default function MissionTrackingView() {
             </div>
 
             <div className='p-6 overflow-auto h-full'>
-              <StudentSubmissionTable
+              <StudentTable
                 selectedCohort={selectedCohort}
                 weeklyData={weeklyData}
                 allStudents={allStudents}
@@ -90,7 +90,7 @@ export default function MissionTrackingView() {
             </div>
           </div>
 
-          <SubmissionDetailPanel selectedSubmission={selectedSubmission} />
+          <DetailPanel selectedSubmission={selectedSubmission} />
         </div>
       </div>
     </div>

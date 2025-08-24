@@ -1,7 +1,7 @@
 'use client';
 
 import { PlayIcon, DocumentArrowUpIcon } from '@heroicons/react/24/outline';
-import { MissionListProps } from '../types';
+import { MissionListProps } from '../shared/types';
 
 export default function MissionList({ 
   missions, 

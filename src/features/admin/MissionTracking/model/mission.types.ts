@@ -13,8 +13,11 @@ export interface WeeklyData {
 export interface StudentSubmissionDetail {
   studentId: string;
   studentName: string;
-  userId: string;
-  email: string;
+  submissionStatus: 'submitted' | 'not_submitted';
+  submittedAt?: string;
+  submissionContent?: string;
+  grade?: number;
+  feedback?: string;
 }
 
 export interface StudentSubmissionTableProps {

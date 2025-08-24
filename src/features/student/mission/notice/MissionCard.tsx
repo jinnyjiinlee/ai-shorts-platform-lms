@@ -1,7 +1,7 @@
 'use client';
 
 import { CheckCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
-import { MissionCardProps } from './types';
+import { MissionCardProps } from '../shared/types';
 
 export default function MissionCard({ mission, onClick }: MissionCardProps) {
   return (

@@ -4,7 +4,7 @@ interface TrackingStatsProps {
   totalMissions: number;
 }
 
-export default function TrackingStats({ 
+export default function StatsCards({ 
   overallRate, 
   totalSubmissions, 
   totalMissions 
