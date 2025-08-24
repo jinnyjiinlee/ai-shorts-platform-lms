@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useDebounce } from '@/lib/hooks/common/useDebounce';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Announcement } from './types';
-import { simpleMockAnnouncements } from './SimpleMockData';
+import { simpleMockAnnouncements } from '@/__mocks__/simpleAnnouncements.mock';
 import SimpleAnnouncementList from './SimpleAnnouncementList';
 import AnnouncementDetail from './AnnouncementDetail';
 
@@ -62,7 +62,7 @@ export default function SimpleAnnouncementView() {
         <div className="lg:col-span-2">
           {selectedAnnouncement ? (
             <AnnouncementDetail
-              announcement={selectedAnnouncement as any}
+              announcement={selectedAnnouncement}
               onBack={() => setSelectedAnnouncement(null)}
             />
           ) : (

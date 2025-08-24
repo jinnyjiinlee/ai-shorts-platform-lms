@@ -16,7 +16,7 @@ interface MissionListProps {
   missions: Mission[];
   onViewSubmissions: (mission: Mission) => void;
   onEditMission: (mission: Mission) => void;
-  onDeleteMission: (missionId: number) => void;
+  onDeleteMission: (missionId: string) => void;
 }
 
 export default function MissionList({ 
@@ -68,7 +68,7 @@ export default function MissionList({
                   )}
                 </div>
                 <div className="text-sm text-slate-600">
-                  총 {missionsByWeek[week].reduce((acc, m) => acc + m.submissions.length, 0)}건 제출
+                  총 {missionsByWeek[week].reduce((acc, m) => acc + (m.submissions?.length || 0), 0)}건 제출
                 </div>
               </div>
             </div>
@@ -85,22 +85,22 @@ export default function MissionList({
                           {mission.cohort}기
                         </span>
                         <span className={`px-2 py-1 rounded-full text-xs ${
-                          mission.submissions.length > 0 
+                          (mission.submissions?.length || 0) > 0 
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-orange-100 text-orange-800'
                         }`}>
-                          {mission.submissions.length > 0 ? '제출있음' : '미제출'}
+                          {(mission.submissions?.length || 0) > 0 ? '제출있음' : '미제출'}
                         </span>
                       </div>
                       <p className="text-slate-600 mb-3 text-sm line-clamp-2 whitespace-pre-line">{mission.description}</p>
                       <div className="flex items-center space-x-6 text-xs text-slate-500">
                         <div className="flex items-center space-x-1">
                           <CalendarIcon className="w-3 h-3" />
-                          <span>마감: {mission.dueDate}</span>
+                          <span>마감: {mission.due_date}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <DocumentTextIcon className="w-3 h-3" />
-                          <span>{mission.submissions.length}개 제출</span>
+                          <span>{mission.submissions?.length || 0}개 제출</span>
                         </div>
                       </div>
                     </div>

@@ -3,12 +3,12 @@
 import dynamic from 'next/dynamic';
 
 // Dynamic imports for code splitting
-const ProgressDashboard = dynamic(() => import('@/features/dashboard').then(mod => ({ default: mod.StudentDashboard })));
-const StudentMissionManagement = dynamic(() => import('@/features/missions').then(mod => ({ default: mod.StudentMissionView })));
-const CommunityView = dynamic(() => import('@/features/community').then(mod => ({ default: mod.CommunityView })));
-const WeeklyLearningMaterials = dynamic(() => import('@/features/dashboard').then(mod => ({ default: mod.WeeklyLearningMaterials })));
-const BoardStyleColumn = dynamic(() => import('@/features/community').then(mod => ({ default: mod.CommunityView })));
-const BoardStyleAnnouncement = dynamic(() => import('@/features/community/shared/components/BoardStyleAnnouncement'));
+const ProgressDashboard = dynamic(() => import('@/features/dashboard/student/dashboard/ProgressDashboard'));
+const StudentMissionManagement = dynamic(() => import('@/features/dashboard/student/missions/StudentMissionManagement'));
+const CommunityView = dynamic(() => import('@/features/community/CommunityView'));
+const WeeklyLearningMaterials = dynamic(() => import('@/features/admin/resources/WeeklyLearningMaterials'));
+const BoardStyleColumn = dynamic(() => import('@/features/columns/ColumnView'));
+const BoardStyleAnnouncement = dynamic(() => import('@/features/announcements/BoardStyleAnnouncement'));
 
 interface StudentContentProps {
   activeMenu: string;

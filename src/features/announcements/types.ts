@@ -7,6 +7,8 @@ export interface Announcement {
   author: string;
   date: string;
   isNew: boolean;
+  priority: 'urgent' | 'important' | 'normal';
+  category: string;
 }
 
 export interface AnnouncementFilters {

@@ -119,7 +119,7 @@ export default function ProfileImageSection() {
         </button>
 
         <p className='text-sm text-slate-500 text-center'>
-          마음에 드는 아바타가 나올 때까지 "새 아바타 생성" 버튼을 눌러보세요
+          마음에 드는 아바타가 나올 때까지 &quot;새 아바타 생성&quot; 버튼을 눌러보세요
         </p>
       </div>
     </div>

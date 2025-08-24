@@ -17,7 +17,11 @@ interface PieData {
   color: string;
 }
 
-export default function MissionProgressChart() {
+interface MissionProgressChartProps {
+  data?: any[];
+}
+
+export default function MissionProgressChart({ data }: MissionProgressChartProps) {
   const [chartType, setChartType] = useState<'line' | 'bar' | 'area'>('line');
   const [selectedMetric, setSelectedMetric] = useState<'submission' | 'completion'>('submission');
 
@@ -43,12 +47,20 @@ export default function MissionProgressChart() {
     { cohort: '3기', current: 78, previous: 92, best: 95 },
   ];
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: {
+    active?: boolean;
+    payload?: Array<{
+      name: string;
+      value: number;
+      color: string;
+    }>;
+    label?: string;
+  }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 rounded-lg shadow-lg border border-slate-200">
           <p className="font-semibold text-slate-900 mb-2">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {entry.name}: {entry.value}%
             </p>
@@ -164,7 +176,7 @@ export default function MissionProgressChart() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"

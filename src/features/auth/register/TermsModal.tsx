@@ -59,8 +59,8 @@ export default function TermsModal({ isOpen, onClose, onAgree }: TermsModalProps
               <p className="mb-3">본 약관은 유튜브 쇼츠 마케팅 아카데미에서 제공하는 교육 서비스의 이용조건 및 절차, 회사와 이용자 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.</p>
               
               <h4 className="font-semibold text-slate-900 mb-2">제2조 (정의)</h4>
-              <p className="mb-3">1. "서비스"라 함은 회사가 제공하는 모든 교육 콘텐츠 및 관련 서비스를 의미합니다.</p>
-              <p className="mb-3">2. "이용자"라 함은 본 약관에 따라 서비스를 이용하는 회원을 말합니다.</p>
+              <p className="mb-3">1. &quot;서비스&quot;라 함은 회사가 제공하는 모든 교육 콘텐츠 및 관련 서비스를 의미합니다.</p>
+              <p className="mb-3">2. &quot;이용자&quot;라 함은 본 약관에 따라 서비스를 이용하는 회원을 말합니다.</p>
               
               <h4 className="font-semibold text-slate-900 mb-2">제3조 (약관의 효력과 변경)</h4>
               <p>본 약관은 서비스를 이용하고자 하는 모든 이용자에게 그 효력이 발생합니다. 회사는 필요에 따라 관련 법령에 위배되지 않는 범위에서 본 약관을 변경할 수 있습니다.</p>

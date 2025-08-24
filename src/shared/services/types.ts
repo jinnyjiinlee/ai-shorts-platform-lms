@@ -17,7 +17,7 @@ export interface ProfileData {
   status: 'pending' | 'approved' | 'rejected';
 }
 
-export interface AuthError {
+export interface ServiceAuthError {
   message: string;
   code?: string;
   details?: Record<string, unknown>;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useDebounce } from '../../../lib/hooks/common/useDebounce';
+import { useDebounce } from '@/lib/hooks/common/useDebounce';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 
 // 컴포넌트 임포트
@@ -11,7 +11,7 @@ import ColumnDetail from './ColumnDetail';
 
 // 타입 및 데이터 임포트
 import { Column, ColumnFilters } from './types';
-import { mockColumns } from './mockData';
+import { mockColumns } from '@/__mocks__/columns.mock';
 
 export default function ColumnView() {
   const [selectedColumn, setSelectedColumn] = useState<Column | null>(null);

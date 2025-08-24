@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useDebounce } from '../../../lib/hooks/common/useDebounce';
+import { useDebounce } from '@/lib/hooks/common/useDebounce';
 import { SpeakerWaveIcon, BellAlertIcon } from '@heroicons/react/24/outline';
 import { Announcement } from './types';
-import { mockAnnouncements } from './mockData';
+import { mockAnnouncements } from '@/__mocks__/announcements.mock';
 import AnnouncementList from './AnnouncementList';
 import AnnouncementDetail from './AnnouncementDetail';
 import AnnouncementSearch from './AnnouncementSearch';

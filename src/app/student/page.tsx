@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '../../lib/hooks/common/useAuth';
 import StudentSidebar from './components/StudentSidebar';
@@ -8,7 +8,7 @@ import StudentHeader from './components/StudentHeader';
 import StudentContent from './components/StudentContent';
 import SkipToContent from '@/features/ui/SkipToContent';
 
-export default function StudentPage() {
+function StudentPageContent() {
   const { user, loading } = useAuth('student');
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -78,5 +78,17 @@ export default function StudentPage() {
         <StudentContent activeMenu={activeMenu} />
       </div>
     </div>
+  );
+}
+
+export default function StudentPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    }>
+      <StudentPageContent />
+    </Suspense>
   );
 }

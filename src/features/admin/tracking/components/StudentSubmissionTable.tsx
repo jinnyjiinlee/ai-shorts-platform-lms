@@ -4,7 +4,11 @@ interface StudentSubmissionTableProps {
   selectedCohort: number;
   weeklyData: WeeklyData[];
   allStudents: StudentSubmissionDetail[];
-  studentSubmissions: Map<string, Map<string, any>>;
+  studentSubmissions: Map<string, Map<string, {
+    submitted: boolean;
+    content?: string;
+    submittedAt?: string;
+  }>>;
   onSubmissionClick: (submission: {
     studentName: string;
     week: number;

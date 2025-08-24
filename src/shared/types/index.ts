@@ -4,12 +4,6 @@ export * from './auth.types';
 // User types
 export * from './user.types';
 
-// Mission types
-export * from './mission.types';
-
-// Dashboard types
-export * from './dashboard.types';
-
 // Common types
 export interface ApiResponse<T> {
   data: T;

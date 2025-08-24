@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mission } from '../../types';
+import { Mission } from '@/features/missions/admin/types';
 import { fetchMissions, createMission, updateMission, deleteMission } from '../../services/missions/adminMissionService';
 
 export const useMissionManagement = () => {

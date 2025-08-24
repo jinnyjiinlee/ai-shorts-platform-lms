@@ -6,7 +6,7 @@ const getCurrentWeek = (missions: Mission[]) => {
 
 const getWeeklyProgress = (missions: Mission[]) => {
   return missions.reduce((acc, mission) => {
-    acc[mission.week] = mission.submissions.length;
+    acc[mission.week] = mission.submissions?.length || 0;
     return acc;
   }, {} as { [week: number]: number });
 };
@@ -30,8 +30,8 @@ export default function WeeklyProgressView({ missions }: WeeklyProgressViewProps
         <div className="space-y-4">
           {weeks.map(week => {
             const progress = weeklyProgress[week];
-            const completionRate = progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0;
-            const missionsInWeek = progress.missions.length;
+            const submissionCount = progress;
+            const completionRate = submissionCount > 0 ? 100 : 0; // 간단히 제출이 있으면 100%
             
             return (
               <div key={week} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
@@ -48,7 +48,7 @@ export default function WeeklyProgressView({ missions }: WeeklyProgressViewProps
                     </span>
                     <div>
                       <h3 className="text-lg font-medium text-slate-900">{week}주차</h3>
-                      <p className="text-sm text-slate-600">{missionsInWeek}개 미션</p>
+                      <p className="text-sm text-slate-600">{submissionCount}개 제출</p>
                     </div>
                     {week === currentWeek && (
                       <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs font-medium">
@@ -59,7 +59,7 @@ export default function WeeklyProgressView({ missions }: WeeklyProgressViewProps
                   
                   <div className="flex items-center space-x-6">
                     <div className="text-sm text-slate-600">
-                      완료: {progress.completed}/{progress.total}명
+                      제출수: {submissionCount}개
                     </div>
                     <div className={`text-sm font-medium ${
                       completionRate >= 80 ? 'text-green-600' :

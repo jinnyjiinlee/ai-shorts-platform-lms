@@ -1,4 +1,4 @@
-import { Announcement } from './types';
+import { Announcement } from '@/features/announcements/types';
 
 export const mockAnnouncements: Announcement[] = [
   {

@@ -12,7 +12,7 @@ const getCurrentWeek = (missions: Mission[]) => {
 
 const getWeeklyProgress = (missions: Mission[]) => {
   return missions.reduce((acc, mission) => {
-    acc[mission.week] = mission.submissions.length;
+    acc[mission.week] = mission.submissions?.length || 0;
     return acc;
   }, {} as { [week: number]: number });
 };
@@ -34,8 +34,9 @@ export default function MissionStatsCards({ missions, selectedCohort, activeStud
     if (weeks.length === 0) return 0;
     
     const completedWeeks = weeks.filter(week => {
-      const progress = weeklyProgress[parseInt(week)];
-      return progress.completed >= progress.total * 0.8; // 80% 이상 완료 시 주차 완료로 간주
+      const submissionCount = weeklyProgress[parseInt(week)];
+      // 간단히 제출 수가 1개 이상이면 완료로 간주
+      return submissionCount > 0;
     });
     
     return Math.round((completedWeeks.length / weeks.length) * 100);

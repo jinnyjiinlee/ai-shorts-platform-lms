@@ -13,7 +13,13 @@ interface MissionFormModalProps {
   };
   onClose: () => void;
   onSave: () => void;
-  onFormDataChange: (data: any) => void;
+  onFormDataChange: (data: {
+    title: string;
+    description: string;
+    due_date: string;
+    cohort: number;
+    week: number;
+  }) => void;
 }
 
 export default function MissionFormModal({

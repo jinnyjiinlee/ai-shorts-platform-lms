@@ -30,7 +30,7 @@ export async function fetchStudentsForCohort(cohort: number) {
   return students || [];
 }
 
-export async function fetchSubmissionsForMission(missionId: string) {
+export async function fetchMissionSubmissionData(missionId: string) {
   const { data: submissions, error: submissionError } = await supabase
     .from('mission_submissions')
     .select('id, student_id, submitted_at')
@@ -58,6 +58,6 @@ export async function fetchSubmissionsForMission(missionId: string) {
   return uniqueSubmissions;
 }
 
-export function calculateSubmissionRate(submittedCount: number, totalStudents: number): number {
+export function calculateMissionSubmissionRate(submittedCount: number, totalStudents: number): number {
   return totalStudents > 0 ? Math.round((submittedCount / totalStudents) * 100) : 0;
 }

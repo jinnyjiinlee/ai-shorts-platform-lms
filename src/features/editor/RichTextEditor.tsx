@@ -280,7 +280,7 @@ export default function RichTextEditor({ value, onChange, placeholder, className
         {/* 정렬 */}
         <div className="flex items-center space-x-1">
           <select
-            onChange={(e) => execCommand('justifyLeft') || execCommand(e.target.value)}
+            onChange={(e) => execCommand(e.target.value)}
             className="text-xs bg-white border border-slate-300 rounded px-2 py-1"
             defaultValue="justifyLeft"
           >

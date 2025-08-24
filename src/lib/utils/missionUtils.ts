@@ -1,4 +1,4 @@
-import { Mission, WeeklyProgress } from '../types';
+import { Mission, WeeklyProgress } from '@/features/missions/admin/types';
 // Mock student counts for different cohorts
 const studentCounts: { [key: number]: number } = {
   1: 20,

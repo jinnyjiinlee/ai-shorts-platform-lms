@@ -5,7 +5,7 @@ export { supabase } from './client';
 export type { 
   UserRegistrationData, 
   ProfileData, 
-  AuthError 
+  ServiceAuthError 
 } from './types';
 
 // Auth exports

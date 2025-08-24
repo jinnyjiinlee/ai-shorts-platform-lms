@@ -2,8 +2,8 @@ import { supabase } from '../../supabase/client';
 import { 
   fetchMissionsForCohort,
   fetchStudentsForCohort,
-  fetchSubmissionsForMission,
-  calculateSubmissionRate
+  fetchMissionSubmissionData,
+  calculateMissionSubmissionRate
 } from '../../utils/missionDataUtils';
 
 export interface WeeklyData {
@@ -28,9 +28,9 @@ export const fetchMissionTrackingData = async (cohort: number): Promise<WeeklyDa
     const trackingData: WeeklyData[] = await Promise.all(
       missions.map(async (mission) => {
         try {
-          const submissions = await fetchSubmissionsForMission(mission.id);
+          const submissions = await fetchMissionSubmissionData(mission.id);
           const submittedCount = submissions.length; // 이미 중복 제거된 데이터
-          const submissionRate = calculateSubmissionRate(submittedCount, students.length);
+          const submissionRate = calculateMissionSubmissionRate(submittedCount, students.length);
 
           return {
             week: mission.week,

@@ -1,7 +1,7 @@
 'use client';
 
 import ReactMarkdown from 'react-markdown';
-import { MissionModalProps } from './types';
+import { MissionModalProps } from '../types';
 import TextSubmission from './ImprovedFileUpload';
 import CompletionStatus from './CompletionStatus';
 import { useToast } from '@/features/ui/useToast';

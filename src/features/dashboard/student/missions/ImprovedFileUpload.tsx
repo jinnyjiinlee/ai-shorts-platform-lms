@@ -121,7 +121,7 @@ export default function TextSubmission({
       {/* 제출 버튼 */}
       <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200">
         <button 
-          onClick={handleSubmission}
+          onClick={() => handleSubmission()}
           disabled={isSubmitting || !textContent.trim()}
           className={`px-6 py-2 text-white rounded-lg transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed ${
             canResubmit 

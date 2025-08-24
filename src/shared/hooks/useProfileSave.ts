@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { supabase } from '@/shared/services';
 
-export function useProfileSave(userRole: string, formData: unknown) {
+export function useProfileSave(userRole: string, formData: any) {
   const [isSaving, setIsSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
@@ -53,7 +53,7 @@ export function useProfileSave(userRole: string, formData: unknown) {
       
     } catch (e: unknown) {
       console.error('저장 오류:', e);
-      alert(`저장 실패: ${e?.message || '알 수 없는 오류'}`);
+      alert(`저장 실패: ${(e as Error)?.message || '알 수 없는 오류'}`);
     } finally {
       setIsSaving(false);
     }

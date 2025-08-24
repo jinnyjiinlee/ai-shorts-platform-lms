@@ -1,5 +1,22 @@
 import { supabase } from '../../supabase/client';
-import { Mission } from '../../types';
+
+interface Submission {
+  id: string;
+  student_id: string;
+  submitted_at: string;
+  content?: string;
+  file_name?: string;
+  status: string;
+}
+
+interface MissionFormData {
+  title: string;
+  description: string;
+  due_date: string;
+  cohort: number;
+  week: number;
+}
+import { Mission } from '@/features/missions/admin/types';
 
 export const fetchMissions = async (): Promise<Mission[]> => {
   try {
@@ -45,7 +62,7 @@ export const fetchMissions = async (): Promise<Mission[]> => {
           }
 
           // 중복 제출 제거 (같은 학생의 최신 제출만 유지)
-          const uniqueSubmissions = (submissions || []).reduce((acc: any[], curr: any) => {
+          const uniqueSubmissions = (submissions || []).reduce((acc: Submission[], curr: Submission) => {
             const existingIndex = acc.findIndex((sub) => sub.student_id === curr.student_id);
             if (existingIndex >= 0) {
               // 더 최신 제출로 교체
@@ -150,7 +167,7 @@ export const fetchMissions = async (): Promise<Mission[]> => {
   }
 };
 
-export const createMission = async (formData: any): Promise<void> => {
+export const createMission = async (formData: MissionFormData): Promise<void> => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -180,7 +197,7 @@ export const createMission = async (formData: any): Promise<void> => {
   }
 };
 
-export const updateMission = async (missionId: string, formData: any): Promise<void> => {
+export const updateMission = async (missionId: string, formData: MissionFormData): Promise<void> => {
   // datetime-local 값을 UTC로 변환
   const processedFormData = { ...formData };
   if (formData.due_date) {

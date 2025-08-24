@@ -129,7 +129,7 @@ export default function ColumnDetail({ column, onBack, onLike }: ColumnDetailPro
                   .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                   .replace(/\*(.*?)\*/g, '<em>$1</em>')
                   .replace(/^- (.+)/gm, '<li class="ml-4">$1</li>')
-                  .replace(/(<li.*?>.*?<\/li>)/gs, '<ul class="list-disc ml-6 space-y-2 my-4">$1</ul>')
+                  .replace(/(<li.*?>.*?<\/li>)/g, '<ul class="list-disc ml-6 space-y-2 my-4">$1</ul>')
                   .replace(/^\d+\.\s(.+)/gm, '<li class="ml-4">$1</li>')
                   .replace(/✅\s(.+)/g, '<div class="flex items-center space-x-2 my-2"><span class="text-green-500">✅</span><span>$1</span></div>')
                   .replace(/✨\s(.+)/g, '<div class="flex items-center space-x-2 my-2"><span class="text-yellow-500">✨</span><span>$1</span></div>')

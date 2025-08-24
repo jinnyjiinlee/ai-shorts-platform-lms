@@ -1,4 +1,4 @@
-import { Announcement } from './types';
+import { Announcement } from '@/features/announcements/types';
 
 export const simpleMockAnnouncements: Announcement[] = [
   {
@@ -23,7 +23,9 @@ export const simpleMockAnnouncements: Announcement[] = [
 감사합니다.`,
     author: '하대표',
     date: '2024-03-23',
-    isNew: true
+    isNew: true,
+    priority: 'important',
+    category: '라이브 강의'
   },
   {
     id: 2,
@@ -49,7 +51,9 @@ export const simpleMockAnnouncements: Announcement[] = [
 모든 콘텐츠는 4월 1일부터 학습자료 페이지에서 확인하실 수 있습니다.`,
     author: '하대표',
     date: '2024-03-22',
-    isNew: true
+    isNew: true,
+    priority: 'normal',
+    category: '콘텐츠 업데이트'
   },
   {
     id: 3,
@@ -70,6 +74,8 @@ export const simpleMockAnnouncements: Announcement[] = [
 늦지 않게 제출 부탁드립니다!`,
     author: '관리자',
     date: '2024-03-20',
-    isNew: false
+    isNew: false,
+    priority: 'urgent',
+    category: '미션 안내'
   }
 ];

@@ -18,26 +18,28 @@ interface LearningMaterial {
   isPublished: boolean;
 }
 
+type MaterialFormData = {
+  title: string;
+  description: string;
+  week: number;
+  cohort: number;
+  fileName: string;
+  fileSize: string;
+  fileType: string;
+  isPublished: boolean;
+};
+
 interface MaterialModalProps {
   show: boolean;
   type: 'create' | 'edit' | 'view';
   material?: LearningMaterial | null;
-  formData: {
-    title: string;
-    description: string;
-    week: number;
-    cohort: number;
-    fileName: string;
-    fileSize: string;
-    fileType: string;
-    isPublished: boolean;
-  };
+  formData: MaterialFormData;
   availableWeeks: number[];
   availableCohorts: number[];
   onClose: () => void;
   onSave: () => void;
   onDownload?: (material: LearningMaterial) => void;
-  onFormDataChange: (data: any) => void;
+  onFormDataChange: (data: MaterialFormData) => void;
 }
 
 export default function MaterialModal({
@@ -227,8 +229,8 @@ export default function MaterialModal({
 
 // 드래그 앤 드롭 파일 업로드 컴포넌트
 function FileUploadArea({ onFormDataChange, formData }: {
-  onFormDataChange: (data: any) => void;
-  formData: any;
+  onFormDataChange: (data: MaterialFormData) => void;
+  formData: MaterialFormData;
 }) {
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
