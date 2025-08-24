@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Mission } from '@/features/missions/admin/types';
-import { fetchMissions, createMission, updateMission, deleteMission } from '../../services/missions/adminMissionService';
+import { Mission } from '@/features/student/dashboard/types';
+import {
+  fetchMissions,
+  createMission,
+  updateMission,
+  deleteMission,
+} from '../../services/missions/adminMissionService';
 
 export const useMissionManagement = () => {
   const [missions, setMissions] = useState<Mission[]>([]);
@@ -51,6 +56,6 @@ export const useMissionManagement = () => {
     isLoading,
     saveMission,
     removeMission,
-    refreshMissions: loadMissions // 관리자도 새로고침 가능
+    refreshMissions: loadMissions, // 관리자도 새로고침 가능
   };
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mission } from '@/features/dashboard/student/types';
+import { Mission } from '@/features/student/mission/types';
 import { fetchStudentMissions, getStudentCohort } from '../../services/missions/studentMissionService';
 
 export const useStudentMissions = () => {

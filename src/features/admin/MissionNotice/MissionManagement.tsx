@@ -3,16 +3,16 @@
 import { useState } from 'react';
 
 // 컴포넌트 임포트
-import MissionHeader from '../../missions/admin/lists/MissionHeader';
-import MissionTable from '../../missions/admin/lists/MissionTable';
-import MissionFormModal from '../../missions/admin/modals/MissionFormModal';
-import SubmissionListModal from '../../missions/admin/modals/SubmissionListModal';
+import MissionHeader from './lists/MissionHeader';
+import MissionTable from './lists/MissionTable';
+import MissionFormModal from './modals/MissionFormModal';
+import SubmissionListModal from './modals/SubmissionListModal';
 
 // 훅 및 유틸리티 임포트
 import { useMissionManagement } from '@/lib/hooks/admin/useMissionManagement';
 import { useModalState } from '@/lib/hooks/admin/useModalState';
 import { getFilteredMissions, getAvailableCohorts } from '@/lib/utils/missionUtils';
-import { Mission } from '../../missions/admin/types';
+import { Mission } from '../../student/dashboard/types';
 
 export default function MissionManagement() {
   const { missions, isLoading, saveMission, removeMission, refreshMissions } = useMissionManagement();

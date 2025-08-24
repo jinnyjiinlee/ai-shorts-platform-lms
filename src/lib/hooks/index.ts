@@ -14,4 +14,4 @@ export * from './admin/useTrackingData';
 export * from './admin/useMissionData';
 
 // Student hooks
-export * from './student/useStudentMissions';
+export * from '../../features/student/mission/useStudentMissions';

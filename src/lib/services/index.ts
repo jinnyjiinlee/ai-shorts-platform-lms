@@ -1,6 +1,6 @@
 // Dashboard services
 export * from './dashboard/adminDashboardService';
-export * from './dashboard/studentDashboardService';
+export * from '../../features/student/dashboard/studentDashboardService';
 
 // Mission services
 export * from './missions/adminMissionService';

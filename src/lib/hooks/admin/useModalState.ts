@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mission } from '@/features/missions/admin/types';
+import { Mission } from '@/features/student/mission/types';
 
 export const useModalState = () => {
   const [showModal, setShowModal] = useState(false);
@@ -10,7 +10,7 @@ export const useModalState = () => {
     description: '',
     due_date: '',
     cohort: 1,
-    week: 1
+    week: 1,
   });
 
   const resetFormData = () => {
@@ -19,7 +19,7 @@ export const useModalState = () => {
       description: '',
       due_date: '',
       cohort: 1,
-      week: 1
+      week: 1,
     });
   };
 
@@ -38,7 +38,7 @@ export const useModalState = () => {
       description: mission.description,
       due_date: localDueDate,
       cohort: mission.cohort,
-      week: mission.week
+      week: mission.week,
     });
   };
 
@@ -57,6 +57,6 @@ export const useModalState = () => {
     setFormData,
     resetFormData,
     setFormDataFromMission,
-    closeModal
+    closeModal,
   };
 };

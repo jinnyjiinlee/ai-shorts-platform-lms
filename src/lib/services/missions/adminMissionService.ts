@@ -16,7 +16,7 @@ interface MissionFormData {
   cohort: number;
   week: number;
 }
-import { Mission } from '@/features/missions/admin/types';
+import { Mission } from '@/features/student/dashboard/types';
 
 export const fetchMissions = async (): Promise<Mission[]> => {
   try {
