@@ -4,9 +4,10 @@ import dynamic from 'next/dynamic';
 
 // Dynamic imports for code splitting
 const ProgressDashboard = dynamic(() => import('@/features/dashboard/student/dashboard/ProgressDashboard'));
-const StudentMissionManagement = dynamic(() => import('@/features/dashboard/student/missions/StudentMissionManagement'));
-const CommunityView = dynamic(() => import('@/features/community/CommunityView'));
-const WeeklyLearningMaterials = dynamic(() => import('@/features/admin/resources/WeeklyLearningMaterials'));
+const StudentMissionManagement = dynamic(
+  () => import('@/features/dashboard/student/missions/StudentMissionManagement')
+);
+const WeeklyLearningMaterials = dynamic(() => import('@/features/admin/resourceShare/WeeklyLearningMaterials'));
 const BoardStyleColumn = dynamic(() => import('@/features/columns/BoardStyleColumn'));
 const BoardStyleAnnouncement = dynamic(() => import('@/features/announcements/BoardStyleAnnouncement'));
 

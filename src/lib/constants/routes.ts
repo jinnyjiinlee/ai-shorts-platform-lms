@@ -7,8 +7,8 @@ export const ROUTES = {
   // Admin routes
   ADMIN: '/admin',
   ADMIN_DASHBOARD: '/admin',
-  ADMIN_USERS: '/admin/usersManagement',
-  ADMIN_MISSIONS: '/admin/missions',
+  ADMIN_USERS: '/admin/student',
+  ADMIN_MISSIONS: '/admin/missionNotice',
   ADMIN_TRACKING: '/admin/missionTracking',
   ADMIN_PROGRESS: '/admin/progressManagement',
   ADMIN_SETTINGS: '/admin/settings',

@@ -3,16 +3,16 @@
 import { useState } from 'react';
 
 // 컴포넌트 임포트
-import MissionHeader from './lists/MissionHeader';
-import MissionTable from './lists/MissionTable';
-import MissionFormModal from './modals/MissionFormModal';
-import SubmissionListModal from './modals/SubmissionListModal';
+import MissionHeader from '../../missions/admin/lists/MissionHeader';
+import MissionTable from '../../missions/admin/lists/MissionTable';
+import MissionFormModal from '../../missions/admin/modals/MissionFormModal';
+import SubmissionListModal from '../../missions/admin/modals/SubmissionListModal';
 
 // 훅 및 유틸리티 임포트
 import { useMissionManagement } from '@/lib/hooks/admin/useMissionManagement';
 import { useModalState } from '@/lib/hooks/admin/useModalState';
 import { getFilteredMissions, getAvailableCohorts } from '@/lib/utils/missionUtils';
-import { Mission } from './types';
+import { Mission } from '../../missions/admin/types';
 
 export default function MissionManagement() {
   const { missions, isLoading, saveMission, removeMission, refreshMissions } = useMissionManagement();
@@ -27,9 +27,9 @@ export default function MissionManagement() {
     closeModal,
     setShowModal,
     setSelectedMission,
-    setModalType
+    setModalType,
   } = useModalState();
-  
+
   const [selectedCohort, setSelectedCohort] = useState<number | 'all'>(1);
 
   const filteredMissions = getFilteredMissions(missions, selectedCohort);
@@ -62,7 +62,7 @@ export default function MissionManagement() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <MissionHeader
         selectedCohort={selectedCohort}
         availableCohorts={availableCohorts}
@@ -92,11 +92,7 @@ export default function MissionManagement() {
       )}
 
       {modalType === 'submission' && (
-        <SubmissionListModal
-          show={showModal}
-          mission={selectedMission}
-          onClose={closeModal}
-        />
+        <SubmissionListModal show={showModal} mission={selectedMission} onClose={closeModal} />
       )}
     </div>
   );

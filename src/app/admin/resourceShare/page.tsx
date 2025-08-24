@@ -1,5 +1,5 @@
-import WeeklyLearningMaterials from '@/features/admin/resources/WeeklyLearningMaterials';
+import WeeklyLearningMaterials from '@/features/admin/resourceShare/WeeklyLearningMaterials';
 
 export default function ResourceSharePage() {
-  return <WeeklyLearningMaterials userRole="admin" />;
+  return <WeeklyLearningMaterials userRole='admin' />;
 }

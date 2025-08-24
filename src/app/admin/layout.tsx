@@ -95,9 +95,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { href: '/admin/community/columns', name: '하대표 칼럼' },
       ],
     },
-    { href: '/admin/missions', name: '미션 공지', icon: ClipboardDocumentListIcon },
+    { href: '/admin/missionNotice', name: '미션 공지', icon: ClipboardDocumentListIcon },
     { href: '/admin/missionTracking', name: '미션 달성', icon: ChartBarIcon },
-    { href: '/admin/usersManagement', name: '수강생', icon: UsersIcon },
+    { href: '/admin/studentManagement', name: '수강생', icon: UsersIcon },
     { href: '/admin/resourceShare', name: '자료 공유', icon: AcademicCapIcon },
     { href: '/admin/settings', name: '설정', icon: Cog6ToothIcon }
   ];
