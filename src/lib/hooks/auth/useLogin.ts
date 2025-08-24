@@ -1,5 +1,7 @@
 'use client';
 
+//사용
+
 import { useState } from 'react';
 import { signIn } from '../../supabase/auth';
 import { supabase } from '../../supabase/client';
@@ -34,8 +36,12 @@ export function useLogin() {
       }
 
       // 프로필 정보 가져오기
-      const { data: profile, error: profileError } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
-      
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+
       console.log('Profile data:', profile);
       console.log('Profile error:', profileError);
 

@@ -8,6 +8,7 @@ export interface UserRegistrationData {
   avatar_url: string; 
 }
 
+// 사용
 export interface ProfileData {
   id: string;
   name: string;

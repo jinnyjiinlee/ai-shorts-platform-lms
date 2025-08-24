@@ -1,3 +1,5 @@
+//사용
+
 import { supabase } from './client';
 import { UserRegistrationData } from '../types';
 
