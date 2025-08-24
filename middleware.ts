@@ -18,10 +18,18 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: any) {
+          const cookieOptions = {
+            ...options,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax' as const,
+            httpOnly: false,
+            path: '/'
+          };
+          
           request.cookies.set({
             name,
             value,
-            ...options,
+            ...cookieOptions,
           });
           response = NextResponse.next({
             request: {
@@ -31,14 +39,22 @@ export async function middleware(request: NextRequest) {
           response.cookies.set({
             name,
             value,
-            ...options,
+            ...cookieOptions,
           });
         },
         remove(name: string, options: any) {
+          const cookieOptions = {
+            ...options,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax' as const,
+            httpOnly: false,
+            path: '/'
+          };
+          
           request.cookies.set({
             name,
             value: '',
-            ...options,
+            ...cookieOptions,
           });
           response = NextResponse.next({
             request: {
@@ -48,7 +64,7 @@ export async function middleware(request: NextRequest) {
           response.cookies.set({
             name,
             value: '',
-            ...options,
+            ...cookieOptions,
           });
         },
       },
