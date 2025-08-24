@@ -6,7 +6,7 @@ export type {
   UserRegistrationData, 
   ProfileData, 
   AuthError 
-} from './types';
+} from '../types/auth.types';
 
 // Auth exports
 export { 
@@ -24,7 +24,7 @@ export {
 
 // Helper object for backward compatibility
 export const authHelpers = {
-  signUp: async (userData: import('./types').UserRegistrationData) => {
+  signUp: async (userData: import('../types/auth.types').UserRegistrationData) => {
     const { signUp } = await import('./auth');
     return signUp(userData);
   },
