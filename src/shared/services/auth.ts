@@ -3,7 +3,6 @@ import { UserRegistrationData } from '../types';
 
 // 회원가입 함수: Supabase Auth를 이용해 새 사용자를 등록한다.
 export async function signUp(userData: UserRegistrationData) {
-  alert('👉 cohort 값 확인\n' + '타입: ' + typeof userData.cohort + '\n' + '값: ' + userData.cohort);
 
   try {
     // Supabase Auth의 signUp 메서드 호출
