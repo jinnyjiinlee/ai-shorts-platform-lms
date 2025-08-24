@@ -79,13 +79,6 @@ export async function middleware(request: NextRequest) {
     const publicRoutes = ['/', '/auth/register'];
     const isPublicRoute = publicRoutes.includes(pathname);
 
-    // If no session and trying to access protected route
-    if (!session && !isPublicRoute) {
-      const redirectUrl = new URL('/', request.url);
-      redirectUrl.searchParams.set('redirectTo', pathname);
-      return NextResponse.redirect(redirectUrl);
-    }
-
     // If user is authenticated, check role-based access
     if (session) {
       const { data: profile, error: profileError } = await supabase
