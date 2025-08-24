@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Mission } from '@/features/student/dashboard/types';
+import { Mission } from '@/features/student/mission/types';
 import {
   fetchMissions,
   createMission,
   updateMission,
   deleteMission,
-} from '../../services/missions/adminMissionService';
+} from '../../../features/admin/MissionNotice/adminMissionService';
 
 export const useMissionManagement = () => {
   const [missions, setMissions] = useState<Mission[]>([]);

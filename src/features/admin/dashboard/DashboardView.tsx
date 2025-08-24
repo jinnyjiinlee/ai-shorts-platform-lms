@@ -11,7 +11,7 @@ import {
   fetchCohortData,
   DashboardStats,
   CohortDashboardData,
-} from '@/lib/services/dashboard/adminDashboardService';
+} from '@/features/admin/dashboard/adminDashboardService';
 import { CohortData, OverallStats } from './types';
 
 // CohortDashboardData를 CohortData로 변환하는 어댑터 함수

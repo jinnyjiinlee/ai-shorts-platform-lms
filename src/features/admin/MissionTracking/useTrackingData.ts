@@ -4,8 +4,8 @@ import {
   fetchAvailableCohorts,
   fetchMissionStudentDetails,
   WeeklyData,
-  StudentSubmissionDetail
-} from '../../services/tracking/trackingService';
+  StudentSubmissionDetail,
+} from '../../../features/admin/MissionTracking/trackingService';
 
 export function useTrackingData(selectedCohort: number) {
   const [weeklyData, setWeeklyData] = useState<WeeklyData[]>([]);
@@ -20,35 +20,35 @@ export function useTrackingData(selectedCohort: number) {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const cohorts = await fetchAvailableCohorts();
         setAvailableCohorts(cohorts);
-        
+
         const data = await fetchMissionTrackingData(selectedCohort);
         setWeeklyData(data);
-        
+
         if (data.length > 0) {
           const firstMission = data[0];
           const studentDetails = await fetchMissionStudentDetails(firstMission.missionId, selectedCohort);
           setAllStudents(studentDetails);
-          
+
           const submissionMap = new Map<string, Map<string, any>>();
-          
+
           for (const mission of data) {
             const missionStudents = await fetchMissionStudentDetails(mission.missionId, selectedCohort);
             const missionSubmissions = new Map<string, any>();
-            
-            missionStudents.forEach(student => {
+
+            missionStudents.forEach((student) => {
               missionSubmissions.set(student.studentId, {
                 submitted: student.submissionStatus === 'submitted',
                 content: student.submissionContent,
-                submittedAt: student.submittedAt
+                submittedAt: student.submittedAt,
               });
             });
-            
+
             submissionMap.set(mission.missionId, missionSubmissions);
           }
-          
+
           setStudentSubmissions(submissionMap);
         }
       } catch (err) {
@@ -68,6 +68,6 @@ export function useTrackingData(selectedCohort: number) {
     isLoading,
     error,
     allStudents,
-    studentSubmissions
+    studentSubmissions,
   };
 }

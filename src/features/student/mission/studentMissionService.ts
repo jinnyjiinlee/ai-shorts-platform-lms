@@ -1,4 +1,4 @@
-import { supabase } from '../../supabase/client';
+import { supabase } from '../../../lib/supabase/client';
 import { Mission } from '@/features/student/mission/types';
 
 export const fetchStudentMissions = async (studentCohort: number): Promise<Mission[]> => {

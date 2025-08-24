@@ -7,7 +7,7 @@ import ProgressCards from '../dashboard/ProgressCards';
 import MissionCard from './MissionCard';
 import MissionList from './MissionList';
 import MissionModal from './MissionModal';
-import { useStudentMissions } from '@/lib/hooks/student/useStudentMissions';
+import { useStudentMissions } from '@/features/student/mission/useStudentMissions';
 
 export default function StudentMissionManagement() {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(1);

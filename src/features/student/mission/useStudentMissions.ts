@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Mission } from '@/features/student/mission/types';
-import { fetchStudentMissions, getStudentCohort } from '../../services/missions/studentMissionService';
+import { fetchStudentMissions, getStudentCohort } from './studentMissionService';
 
 export const useStudentMissions = () => {
   const [missions, setMissions] = useState<Mission[]>([]);
@@ -12,7 +12,7 @@ export const useStudentMissions = () => {
       setIsLoading(true);
       const cohort = await getStudentCohort();
       setStudentCohort(cohort);
-      
+
       const missionData = await fetchStudentMissions(cohort);
       setMissions(missionData);
     } catch (error) {
@@ -35,13 +35,13 @@ export const useStudentMissions = () => {
 
   const getStats = () => {
     const totalMissions = missions.length;
-    const completedMissions = missions.filter(m => m.isSubmitted).length;
+    const completedMissions = missions.filter((m) => m.isSubmitted).length;
     const completionRate = totalMissions > 0 ? Math.round((completedMissions / totalMissions) * 100) : 0;
-    
+
     return {
       totalMissions,
       completedMissions,
-      completionRate
+      completionRate,
     };
   };
 
@@ -55,6 +55,6 @@ export const useStudentMissions = () => {
     studentCohort,
     missionsByWeek: getMissionsByWeek(),
     stats: getStats(),
-    refreshMissions: loadMissions
+    refreshMissions: loadMissions,
   };
 };

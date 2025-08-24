@@ -4,8 +4,8 @@ import ProfileHeader from './ProfileHeader';
 import ProfileImageSection from './ProfileImageSection';
 import ProfileForm from './ProfileForm';
 import ProfileActions from './ProfileActions';
-import { useProfileData } from '@/lib/hooks/common/useProfileData';
-import { useProfileSave } from '@/lib/hooks/common/useProfileSave';
+import { useProfileData } from './hooks/useProfileData';
+import { useProfileSave } from './hooks/useProfileSave';
 
 export default function ProfileManagement({ userRole }: any) {
   const { isLoading, formData, setFormData } = useProfileData();

@@ -9,8 +9,8 @@ import MissionFormModal from './modals/MissionFormModal';
 import SubmissionListModal from './modals/SubmissionListModal';
 
 // 훅 및 유틸리티 임포트
-import { useMissionManagement } from '@/lib/hooks/admin/useMissionManagement';
-import { useModalState } from '@/lib/hooks/admin/useModalState';
+import { useMissionManagement } from '@/features/admin/MissionNotice/useMissionManagement';
+import { useModalState } from '@/features/admin/MissionNotice/useModalState';
 import { getFilteredMissions, getAvailableCohorts } from '@/lib/utils/missionUtils';
 import { Mission } from '../../student/dashboard/types';
 
