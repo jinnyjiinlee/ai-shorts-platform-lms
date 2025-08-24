@@ -5,7 +5,7 @@ import TermsModal from '@/features/auth/register/TermsModal';
 import RegisterBackground from './components/RegisterBackground';
 import RegisterHeader from './components/RegisterHeader';
 import RegisterFooter from './components/RegisterFooter';
-import { useRegistration } from '../../../lib/hooks/auth/useRegistration';
+import { useRegistration } from '@/features/auth/hooks/useRegistration';
 
 export default function RegisterPage() {
   const {

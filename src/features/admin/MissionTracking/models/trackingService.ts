@@ -1,20 +1,12 @@
-import { supabase } from '../../../lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import {
   fetchMissionsForCohort,
   fetchStudentsForCohort,
   fetchMissionSubmissionData,
   calculateMissionSubmissionRate,
-} from '../../../lib/utils/missionDataUtils';
+} from '@/lib/utils/missionDataUtils';
 
-export interface WeeklyData {
-  week: number;
-  missionTitle: string;
-  missionId: string;
-  totalStudents: number;
-  submittedCount: number;
-  submissionRate: number;
-  dueDate: string;
-}
+import { WeeklyData, StudentSubmissionDetail } from './types';
 
 export const fetchMissionTrackingData = async (cohort: number): Promise<WeeklyData[]> => {
   try {

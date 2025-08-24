@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { useLogin } from '../lib/hooks/auth/useLogin';
+import { useLogin } from '@/features/auth/hooks/useLogin';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({

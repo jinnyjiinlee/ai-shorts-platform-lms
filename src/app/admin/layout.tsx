@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { supabase } from '../../lib/supabase/client';
-import { useAuth } from '../../lib/hooks/common/useAuth';
+import { supabase } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/hooks/common/useAuth';
 import {
   HomeIcon,
   ClipboardDocumentListIcon,

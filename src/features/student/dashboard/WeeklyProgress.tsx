@@ -20,7 +20,7 @@ export default function WeeklyProgress({ weeklyProgress }: WeekProgressProps) {
   const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
   
   const handleClick = () => {
-    router.push('/student?menu=missions');
+    router.push('/student/mission');
   };
 
   return (

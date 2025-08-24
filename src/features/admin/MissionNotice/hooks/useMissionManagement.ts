@@ -5,7 +5,7 @@ import {
   createMission,
   updateMission,
   deleteMission,
-} from '../../../features/admin/MissionNotice/adminMissionService';
+} from '@/features/admin/MissionNotice/adminMissionService';
 
 export const useMissionManagement = () => {
   const [missions, setMissions] = useState<Mission[]>([]);

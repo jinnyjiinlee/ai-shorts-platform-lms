@@ -5,7 +5,8 @@ import TrackingHeader from './TrackingHeader';
 import TrackingStats from './TrackingStats';
 import StudentSubmissionTable from './StudentSubmissionTable';
 import SubmissionDetailPanel from './SubmissionDetailPanel';
-import { useTrackingData } from '@/lib/hooks/admin/useTrackingData';
+import { useTrackingData } from '../controllers/useTrackingData';
+import { calculateOverallStats } from '../models/trackingCalculations';
 
 export default function MissionTrackingView() {
   const [selectedCohort, setSelectedCohort] = useState<number>(1);
@@ -21,10 +22,8 @@ export default function MissionTrackingView() {
   const { weeklyData, availableCohorts, isLoading, error, allStudents, studentSubmissions } =
     useTrackingData(selectedCohort);
 
-  // 전체 제출률 계산
-  const totalSubmissions = weeklyData.reduce((sum, week) => sum + week.submittedCount, 0);
-  const totalExpected = weeklyData.reduce((sum, week) => sum + week.totalStudents, 0);
-  const overallRate = totalExpected > 0 ? Math.round((totalSubmissions / totalExpected) * 100) : 0;
+  // 전체 제출률 계산 (model 함수 사용)
+  const { totalSubmissions, totalExpected, overallRate } = calculateOverallStats(weeklyData);
 
   if (isLoading) {
     return (

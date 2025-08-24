@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '../../supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export function useProfileSave(userRole: string, formData: any) {
   const [isSaving, setIsSaving] = useState(false);

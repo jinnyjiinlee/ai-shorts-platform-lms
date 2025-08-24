@@ -3,8 +3,8 @@
 //사용
 
 import { useState } from 'react';
-import { signIn } from '../../supabase/auth';
-import { supabase } from '../../supabase/client';
+import { signIn } from '@/lib/supabase/auth';
+import { supabase } from '@/lib/supabase/client';
 
 interface LoginFormData {
   userId: string;

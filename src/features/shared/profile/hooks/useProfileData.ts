@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '../../supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export function useProfileData() {
   const [isLoading, setIsLoading] = useState(true);

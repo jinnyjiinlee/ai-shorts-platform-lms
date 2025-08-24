@@ -1,4 +1,4 @@
-import MissionTrackingView from '@/features/admin/MissionTracking/MissionTrackingView';
+import { MissionTrackingView } from '@/features/admin/MissionTracking';
 
 export default function MissionTrackingPage() {
   return <MissionTrackingView />;
