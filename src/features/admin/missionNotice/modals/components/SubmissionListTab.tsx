@@ -43,7 +43,7 @@ export default function SubmissionListTab({ mission, onGradeSubmission }: Submis
                   <span className='font-medium text-slate-700'>제출 내용:</span>
                   <div className='mt-2 p-3 bg-slate-50 rounded-lg border'>
                     <p className='whitespace-pre-wrap break-words leading-relaxed text-slate-700'>
-                      {submission.fileName || '내용 없음'}
+                      {submission.content || '내용 없음'}
                     </p>
                   </div>
                 </div>

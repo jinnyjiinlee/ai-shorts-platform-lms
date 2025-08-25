@@ -41,7 +41,7 @@ export const fetchMissions = async (): Promise<Mission[]> => {
         try {
           // 해당 미션의 제출 데이터 조회
           const { data: submissions, error: submissionError } = await supabase
-            .from('mission_submissions')
+            .from('mission_submit')
             .select(
               `
               id,

@@ -1,6 +1,6 @@
 // 사용
 
-import { supabase } from '../../../lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export interface StudentDashboardStats {
   completedMissions: number;
@@ -53,7 +53,7 @@ export const fetchStudentDashboardData = async (): Promise<StudentDashboardStats
 
     // 내 제출 현황 가져오기
     const { data: submissions, error: submissionError } = await supabase
-      .from('mission_submissions')
+      .from('mission_submit')
       .select(
         `
         id,

@@ -10,6 +10,7 @@ export interface Mission {
   status: 'pending' | 'submitted' | 'completed';
   submission_type: 'file' | 'text';
   feedback?: string;
+  submissionContent?: string;
 }
 
 export interface MissionCardProps {

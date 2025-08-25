@@ -32,7 +32,7 @@ export async function fetchStudentsForCohort(cohort: number) {
 
 export async function fetchMissionSubmissionData(missionId: string) {
   const { data: submissions, error: submissionError } = await supabase
-    .from('mission_submissions')
+    .from('mission_submit')
     .select('id, student_id, submitted_at')
     .eq('mission_id', missionId);
 

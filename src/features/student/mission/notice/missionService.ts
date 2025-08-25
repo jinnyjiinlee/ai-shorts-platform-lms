@@ -10,72 +10,40 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
       throw new Error('로그인이 필요합니다.');
     }
 
-    // 미션 데이터와 해당 학생의 제출 데이터를 함께 가져오기
-    const { data, error } = await supabase
-      .from('mission_notice')
-      .select(
-        `
-        *,
-        mission_submissions!inner (
-          id,
-          submitted_at,
-          status,
-          student_id
-        )
-      `
-      )
-      .eq('cohort', studentCohort)
-      .eq('mission_submissions.student_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('학생 미션 데이터 조회 오류:', error);
-      throw new Error('미션 데이터를 불러오는 중 오류가 발생했습니다.');
-    }
-
-    // 제출된 미션들
-    const submittedMissions = (data || []).map((mission) => ({
-      id: mission.id,
-      title: mission.title,
-      description: mission.description,
-      week: mission.week || 1,
-      dueDate: new Date(mission.due_date).toLocaleString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      isSubmitted: true,
-      submittedAt: new Date(mission.mission_submissions[0]?.submitted_at).toLocaleString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      status: 'submitted' as const,
-      submission_type: mission.submission_type || 'file',
-      feedback: undefined,
-    }));
-
-    // 모든 미션 가져오기 (제출 여부 상관없이)
-    const { data: allMissions, error: allError } = await supabase
+    // 먼저 모든 미션 가져오기
+    const { data: missions, error: missionError } = await supabase
       .from('mission_notice')
       .select('*')
       .eq('cohort', studentCohort)
       .order('created_at', { ascending: false });
 
-    if (allError) {
-      console.error('전체 미션 데이터 조회 오류:', allError);
+    if (missionError) {
+      console.error('미션 데이터 조회 오류:', missionError);
       throw new Error('미션 데이터를 불러오는 중 오류가 발생했습니다.');
     }
 
-    // 제출되지 않은 미션들
-    const submittedMissionIds = new Set(submittedMissions.map((m) => m.id));
-    const unsubmittedMissions = (allMissions || [])
-      .filter((mission) => !submittedMissionIds.has(mission.id))
-      .map((mission) => ({
+    // 해당 학생의 제출 데이터 가져오기
+    const { data: submissions, error: submissionError } = await supabase
+      .from('mission_submit')
+      .select('*')
+      .eq('student_id', user.id);
+
+    if (submissionError) {
+      console.error('제출 데이터 조회 오류:', submissionError);
+      throw new Error('제출 데이터를 불러오는 중 오류가 발생했습니다.');
+    }
+
+    // 제출 데이터를 미션 ID로 매핑
+    const submissionMap = new Map();
+    (submissions || []).forEach(submission => {
+      submissionMap.set(submission.mission_id, submission);
+    });
+
+    // 미션들을 제출 여부에 따라 매핑
+    const missionList = (missions || []).map((mission) => {
+      const submission = submissionMap.get(mission.id);
+      
+      return {
         id: mission.id,
         title: mission.title,
         description: mission.description,
@@ -87,14 +55,22 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
           hour: '2-digit',
           minute: '2-digit',
         }),
-        isSubmitted: false,
-        status: 'pending' as const,
+        isSubmitted: !!submission,
+        submittedAt: submission ? new Date(submission.submitted_at).toLocaleString('ko-KR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }) : undefined,
+        status: submission ? 'submitted' as const : 'pending' as const,
         submission_type: mission.submission_type || 'file',
         feedback: undefined,
-      }));
+        submissionContent: submission?.content || '',
+      };
+    });
 
-    // 제출된 것과 안된 것 합치기
-    return [...submittedMissions, ...unsubmittedMissions].sort((a, b) => b.week - a.week);
+    return missionList.sort((a, b) => b.week - a.week);
   } catch (error) {
     console.error('학생 미션 데이터 가져오기 오류:', error);
     if (error instanceof Error) {

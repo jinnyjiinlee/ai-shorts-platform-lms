@@ -113,6 +113,7 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
             missionId={mission.id}
             isSubmitted={mission.isSubmitted || false}
             dueDate={mission.dueDate}
+            existingSubmissionContent={mission.submissionContent}
             onSubmissionComplete={async () => {
               try {
                 // 제출 완료 후 미션 상태 업데이트

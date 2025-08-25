@@ -66,7 +66,7 @@ export const fetchDashboardStats = async (): Promise<DashboardStats> => {
 
     // 4. 전체 제출 수
     const { data: submissions, error: submissionsError } = await supabase
-      .from('mission_submissions')
+      .from('mission_submit')
       .select('id, mission_id, student_id');
 
     if (submissionsError) {
@@ -125,7 +125,7 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
         id, 
         cohort, 
         week,
-        mission_submissions (
+        mission_submit (
           id,
           student_id
         )
@@ -165,7 +165,7 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
 
       // 주차별 제출 현황 집계
       const weeklyMap = new Map<number, Set<string>>();
-      (mission.mission_submissions || []).forEach((sub: any) => {
+      (mission.mission_submit || []).forEach((sub: any) => {
         if (!weeklyMap.has(mission.week)) {
           weeklyMap.set(mission.week, new Set());
         }
