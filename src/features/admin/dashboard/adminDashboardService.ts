@@ -21,7 +21,11 @@ export interface CohortDashboardData {
   cohort: string;
   totalStudents: number;
   totalMissions: number;
-  submissionRate: number;
+  submissionRate: number; // 평균 완료율
+  perfectCompletionCount: number; // 모든 미션을 완료한 학생 수
+  perfectCompletionRate: number; // 완벽 완료 비율
+  participatingStudents: number; // 참여 학생 수 (하나라도 제출한 학생)
+  currentWeek: number; // 현재 주차
   activeStudents: number;
   status: 'active' | 'completed' | 'upcoming';
   weeklySubmissions: WeeklySubmissionData[];
@@ -114,7 +118,7 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
     // 1. 기수별 학생 수
     const { data: students, error: studentsError } = await supabase
       .from('profiles')
-      .select('cohort')
+      .select('id, cohort')
       .eq('role', 'student')
       .eq('status', 'approved');
 
@@ -134,18 +138,23 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
     if (missionsError) throw missionsError;
 
     // 기수별 데이터 집계
-    const cohortMap = new Map<number, CohortDashboardData>();
+    const cohortMap = new Map<string, CohortDashboardData>();
 
     // 학생 수 집계
-    const studentsByCohort = new Map<number, number>();
+    const studentsByCohort = new Map<string, number>();
     (students || []).forEach((student) => {
       const count = studentsByCohort.get(student.cohort) || 0;
       studentsByCohort.set(student.cohort, count + 1);
     });
 
+    // 기수별 주차별 미션 개수 계산
+    const cohortWeeklyMissionCount = new Map<string, Map<number, number>>();
+    // 학생별 주차별 제출 개수 계산
+    const studentWeeklySubmissions = new Map<string, Map<number, number>>();
+
     // 미션 및 제출 데이터 집계
     (missions || []).forEach((mission) => {
-      const cohort = mission.cohort;
+      const cohort = mission.cohort || '1'; // null인 경우 기본값 '1' 사용
 
       if (!cohortMap.has(cohort)) {
         const totalStudents = studentsByCohort.get(cohort) || 0;
@@ -154,6 +163,10 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
           totalStudents,
           totalMissions: 0,
           submissionRate: 0,
+          perfectCompletionCount: 0,
+          perfectCompletionRate: 0,
+          participatingStudents: 0,
+          currentWeek: 0,
           activeStudents: totalStudents,
           status: 'active', // 기본값
           weeklySubmissions: [],
@@ -163,39 +176,111 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
       const cohortData = cohortMap.get(cohort)!;
       cohortData.totalMissions++;
 
-      // 주차별 제출 현황 집계
-      const weeklyMap = new Map<number, Set<string>>();
-      (mission.mission_submit || []).forEach((sub: any) => {
-        if (!weeklyMap.has(mission.week)) {
-          weeklyMap.set(mission.week, new Set());
-        }
-        weeklyMap.get(mission.week)!.add(sub.student_id);
-      });
-
-      // 주차별 데이터 업데이트
-      const existingWeek = cohortData.weeklySubmissions.find((w) => w.week === mission.week);
-      const submittedCount = weeklyMap.get(mission.week)?.size || 0;
-
-      if (existingWeek) {
-        existingWeek.submitted += submittedCount;
-        existingWeek.total += cohortData.totalStudents;
-        existingWeek.rate =
-          existingWeek.total > 0 ? Math.round((existingWeek.submitted / existingWeek.total) * 100) : 0;
-      } else {
-        cohortData.weeklySubmissions.push({
-          week: mission.week,
-          submitted: submittedCount,
-          total: cohortData.totalStudents,
-          rate: cohortData.totalStudents > 0 ? Math.round((submittedCount / cohortData.totalStudents) * 100) : 0,
-        });
+      // 기수별 주차별 미션 개수 카운트
+      if (!cohortWeeklyMissionCount.has(cohort)) {
+        cohortWeeklyMissionCount.set(cohort, new Map());
       }
+      const weeklyMissionCount = cohortWeeklyMissionCount.get(cohort)!;
+      const currentCount = weeklyMissionCount.get(mission.week) || 0;
+      weeklyMissionCount.set(mission.week, currentCount + 1);
+
+      // 각 제출에 대해 학생별 주차별 제출 개수 카운트
+      (mission.mission_submit || []).forEach((sub: any) => {
+        const studentId = sub.student_id;
+        
+        if (!studentWeeklySubmissions.has(studentId)) {
+          studentWeeklySubmissions.set(studentId, new Map());
+        }
+        const studentWeekly = studentWeeklySubmissions.get(studentId)!;
+        const currentSubmissions = studentWeekly.get(mission.week) || 0;
+        studentWeekly.set(mission.week, currentSubmissions + 1);
+      });
     });
 
-    // 기수별 전체 제출률 계산
-    cohortMap.forEach((cohortData, cohort) => {
-      const totalExpected = cohortData.totalMissions * cohortData.totalStudents;
-      const totalSubmitted = cohortData.weeklySubmissions.reduce((sum, w) => sum + w.submitted, 0);
-      cohortData.submissionRate = totalExpected > 0 ? Math.round((totalSubmitted / totalExpected) * 100) : 0;
+    // 주차별 완료한 학생 수 계산
+    cohortWeeklyMissionCount.forEach((weeklyMissionCount, cohort) => {
+      const cohortData = cohortMap.get(cohort)!;
+      
+      weeklyMissionCount.forEach((missionCount, week) => {
+        let completedStudents = 0;
+
+        // 해당 기수의 모든 학생을 확인
+        (students || []).forEach((student) => {
+          if (student.cohort === cohort) {
+            const studentSubmissions = studentWeeklySubmissions.get(student.id);
+            const submissionCount = studentSubmissions?.get(week) || 0;
+            
+            // 해당 주차의 모든 미션을 완료했는지 확인
+            if (submissionCount === missionCount) {
+              completedStudents++;
+            }
+          }
+        });
+
+        cohortData.weeklySubmissions.push({
+          week,
+          submitted: completedStudents,
+          total: cohortData.totalStudents,
+          rate: cohortData.totalStudents > 0 ? Math.round((completedStudents / cohortData.totalStudents) * 100) : 0,
+        });
+      });
+    });
+
+    // 기수별 상세 통계 계산
+    cohortMap.forEach((cohortData) => {
+      const cohort = cohortData.cohort;
+      const cohortStudents = (students || []).filter(s => s.cohort === cohort);
+      
+      // 개별 학생별 완료율 계산
+      let totalCompletionRate = 0;
+      let perfectCompletionCount = 0;
+      let participatingStudentsSet = new Set<string>();
+
+      cohortStudents.forEach(student => {
+        const studentSubmissions = studentWeeklySubmissions.get(student.id);
+        let studentCompletedMissions = 0;
+
+        // 각 주차별로 확인
+        cohortWeeklyMissionCount.get(cohort)?.forEach((missionCount, week) => {
+          const submissionCount = studentSubmissions?.get(week) || 0;
+          if (submissionCount === missionCount) {
+            studentCompletedMissions++;
+          }
+          if (submissionCount > 0) {
+            participatingStudentsSet.add(student.id);
+          }
+        });
+
+        // 개별 학생 완료율
+        const studentCompletionRate = cohortData.totalMissions > 0 
+          ? (studentCompletedMissions / cohortData.totalMissions) * 100 
+          : 0;
+        
+        totalCompletionRate += studentCompletionRate;
+
+        // 모든 미션을 완료한 학생 카운트
+        if (studentCompletionRate === 100) {
+          perfectCompletionCount++;
+        }
+      });
+
+      // 평균 완료율
+      cohortData.submissionRate = cohortStudents.length > 0 
+        ? Math.round(totalCompletionRate / cohortStudents.length) 
+        : 0;
+
+      // 완벽 완료 관련 통계
+      cohortData.perfectCompletionCount = perfectCompletionCount;
+      cohortData.perfectCompletionRate = cohortStudents.length > 0 
+        ? Math.round((perfectCompletionCount / cohortStudents.length) * 100) 
+        : 0;
+
+      // 참여 학생 수
+      cohortData.participatingStudents = participatingStudentsSet.size;
+
+      // 현재 주차 (가장 최근 미션의 week)
+      const weeks = Array.from(cohortWeeklyMissionCount.get(cohort)?.keys() || []);
+      cohortData.currentWeek = weeks.length > 0 ? Math.max(...weeks) : 0;
 
       // 주차별 데이터 정렬
       cohortData.weeklySubmissions.sort((a, b) => a.week - b.week);
@@ -203,7 +288,7 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
 
     console.log('기수별 데이터 조회 완료');
 
-    return Array.from(cohortMap.values()).sort((a, b) => parseInt(a.cohort) - parseInt(b.cohort));
+    return Array.from(cohortMap.values()).sort((a, b) => a.cohort.localeCompare(b.cohort));
   } catch (error) {
     console.error('기수별 데이터 조회 오류:', error);
     throw new Error('기수별 데이터를 불러오는 중 오류가 발생했습니다.');

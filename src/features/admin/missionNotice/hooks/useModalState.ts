@@ -13,12 +13,12 @@ export const useModalState = () => {
     week: 1,
   });
 
-  const resetFormData = () => {
+  const resetFormData = (cohort: string = '') => {
     setFormData({
       title: '',
       description: '',
       due_date: '',
-      cohort: '',
+      cohort: cohort,
       week: 1,
     });
   };

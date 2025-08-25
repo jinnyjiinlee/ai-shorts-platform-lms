@@ -41,7 +41,7 @@ export default function CohortCard({ cohort, isSelected, onSelect }: CohortCardP
           </div>
           <div className='text-left sm:text-right'>
             <div className='text-xl sm:text-2xl font-bold text-slate-900'>{cohort.submissionRate}%</div>
-            <div className='text-xs text-slate-500'>과제 제출률</div>
+            <div className='text-xs text-slate-500'>평균 완료율</div>
           </div>
         </div>
 
@@ -53,49 +53,47 @@ export default function CohortCard({ cohort, isSelected, onSelect }: CohortCardP
           ></div>
         </div>
 
-        {/* 상세 통계 - 미션 제출 현황 */}
+        {/* 상세 통계 - 새로운 지표들 */}
         <div className='grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4'>
-          <div className='text-center p-2 sm:p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors duration-300'>
-            <div className='text-base sm:text-lg font-bold text-slate-900'>{cohort.activeStudents}</div>
-            <div className='text-xs text-slate-600'>제출한 학생</div>
+          <div className='text-center p-2 sm:p-3 bg-green-50 rounded-xl hover:bg-green-100 transition-colors duration-300 border border-green-200'>
+            <div className='text-base sm:text-lg font-bold text-green-700'>{cohort.perfectCompletionCount}명</div>
+            <div className='text-xs text-green-600'>완벽 완료</div>
+            <div className='text-xs text-green-500'>({cohort.perfectCompletionRate}%)</div>
           </div>
-          <div className='text-center p-2 sm:p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors duration-300'>
-            <div className='text-base sm:text-lg font-bold text-slate-900'>{cohort.completedMissions}</div>
-            <div className='text-xs text-slate-600'>발행 미션</div>
+          <div className='text-center p-2 sm:p-3 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors duration-300 border border-blue-200'>
+            <div className='text-base sm:text-lg font-bold text-blue-700'>{cohort.participatingStudents}명</div>
+            <div className='text-xs text-blue-600'>참여 학생</div>
           </div>
-          <div className='text-center p-2 sm:p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors duration-300'>
-            <div className='text-base sm:text-lg font-bold text-slate-900'>{cohort.totalMissions}</div>
-            <div className='text-xs text-slate-600'>전체 미션</div>
-          </div>
-        </div>
-
-        {/* 미션 진행률 표시 */}
-        <div className='mb-3 sm:mb-4'>
-          <div className='flex items-center justify-between text-xs sm:text-sm text-slate-600 mb-1'>
-            <span>미션 진행률</span>
-            <span>
-              {cohort.totalMissions > 0 ? Math.round((cohort.completedMissions / cohort.totalMissions) * 100) : 0}%
-            </span>
-          </div>
-          <div className='w-full bg-slate-200 rounded-full h-2 overflow-hidden'>
-            <div
-              className='h-2 bg-green-500 rounded-full transition-all duration-500 ease-out'
-              style={{
-                width: `${cohort.totalMissions > 0 ? (cohort.completedMissions / cohort.totalMissions) * 100 : 0}%`,
-              }}
-            ></div>
+          <div className='text-center p-2 sm:p-3 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors duration-300 border border-purple-200'>
+            <div className='text-base sm:text-lg font-bold text-purple-700'>{cohort.totalMissions}개</div>
+            <div className='text-xs text-purple-600'>전체 미션</div>
           </div>
         </div>
 
-        {/* 상태 표시 */}
+        {/* 현재 주차 및 진행 상태 */}
+        <div className='mb-3 sm:mb-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-3 border border-indigo-200'>
+          <div className='flex items-center justify-between text-sm mb-2'>
+            <div className='flex items-center space-x-2'>
+              <div className='w-2 h-2 bg-indigo-500 rounded-full animate-pulse'></div>
+              <span className='font-medium text-indigo-700'>현재 진행 중</span>
+            </div>
+            <span className='font-bold text-indigo-800'>{cohort.currentWeek}주차</span>
+          </div>
+          <div className='text-xs text-indigo-600'>
+            🎯 완벽 완료 학생: <span className='font-semibold'>{cohort.perfectCompletionCount}명</span> / 
+            👥 참여 학생: <span className='font-semibold'>{cohort.participatingStudents}명</span>
+          </div>
+        </div>
+
+        {/* 상태 표시 - 개선된 버전 */}
         <div className='flex items-center justify-center pt-3 sm:pt-4 border-t border-slate-100'>
           <div className='flex items-center space-x-2 text-xs sm:text-sm'>
             <div className={`w-2 h-2 bg-gradient-to-r ${cohort.color} rounded-full`}></div>
-            <span className='text-slate-600 group-hover:text-slate-800 transition-colors'>
+            <span className='text-slate-600 group-hover:text-slate-800 transition-colors font-medium'>
               {cohort.submissionRate >= 80
-                ? '🏆 높은 참여율'
+                ? '🎉 순조롭게 진행 중'
                 : cohort.submissionRate >= 60
-                ? '📈 양호한 참여율'
+                ? '💪 열심히 참여 중'
                 : '⚠️ 독려 필요'}
             </span>
           </div>

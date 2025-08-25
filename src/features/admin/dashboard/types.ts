@@ -3,7 +3,11 @@ export interface CohortData {
   cohort: string;
   name: string;
   totalStudents: number;
-  submissionRate: number;
+  submissionRate: number; // 평균 완료율
+  perfectCompletionCount: number; // 모든 미션을 완료한 학생 수
+  perfectCompletionRate: number; // 완벽 완료 비율
+  participatingStudents: number; // 참여 학생 수 (하나라도 제출한 학생)
+  currentWeek: number; // 현재 주차
   activeStudents: number;
   totalMissions: number;
   completedMissions: number;

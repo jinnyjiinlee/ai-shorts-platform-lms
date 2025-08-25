@@ -10,11 +10,11 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
       throw new Error('로그인이 필요합니다.');
     }
 
-    // 먼저 모든 미션 가져오기
+    // 먼저 모든 미션 가져오기 (cohort가 null인 것도 포함)
     const { data: missions, error: missionError } = await supabase
       .from('mission_notice')
       .select('*')
-      .eq('cohort', studentCohort)
+      .or(`cohort.eq.${studentCohort},cohort.is.null`)
       .order('created_at', { ascending: false });
 
     if (missionError) {

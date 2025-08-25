@@ -183,16 +183,29 @@ export const createMission = async (formData: MissionFormData): Promise<void> =>
     processedFormData.due_date = localDate.toISOString();
   }
 
-  const { error } = await supabase.from('mission_notice').insert([
-    {
-      ...processedFormData,
-      created_by: user.id,
-    },
-  ]);
+  // 디버깅: cohort 값 확인
+  console.log('미션 생성 데이터:', processedFormData);
+  console.log('cohort 값:', processedFormData.cohort, '타입:', typeof processedFormData.cohort);
+
+  // cohort가 비어있으면 기본값 설정
+  
+  if (!processedFormData.cohort) {
+    processedFormData.cohort = '1'; // 기본값
+    console.warn('cohort 값이 없어서 기본값 "1"로 설정');
+  }
+
+  const insertData = {
+    ...processedFormData,
+    created_by: user.id,
+  };
+  
+  console.log('최종 INSERT 데이터:', insertData);
+
+  const { error } = await supabase.from('mission_notice').insert([insertData]);
 
   if (error) {
     console.error('미션 생성 오류:', error);
-    console.error('전송된 데이터:', processedFormData);
+    console.error('전송된 데이터:', insertData);
     throw new Error(`미션 생성 중 오류가 발생했습니다: ${error.message}`);
   }
 };

@@ -37,7 +37,7 @@ export default function MissionManagement() {
 
   const handleCreateMission = () => {
     setModalType('create');
-    resetFormData();
+    resetFormData(selectedCohort === 'all' ? '1' : selectedCohort);
     setShowModal(true);
   };
 

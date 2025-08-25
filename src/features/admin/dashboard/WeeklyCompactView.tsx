@@ -81,7 +81,7 @@ export default function WeeklyCompactView({ selectedCohortData }: WeeklyCompactV
             {Math.round(
               selectedCohortData.weeklySubmissions.reduce((acc, w) => acc + w.rate, 0) /
                 selectedCohortData.weeklySubmissions.length
-            )}
+            )} %
           </div>
           <div className='text-xs text-slate-700'>평균 제출률</div>
         </div>
