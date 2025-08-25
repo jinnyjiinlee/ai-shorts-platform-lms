@@ -71,7 +71,8 @@ export const fetchStudentDashboardData = async (): Promise<StudentDashboardStats
     if (submissionError) throw submissionError;
 
     // 완료된 미션 수 계산
-    const completedMissions = submissions?.length || 0;
+    const uniqueMissionIds = new Set(submissions?.map((s) => s.mission_id) || []);
+    const completedMissions = uniqueMissionIds.size;
     const completionRate = totalMissions > 0 ? Math.round((completedMissions / totalMissions) * 100) : 0;
 
     // 현재 주차 계산 (가장 최근 미션의 주차)
