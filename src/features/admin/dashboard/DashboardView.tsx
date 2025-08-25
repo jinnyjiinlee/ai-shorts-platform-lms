@@ -20,7 +20,7 @@ const convertToCohortData = (dashboardData: CohortDashboardData): CohortData => 
     ...dashboardData,
     name: `${dashboardData.cohort}기`,
     completedMissions: Math.floor(dashboardData.totalMissions * (dashboardData.submissionRate / 100)),
-    color: dashboardData.cohort % 3 === 0 ? 'blue' : dashboardData.cohort % 2 === 0 ? 'green' : 'purple',
+    color: parseInt(dashboardData.cohort) % 3 === 0 ? 'blue' : parseInt(dashboardData.cohort) % 2 === 0 ? 'green' : 'purple',
     statusColor:
       dashboardData.status === 'active'
         ? 'bg-green-100 text-green-800'
@@ -37,8 +37,8 @@ const convertToCohortData = (dashboardData: CohortDashboardData): CohortData => 
 };
 
 export default function DashboardView() {
-  const [activeCohorts, setActiveCohorts] = useState<number[]>([1]); // 진행 중인 기수
-  const [selectedCohort, setSelectedCohort] = useState<number | null>(1); // 선택된 기수 (상세 보기용)
+  const [activeCohorts, setActiveCohorts] = useState<string[]>(['1']); // 진행 중인 기수
+  const [selectedCohort, setSelectedCohort] = useState<string | null>('1'); // 선택된 기수 (상세 보기용)
   const [weeklyViewMode, setWeeklyViewMode] = useState<'compact' | 'detailed'>('compact'); // 주차별 보기 모드
 
   // 데이터 상태
@@ -91,7 +91,7 @@ export default function DashboardView() {
     activeStudentsCount: displayCohortData.reduce((sum, c) => sum + c.activeStudents, 0),
   };
 
-  const toggleActiveCohort = (cohortId: number) => {
+  const toggleActiveCohort = (cohortId: string) => {
     const cohort = convertedCohortData.find((c) => c.cohort === cohortId);
     if (cohort?.status === 'upcoming') return; // 예정 기수는 클릭 불가
 
@@ -103,7 +103,7 @@ export default function DashboardView() {
     }
   };
 
-  const selectCohort = (cohortId: number) => {
+  const selectCohort = (cohortId: string) => {
     if (activeCohorts.includes(cohortId)) {
       setSelectedCohort(cohortId);
     }

@@ -1,10 +1,17 @@
-import { Mission, WeeklyProgress } from '@/features/student/mission/types';
+import { Mission } from '@/lib/types/mission.types';
+
+interface WeeklyProgress {
+  week: number;
+  totalMissions: number;
+  submissions: number;
+  rate: number;
+}
 // Mock student counts for different cohorts
-const studentCounts: { [key: number]: number } = {
-  1: 20,
-  2: 25,
-  3: 18,
-  4: 22,
+const studentCounts: { [key: string]: number } = {
+  '1': 20,
+  '2': 25,
+  '3': 18,
+  '4': 22,
 };
 
 // 주차별 미션 완료도 계산 함수 (Supabase 스키마 적용 시 추후 구현)
@@ -19,13 +26,13 @@ export const getCurrentWeek = (missions: Mission[]): number => {
 };
 
 // 필터된 미션 목록 가져오기
-export const getFilteredMissions = (missions: Mission[], selectedCohort: number | 'all'): Mission[] => {
+export const getFilteredMissions = (missions: Mission[], selectedCohort: string | 'all'): Mission[] => {
   if (selectedCohort === 'all') return missions;
   return missions.filter((mission) => mission.cohort === selectedCohort);
 };
 
 // 전체 기수 목록 가져오기
-export const getAvailableCohorts = (missions: Mission[]): number[] => {
+export const getAvailableCohorts = (missions: Mission[]): string[] => {
   const cohorts = [...new Set(missions.map((mission) => mission.cohort).filter(Boolean))];
   return cohorts.sort();
 };
@@ -43,7 +50,7 @@ export const getSubmissionRate = (missions: Mission[]): number => {
   let totalSubmitted = 0;
 
   missions.forEach((mission) => {
-    const cohort = mission.cohort || 1;
+    const cohort = mission.cohort || '1';
     const expectedStudents = studentCounts[cohort as keyof typeof studentCounts] || 0;
     totalExpected += expectedStudents;
     totalSubmitted += mission.submissions?.length || 0;
@@ -58,7 +65,7 @@ export const getActiveStudents = (missions: Mission[]): number => {
 
   missions.forEach((mission) => {
     mission.submissions?.forEach((sub) => {
-      studentIds.add(sub.studentId);
+      studentIds.add(sub.student_id);
     });
   });
 

@@ -7,7 +7,6 @@ export * from './notice/missionService';
 // Submission (미션 제출)
 export { default as MissionModal } from './submission/MissionModal';
 export { default as TextSubmission } from './submission/TextSubmission';
-export { default as FileUploadSection } from './submission/FileUploadSection';
 export * from './submission/submissionService';
 
 // Shared (공통)

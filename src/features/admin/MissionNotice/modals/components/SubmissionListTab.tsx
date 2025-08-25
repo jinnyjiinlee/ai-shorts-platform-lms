@@ -1,8 +1,8 @@
-import { Mission, Submission } from '../../../../student/dashboard/types';
+import { Mission, MissionSubmission } from '@/lib/types/mission.types';
 
 interface SubmissionListTabProps {
   mission: Mission;
-  onGradeSubmission?: (submission: Submission) => void;
+  onGradeSubmission?: (submission: MissionSubmission) => void;
 }
 
 export default function SubmissionListTab({ mission, onGradeSubmission }: SubmissionListTabProps) {

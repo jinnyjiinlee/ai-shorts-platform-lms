@@ -1,6 +1,6 @@
 // 대시보드 관련 타입 정의
 export interface CohortData {
-  cohort: number;
+  cohort: string;
   name: string;
   totalStudents: number;
   submissionRate: number;

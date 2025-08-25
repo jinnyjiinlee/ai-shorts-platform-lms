@@ -2,25 +2,10 @@
 export { supabase } from './client';
 
 // Type exports
-export type { 
-  UserRegistrationData, 
-  ProfileData, 
-  AuthError 
-} from '../types/auth.types';
+export type { UserRegistrationData, ProfileData, AuthError } from '../types/auth.types';
 
 // Auth exports
-export { 
-  signUp, 
-  signIn, 
-  signOut, 
-  getCurrentUser 
-} from './auth';
-
-// Profile exports
-export { 
-  createProfile, 
-  getProfile 
-} from './profile';
+export { signUp, signIn, signOut, getCurrentUser } from './auth';
 
 // Helper object for backward compatibility
 export const authHelpers = {
@@ -40,8 +25,4 @@ export const authHelpers = {
     const { getCurrentUser } = await import('./auth');
     return getCurrentUser();
   },
-  getUserProfile: async (userId: string) => {
-    const { getProfile } = await import('./profile');
-    return getProfile(userId);
-  }
 };

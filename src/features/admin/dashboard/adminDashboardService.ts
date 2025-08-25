@@ -18,7 +18,7 @@ export interface WeeklySubmissionData {
 }
 
 export interface CohortDashboardData {
-  cohort: number;
+  cohort: string;
   totalStudents: number;
   totalMissions: number;
   submissionRate: number;
@@ -203,7 +203,7 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
 
     console.log('기수별 데이터 조회 완료');
 
-    return Array.from(cohortMap.values()).sort((a, b) => a.cohort - b.cohort);
+    return Array.from(cohortMap.values()).sort((a, b) => parseInt(a.cohort) - parseInt(b.cohort));
   } catch (error) {
     console.error('기수별 데이터 조회 오류:', error);
     throw new Error('기수별 데이터를 불러오는 중 오류가 발생했습니다.');

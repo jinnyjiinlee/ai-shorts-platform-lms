@@ -12,7 +12,7 @@ import SubmissionListModal from './modals/SubmissionListModal';
 import { useMissionManagement } from './hooks/useMissionManagement';
 import { useModalState } from '@/features/admin/missionNotice/useModalState';
 import { getFilteredMissions, getAvailableCohorts } from '@/lib/utils/missionUtils';
-import { Mission } from '../../student/dashboard/types';
+import { Mission } from '@/lib/types/mission.types';
 
 export default function MissionManagement() {
   const { missions, isLoading, saveMission, removeMission, refreshMissions } = useMissionManagement();
@@ -30,7 +30,7 @@ export default function MissionManagement() {
     setModalType,
   } = useModalState();
 
-  const [selectedCohort, setSelectedCohort] = useState<number | 'all'>(1);
+  const [selectedCohort, setSelectedCohort] = useState<string | 'all'>('1');
 
   const filteredMissions = getFilteredMissions(missions, selectedCohort);
   const availableCohorts = getAvailableCohorts(missions);

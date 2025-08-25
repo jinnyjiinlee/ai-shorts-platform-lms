@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mission } from '@/features/student/mission/types';
+import { Mission } from '@/lib/types/mission.types';
 import {
   fetchMissions,
   createMission,

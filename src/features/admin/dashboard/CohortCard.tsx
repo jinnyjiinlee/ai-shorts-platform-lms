@@ -5,7 +5,7 @@ import { CohortData } from './types';
 interface CohortCardProps {
   cohort: CohortData;
   isSelected: boolean;
-  onSelect: (cohortId: number) => void;
+  onSelect: (cohortId: string) => void;
 }
 
 export default function CohortCard({ cohort, isSelected, onSelect }: CohortCardProps) {

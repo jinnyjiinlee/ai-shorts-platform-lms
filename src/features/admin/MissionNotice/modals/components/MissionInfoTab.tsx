@@ -1,5 +1,5 @@
 import ReactMarkdown from 'react-markdown';
-import { Mission } from '../../../../student/dashboard/types';
+import { Mission } from '@/lib/types/mission.types';
 
 interface MissionInfoTabProps {
   mission: Mission;

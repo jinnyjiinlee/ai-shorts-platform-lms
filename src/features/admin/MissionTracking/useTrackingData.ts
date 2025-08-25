@@ -1,11 +1,18 @@
 import { useState, useEffect } from 'react';
-import {
-  fetchMissionTrackingData,
-  fetchAvailableCohorts,
-  fetchMissionStudentDetails,
-  WeeklyData,
-  StudentSubmissionDetail,
-} from './trackingService';
+
+interface WeeklyData {
+  week: number;
+  totalMissions: number;
+  submissions: number;
+  rate: number;
+}
+
+interface StudentSubmissionDetail {
+  id: string;
+  name: string;
+  week: number;
+  submitted: boolean;
+}
 
 export function useTrackingData(selectedCohort: number) {
   const [weeklyData, setWeeklyData] = useState<WeeklyData[]>([]);
@@ -13,61 +20,37 @@ export function useTrackingData(selectedCohort: number) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [allStudents, setAllStudents] = useState<StudentSubmissionDetail[]>([]);
-  const [studentSubmissions, setStudentSubmissions] = useState<Map<string, Map<string, any>>>(new Map());
+
+  const loadData = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // TODO: Replace with actual API calls when service is implemented
+      setAvailableCohorts([1, 2, 3]);
+      setWeeklyData([
+        { week: 1, totalMissions: 3, submissions: 15, rate: 75 },
+        { week: 2, totalMissions: 2, submissions: 12, rate: 80 },
+      ]);
+      setAllStudents([]);
+    } catch (err) {
+      console.error('Tracking data fetch error:', err);
+      setError(err instanceof Error ? err.message : '데이터를 불러오는 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const cohorts = await fetchAvailableCohorts();
-        setAvailableCohorts(cohorts);
-
-        const data = await fetchMissionTrackingData(selectedCohort);
-        setWeeklyData(data);
-
-        if (data.length > 0) {
-          const firstMission = data[0];
-          const studentDetails = await fetchMissionStudentDetails(firstMission.missionId, selectedCohort);
-          setAllStudents(studentDetails);
-
-          const submissionMap = new Map<string, Map<string, any>>();
-
-          for (const mission of data) {
-            const missionStudents = await fetchMissionStudentDetails(mission.missionId, selectedCohort);
-            const missionSubmissions = new Map<string, any>();
-
-            missionStudents.forEach((student) => {
-              missionSubmissions.set(student.studentId, {
-                submitted: student.submissionStatus === 'submitted',
-                content: student.submissionContent,
-                submittedAt: student.submittedAt,
-              });
-            });
-
-            submissionMap.set(mission.missionId, missionSubmissions);
-          }
-
-          setStudentSubmissions(submissionMap);
-        }
-      } catch (err) {
-        console.error('데이터 로드 오류:', err);
-        setError(err instanceof Error ? err.message : '데이터를 불러오는 중 오류가 발생했습니다.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadData();
   }, [selectedCohort]);
 
   return {
     weeklyData,
     availableCohorts,
+    allStudents,
     isLoading,
     error,
-    allStudents,
-    studentSubmissions,
+    refreshData: loadData,
   };
 }

@@ -17,7 +17,7 @@ interface Announcement {
   id: number;
   title: string;
   content: string;
-  cohort: number | 'all';
+  cohort: string | 'all';
   author: string;
   createdAt: string;
   pinned: boolean;
@@ -29,7 +29,7 @@ export default function AnnouncementManagement() {
       id: 1,
       title: '3월 우수 수강생 발표',
       content: '이번 달 가장 열심히 활동해주신 수강생분들을 발표합니다! 축하드립니다 🎉',
-      cohort: 1,
+      cohort: '1',
       author: '하대표',
       createdAt: '2024-08-20',
 
@@ -47,13 +47,13 @@ export default function AnnouncementManagement() {
     },
   ]);
 
-  const [form, setForm] = useState({ title: '', content: '', cohort: 1 as number | 'all', pinned: false });
+  const [form, setForm] = useState({ title: '', content: '', cohort: '1', pinned: false });
   const [showForm, setShowForm] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
   const [viewingAnnouncement, setViewingAnnouncement] = useState<Announcement | null>(null);
-  const [selectedCohort, setSelectedCohort] = useState<number | 'all'>('all');
+  const [selectedCohort, setSelectedCohort] = useState<string | 'all'>('all');
 
-  const availableCohorts = [1, 2, 3];
+  const availableCohorts = ['1', '2', '3'];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +75,7 @@ export default function AnnouncementManagement() {
       setAnnouncements([newAnnouncement, ...announcements]);
     }
 
-    setForm({ title: '', content: '', cohort: 1, pinned: false });
+    setForm({ title: '', content: '', cohort: '1', pinned: false });
     setShowForm(false);
   };
 
@@ -125,7 +125,7 @@ export default function AnnouncementManagement() {
               <label className='text-slate-100 font-medium text-sm whitespace-nowrap'>기수</label>
               <select
                 value={selectedCohort}
-                onChange={(e) => setSelectedCohort(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+                onChange={(e) => setSelectedCohort(e.target.value)}
                 className='px-3 md:px-4 py-2 bg-white/20 border border-white/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50 text-sm'
               >
                 <option value='all' className='text-slate-800'>
@@ -142,7 +142,7 @@ export default function AnnouncementManagement() {
             <button
               onClick={() => {
                 setEditingAnnouncement(null);
-                setForm({ title: '', content: '', cohort: 1, pinned: false });
+                setForm({ title: '', content: '', cohort: '1', pinned: false });
                 setShowForm(true);
               }}
               className='flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-4 md:px-6 py-2 md:py-3 rounded-xl hover:bg-white/30 transition-all text-sm md:text-base whitespace-nowrap'
@@ -169,7 +169,7 @@ export default function AnnouncementManagement() {
             <button
               onClick={() => {
                 setEditingAnnouncement(null);
-                setForm({ title: '', content: '', cohort: 1, pinned: false });
+                setForm({ title: '', content: '', cohort: '1', pinned: false });
                 setShowForm(true);
               }}
               className='mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
@@ -293,7 +293,7 @@ export default function AnnouncementManagement() {
                 <select
                   value={form.cohort}
                   onChange={(e) =>
-                    setForm({ ...form, cohort: e.target.value === 'all' ? 'all' : parseInt(e.target.value) })
+                    setForm({ ...form, cohort: e.target.value })
                   }
                   className='w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
                 >

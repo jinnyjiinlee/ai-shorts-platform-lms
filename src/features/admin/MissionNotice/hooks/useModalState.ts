@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mission } from '@/features/student/mission/types';
+import { Mission } from '@/lib/types/mission.types';
 
 export const useModalState = () => {
   const [showModal, setShowModal] = useState(false);
@@ -9,7 +9,7 @@ export const useModalState = () => {
     title: '',
     description: '',
     due_date: '',
-    cohort: 1,
+    cohort: '',
     week: 1,
   });
 
@@ -18,7 +18,7 @@ export const useModalState = () => {
       title: '',
       description: '',
       due_date: '',
-      cohort: 1,
+      cohort: '',
       week: 1,
     });
   };

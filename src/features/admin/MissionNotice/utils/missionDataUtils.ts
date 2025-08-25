@@ -1,4 +1,4 @@
-import { supabase } from '../supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export async function fetchMissionsForCohort(cohort: number) {
   const { data: missions, error: missionError } = await supabase

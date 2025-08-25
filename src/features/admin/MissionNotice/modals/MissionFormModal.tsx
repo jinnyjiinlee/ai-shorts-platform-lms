@@ -9,7 +9,7 @@ interface MissionFormModalProps {
     title: string;
     description: string;
     due_date: string;
-    cohort: number;
+    cohort: string;
     week: number;
   };
   onClose: () => void;
@@ -18,7 +18,7 @@ interface MissionFormModalProps {
     title: string;
     description: string;
     due_date: string;
-    cohort: number;
+    cohort: string;
     week: number;
   }) => void;
 }

@@ -7,8 +7,8 @@ import { CohortData } from './types';
 interface DashboardHeaderProps {
   activeCohortData: CohortData[];
   allCohortData: CohortData[];
-  activeCohorts: number[];
-  onToggleActiveCohort: (cohortId: number) => void;
+  activeCohorts: string[];
+  onToggleActiveCohort: (cohortId: string) => void;
 }
 
 export default function DashboardHeader({

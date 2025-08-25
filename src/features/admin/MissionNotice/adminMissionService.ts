@@ -13,10 +13,10 @@ interface MissionFormData {
   title: string;
   description: string;
   due_date: string;
-  cohort: number;
+  cohort: string;
   week: number;
 }
-import { Mission } from '@/features/student/dashboard/types';
+import { Mission } from '@/lib/types/mission.types';
 
 export const fetchMissions = async (): Promise<Mission[]> => {
   try {

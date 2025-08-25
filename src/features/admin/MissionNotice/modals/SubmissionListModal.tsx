@@ -1,4 +1,4 @@
-import { Mission, Submission } from '../../../student/dashboard/types';
+import { Mission, MissionSubmission } from '@/lib/types/mission.types';
 import { useState } from 'react';
 import ModalHeader from './components/ModalHeader';
 import TabNavigation from './components/TabNavigation';
@@ -9,7 +9,7 @@ interface SubmissionListModalProps {
   show: boolean;
   mission: Mission | null;
   onClose: () => void;
-  onGradeSubmission?: (submission: Submission) => void;
+  onGradeSubmission?: (submission: MissionSubmission) => void;
 }
 
 export default function SubmissionListModal({ show, mission, onClose, onGradeSubmission }: SubmissionListModalProps) {

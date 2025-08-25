@@ -11,6 +11,10 @@ export interface Mission {
   created_at: string;
   updated_at: string;
   created_by: string;
+  due_date: string;
+  cohort: string;
+  week: number;
+  submissions?: MissionSubmission[];
 }
 
 export interface MissionSubmission {
@@ -25,6 +29,11 @@ export interface MissionSubmission {
   submitted_at: string;
   reviewed_at?: string;
   reviewed_by?: string;
+
+  studentName?: string; // ← 학생 이름
+  grade?: string | number; // ← 점수/등급
+  fileName?: string; // ← 파일 이름
+  submittedAt?: string; // ← 제출 시간 (다른 형식)
 }
 
 export interface MissionCategory {

@@ -1,6 +1,5 @@
 // Mission utilities
 export * from './missionUtils';
-export * from './submissionUtils';
 
 // Data utilities
 export * from './missionDataUtils';
