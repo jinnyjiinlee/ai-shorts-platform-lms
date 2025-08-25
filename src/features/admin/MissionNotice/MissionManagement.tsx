@@ -10,7 +10,7 @@ import SubmissionListModal from './modals/SubmissionListModal';
 
 // 훅 및 유틸리티 임포트
 import { useMissionManagement } from './hooks/useMissionManagement';
-import { useModalState } from '@/features/admin/missionNotice/useModalState';
+import { useModalState } from './hooks/useModalState';
 import { getFilteredMissions, getAvailableCohorts } from '@/lib/utils/missionUtils';
 import { Mission } from '@/lib/types/mission.types';
 
