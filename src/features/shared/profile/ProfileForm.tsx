@@ -39,18 +39,6 @@ export default function ProfileForm({ userRole, formData, onInputChange }: Profi
         <h2 className='text-xl font-bold text-slate-900 mb-6'>기본 정보</h2>
 
         <div className='space-y-6'>
-          {userRole === 'student' && (
-            <div>
-              <label className='block text-sm font-medium text-slate-700 mb-2'>아이디</label>
-              <input
-                type='text'
-                value={formData.user_id}
-                disabled
-                className='w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 cursor-not-allowed'
-              />
-            </div>
-          )}
-
           <div>
             <label className='block text-sm font-medium text-slate-700 mb-2'>실명</label>
             <input
@@ -88,19 +76,6 @@ export default function ProfileForm({ userRole, formData, onInputChange }: Profi
               className='w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 cursor-not-allowed'
             />
           </div>
-
-          {userRole === 'student' && (
-            <div>
-              <label className='block text-sm font-medium text-slate-700 mb-2'>닉네임</label>
-              <input
-                type='text'
-                value={formData.nickname}
-                onChange={(e) => onInputChange('nickname', e.target.value)}
-                className='w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all'
-                placeholder='닉네임을 입력하세요'
-              />
-            </div>
-          )}
 
           {userRole === 'student' && (
             <>
