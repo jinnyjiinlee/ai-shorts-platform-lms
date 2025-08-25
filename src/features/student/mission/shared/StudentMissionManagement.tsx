@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Mission } from './types';
 import MissionHeader from '../notice/MissionHeader';
-import ProgressCards from '../../dashboard/ProgressCards';
+import ProgressCards from '../../dashboard/components/ProgressCards';
 import MissionCard from '../notice/MissionCard';
 import MissionList from '../notice/MissionList';
 import MissionModal from '../submission/MissionModal';
@@ -45,11 +45,7 @@ export default function StudentMissionManagement() {
   return (
     <div className='space-y-6'>
       {/* 헤더 - 모티베이션 중심 */}
-      <MissionHeader 
-        selectedWeek={selectedWeek} 
-        onWeekChange={setSelectedWeek} 
-        missionsByWeek={missionsByWeek} 
-      />
+      <MissionHeader selectedWeek={selectedWeek} onWeekChange={setSelectedWeek} missionsByWeek={missionsByWeek} />
 
       {/* 진행률 카드 - 모티베이션 중심 재디자인 */}
       <ProgressCards stats={stats} />
@@ -78,13 +74,7 @@ export default function StudentMissionManagement() {
               <p className='text-sm text-slate-500'>관리자가 미션을 등록하면 여기에 표시됩니다.</p>
             </div>
           ) : (
-            missions.map((mission) => (
-              <MissionCard
-                key={mission.id}
-                mission={mission}
-                onClick={setSelectedMission}
-              />
-            ))
+            missions.map((mission) => <MissionCard key={mission.id} mission={mission} onClick={setSelectedMission} />)
           )}
         </div>
       </div>

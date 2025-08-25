@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { AcademicCapIcon, ChartBarIcon, TrophyIcon } from '@heroicons/react/24/outline';
 import { fetchStudentDashboardData } from '@/features/student/dashboard/studentDashboardService';
 import WeeklyProgress from './WeeklyProgress';
-import LoadingState from './LoadingState';
-import ErrorState from './ErrorState';
+import LoadingState from './components/LoadingState';
+import ErrorState from './components/ErrorState';
 
 interface ProgressStats {
   completedMissions: number;

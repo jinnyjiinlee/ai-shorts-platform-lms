@@ -1,6 +1,6 @@
 'use client';
 
-import { ProgressCardsProps } from './types';
+import { ProgressCardsProps } from '../types';
 
 export default function ProgressCards({ stats }: ProgressCardsProps) {
   const { totalMissions, completedMissions, completionRate } = stats;
