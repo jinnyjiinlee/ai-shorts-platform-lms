@@ -8,7 +8,7 @@ export function useProfileSave(userRole: string, formData: any) {
   const [showToast, setShowToast] = useState(false);
 
   const handleSave = async () => {
-    if (!formData.name?.trim()) return alert('이름은 필수입니다.');
+    // 실명은 disabled로 변경 불가능하므로 체크 필요 없음
 
     try {
       setIsSaving(true);
@@ -18,9 +18,12 @@ export function useProfileSave(userRole: string, formData: any) {
       if (!user) return alert('로그인이 필요합니다.');
       
       // 2. 업데이트 데이터 준비
-      const updateData: any = { name: formData.name.trim() };
-      if (userRole === 'student' && formData.nickname?.trim()) {
+      const updateData: any = {};
+      if (formData.nickname?.trim()) {
         updateData.nickname = formData.nickname.trim();
+      }
+      if (formData.phone?.trim()) {
+        updateData.phone = formData.phone.trim();
       }
       
       console.log('업데이트 데이터:', updateData);
@@ -49,7 +52,10 @@ export function useProfileSave(userRole: string, formData: any) {
 
       console.log('업데이트 성공:', data);
       setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      setTimeout(() => {
+        setShowToast(false);
+        window.location.reload();
+      }, 1000);
       
     } catch (e: any) {
       console.error('저장 오류:', e);

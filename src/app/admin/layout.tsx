@@ -48,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             .single();
 
           if (profile) {
-            setUserName(profile.name || profile.nickname || '관리자');
+            setUserName(profile.nickname || profile.name || '관리자');
             setAvatarUrl(profile.avatar_url);
           }
         }

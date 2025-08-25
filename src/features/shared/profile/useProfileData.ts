@@ -1,16 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export function useProfileData() {
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     user_id: '',
     email: '',
+    phone: '',
     name: '',
     nickname: '',
-    cohort: 0,
+    cohort: '',
     role: '',
     status: '',
   });
@@ -27,6 +28,7 @@ export function useProfileData() {
         setFormData({
           user_id: p.user_id || '',
           email: p.email || user.email || '',
+          phone: p.phone || '', 
           name: p.name || '',
           nickname: p.nickname || '',
           cohort: p.cohort || 0,

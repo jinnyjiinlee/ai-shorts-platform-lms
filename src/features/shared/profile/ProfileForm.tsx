@@ -3,6 +3,7 @@
 interface FormData {
   user_id: string;
   email: string;
+  phone: string;
   name: string;
   nickname: string;
   cohort: number;
@@ -51,13 +52,40 @@ export default function ProfileForm({ userRole, formData, onInputChange }: Profi
           )}
 
           <div>
-            <label className='block text-sm font-medium text-slate-700 mb-2'>이름</label>
+            <label className='block text-sm font-medium text-slate-700 mb-2'>실명</label>
             <input
               type='text'
               value={formData.name}
-              onChange={(e) => onInputChange('name', e.target.value)}
-              className='w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all'
+              disabled
+              className='w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 cursor-not-allowed'
               placeholder='이름을 입력하세요'
+            />
+          </div>
+
+          <div>
+            <label className='block text-sm font-medium text-slate-700 mb-2'>활동명</label>
+            <input
+              value={formData.nickname || ''}
+              onChange={(e) => onInputChange('nickname', e.target.value)}
+              className='w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all'
+            />
+          </div>
+
+          <div>
+            <label className='block text-sm font-medium text-slate-700 mb-2'>휴대폰</label>
+            <input
+              value={formData.phone || ''}
+              onChange={(e) => onInputChange('phone', e.target.value)}
+              className='w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all'
+            />
+          </div>
+
+          <div>
+            <label className='block text-sm font-medium text-slate-700 mb-2'>카카오 아이디</label>
+            <input
+              value={formData.email || ''}
+              disabled
+              className='w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 cursor-not-allowed'
             />
           </div>
 
@@ -73,17 +101,6 @@ export default function ProfileForm({ userRole, formData, onInputChange }: Profi
               />
             </div>
           )}
-
-          <div>
-            <label className='block text-sm font-medium text-slate-700 mb-2'>이메일</label>
-            <input
-              type='email'
-              value={formData.email}
-              disabled
-              className='w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-500 cursor-not-allowed'
-            />
-            <p className='text-xs text-slate-500 mt-1'>이메일은 변경할 수 없습니다.</p>
-          </div>
 
           {userRole === 'student' && (
             <>

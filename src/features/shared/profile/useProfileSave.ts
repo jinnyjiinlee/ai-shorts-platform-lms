@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '../../../lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export function useProfileSave(userRole: string, formData: any) {
   const [isSaving, setIsSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   const handleSave = async () => {
-    if (!formData.name?.trim()) return alert('이름은 필수입니다.');
+    if (!formData.nickname?.trim()) return alert('활동명을 입력해주세요.');
+    if (!formData.phone?.trim()) return alert('휴대폰을 입력해주세요.');
 
     try {
       setIsSaving(true);
@@ -20,9 +21,12 @@ export function useProfileSave(userRole: string, formData: any) {
       if (!user) return alert('로그인이 필요합니다.');
 
       // 2. 업데이트 데이터 준비
-      const updateData: any = { name: formData.name.trim() };
-      if (userRole === 'student' && formData.nickname?.trim()) {
-        updateData.nickname = formData.nickname.trim();
+      const updateData: any = {};
+      if (formData.nickname?.trim()) {
+        updateData.nickname = formData.nickname.trim(); // 활동명 수정 저장
+      }
+      if (formData.phone?.trim()) {
+        updateData.phone = formData.phone.trim(); // 휴대폰 수정 저장
       }
 
       console.log('업데이트 데이터:', updateData);
@@ -55,6 +59,14 @@ export function useProfileSave(userRole: string, formData: any) {
     } finally {
       setIsSaving(false);
     }
+
+    // To-Do: Refactor
+    // 저장 후 페이지 새로 고침
+    // 52-53줄을 이렇게 수정
+    setTimeout(() => {
+      setShowToast(false);
+      window.location.reload(); // 새로고침
+    }, 1000);
   };
 
   return { isSaving, showToast, handleSave };

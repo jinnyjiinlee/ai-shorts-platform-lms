@@ -6,18 +6,18 @@ import { supabase } from '@/lib/supabase/client';
 export function useProfileData() {
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
-    user_id: '', email: '', name: '', nickname: '', cohort: 0, role: '', status: ''
+    user_id: '', email: '', phone: '', name: '', nickname: '', cohort: 0, role: '', status: ''
   });
 
   useEffect(() => {
     (async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) return;1
         const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single();
         if (!p) return;
         setFormData({
-          user_id: p.user_id || '', email: p.email || user.email || '', name: p.name || '',
+          user_id: p.user_id || '', email: p.email || user.email || '', phone: p.phone || '', name: p.name || '',
           nickname: p.nickname || '', cohort: p.cohort || 0, role: p.role === 'admin' ? '관리자' : '수강생', status: p.status || ''
         });
       } finally { setIsLoading(false); }
