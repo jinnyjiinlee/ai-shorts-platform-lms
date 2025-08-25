@@ -23,9 +23,9 @@ export async function middleware(request: NextRequest) {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax' as const,
             httpOnly: false,
-            path: '/'
+            path: '/',
           };
-          
+
           request.cookies.set({
             name,
             value,
@@ -48,9 +48,9 @@ export async function middleware(request: NextRequest) {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax' as const,
             httpOnly: false,
-            path: '/'
+            path: '/',
           };
-          
+
           request.cookies.set({
             name,
             value: '',
@@ -72,7 +72,9 @@ export async function middleware(request: NextRequest) {
   );
 
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const { pathname } = request.nextUrl;
 
     // Public routes that don't require authentication
@@ -126,7 +128,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
 };

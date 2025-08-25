@@ -11,7 +11,7 @@ interface User {
   name: string;
   email: string;
   created_at: string;
-  cohort: number;
+  cohort: string;
   status: string;
   role: string;
 }
@@ -49,7 +49,7 @@ export default function UserRegistrationManagement() {
 
   const handleStatusUpdate = async (userId: string, newStatus: string) => {
     try {
-      const { error } = await supabase.from('profiles').update({ status: newStatus }).eq('id', userId);
+      const { error } = await supabase.from('profiles').upsert({ id: userId, status: newStatus }).eq('id', userId);
 
       if (error) {
         console.error('상태 업데이트 오류:', error);
