@@ -4,6 +4,22 @@ import { CheckCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { MissionCardProps } from '../shared/types';
 
 export default function MissionCard({ mission, onClick }: MissionCardProps) {
+  // 마감일이 지났는지 확인
+  const isOverdue = mission.dueDate ? new Date(mission.dueDate) < new Date() : false;
+  
+  // 상태 결정: 제출완료 > 마감 > 진행중
+  const getStatusInfo = () => {
+    if (mission.isSubmitted) {
+      return { text: '✨ 완료', color: 'bg-green-100 text-green-800 border border-green-200' };
+    } else if (isOverdue) {
+      return { text: '🔒 마감', color: 'bg-red-100 text-red-800 border border-red-200' };
+    } else {
+      return { text: '⚡ 진행중', color: 'bg-blue-100 text-blue-800 border border-blue-200' };
+    }
+  };
+
+  const statusInfo = getStatusInfo();
+  
   return (
     <div className='group'>
       <div
@@ -46,13 +62,9 @@ export default function MissionCard({ mission, onClick }: MissionCardProps) {
             </h4>
             <div className='flex items-center space-x-2'>
               <span
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
-                  mission.isSubmitted
-                    ? 'bg-green-100 text-green-800 border border-green-200'
-                    : 'bg-blue-100 text-blue-800 border border-blue-200'
-                }`}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 ${statusInfo.color}`}
               >
-                {mission.isSubmitted ? '✨ 완료' : '⚡ 진행중'}
+                {statusInfo.text}
               </span>
             </div>
           </div>
