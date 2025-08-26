@@ -185,9 +185,19 @@ export default function TextSubmission({
     );
   }
 
+
+
   // 3) 처음 제출하거나 (아직 제출 X), 편집 모드일 때 → textarea + 제출 버튼
   return (
     <div className='space-y-4'>
+      {/* 마감일 지난 경우 경고 메시지 */}
+      {isOverdue && !isSubmittedState && (
+        <div className='bg-red-50 border border-red-200 rounded-lg p-3 mb-4'>
+          <div className='flex items-center text-red-800'>
+            <span className='font-medium text-sm'>마감일이 지나 제출할 수 없습니다</span>
+          </div>
+        </div>
+      )}
       {isEditing && (
         <div className='bg-blue-50 border border-blue-200 rounded-lg p-3'>
           <div className='flex items-center justify-between text-blue-800'>
@@ -215,7 +225,7 @@ export default function TextSubmission({
       <div className='flex justify-end space-x-3 pt-4 border-t border-slate-200'>
         <button
           onClick={handleSubmit}
-          disabled={isSubmitting || !textContent.trim()}
+          disabled={isSubmitting || !textContent.trim() || isOverdue}
           className={`px-6 py-2 text-white rounded-lg transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed ${
             canResubmit ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'
           }`}

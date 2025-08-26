@@ -87,7 +87,7 @@ export default function MissionCard({ mission, onClick }: MissionCardProps) {
           </div>
 
           <div className='flex items-center justify-between mt-2 text-xs text-slate-500'>
-            <span>마감일: {mission.dueDate}</span>
+            <span>마감일: {mission.dueDateFormatted}</span>
             {mission.submittedAt && <span className='text-green-600'>✅ {mission.submittedAt} 제출</span>}
           </div>
         </div>

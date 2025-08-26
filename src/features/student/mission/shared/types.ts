@@ -11,6 +11,7 @@ export interface Mission {
   submission_type: 'file' | 'text';
   feedback?: string;
   submissionContent?: string;
+  dueDateFormatted: string;
 }
 
 export interface MissionCardProps {

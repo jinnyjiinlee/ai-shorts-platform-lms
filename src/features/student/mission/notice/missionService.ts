@@ -35,20 +35,22 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
 
     // 제출 데이터를 미션 ID로 매핑
     const submissionMap = new Map();
-    (submissions || []).forEach(submission => {
+    (submissions || []).forEach((submission) => {
       submissionMap.set(submission.mission_id, submission);
     });
 
     // 미션들을 제출 여부에 따라 매핑
     const missionList = (missions || []).map((mission) => {
       const submission = submissionMap.get(mission.id);
-      
+
       return {
         id: mission.id,
         title: mission.title,
         description: mission.description,
         week: mission.week || 1,
-        dueDate: new Date(mission.due_date).toLocaleString('ko-KR', {
+
+        dueDate: mission.due_date,
+        dueDateFormatted: new Date(mission.due_date).toLocaleString('ko-KR', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
@@ -56,14 +58,16 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
           minute: '2-digit',
         }),
         isSubmitted: !!submission,
-        submittedAt: submission ? new Date(submission.submitted_at).toLocaleString('ko-KR', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-        }) : undefined,
-        status: submission ? 'submitted' as const : 'pending' as const,
+        submittedAt: submission
+          ? new Date(submission.submitted_at).toLocaleString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+          : undefined,
+        status: submission ? ('submitted' as const) : ('pending' as const),
         submission_type: mission.submission_type || 'file',
         feedback: undefined,
         submissionContent: submission?.content || '',

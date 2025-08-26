@@ -98,7 +98,7 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
           <div className='grid grid-cols-2 gap-4'>
             <div>
               <h4 className='font-medium text-slate-900 mb-1'>마감일</h4>
-              <p className='text-slate-600'>{mission.dueDate}</p>
+              <p className='text-slate-600'>{mission.dueDateFormatted}</p>
             </div>
             {mission.submittedAt && (
               <div>
