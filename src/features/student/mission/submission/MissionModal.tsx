@@ -53,7 +53,7 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
         </div>
 
         {/* Content */}
-        <div className='p-6 space-y-6'>
+        <div className='p-6 space-y-3'>
           {/* 미션 설명 */}
           <div>
             <h4 className='font-medium text-slate-900 mb-2'>미션 설명</h4>
@@ -63,7 +63,7 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
                   h1: ({ children }) => <h1 className='text-2xl font-bold text-slate-900 mt-6 mb-4'>{children}</h1>,
                   h2: ({ children }) => <h2 className='text-xl font-bold text-slate-900 mt-5 mb-3'>{children}</h2>,
                   h3: ({ children }) => <h3 className='text-lg font-bold text-slate-900 mt-4 mb-2'>{children}</h3>,
-                  p: ({ children }) => <p className='mb-3 text-slate-600 whitespace-pre-line'>{children}</p>,
+                  p: ({ children }) => <p className='mb-1.5 text-slate-600 whitespace-pre-line'>{children}</p>,
                   ul: ({ children }) => <ul className='list-disc list-inside mb-3 text-slate-600'>{children}</ul>,
                   ol: ({ children }) => <ol className='list-decimal list-inside mb-3 text-slate-600'>{children}</ol>,
                   li: ({ children }) => <li className='mb-1'>{children}</li>,
