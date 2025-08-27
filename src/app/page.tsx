@@ -11,6 +11,7 @@ export default function LoginPage() {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
   const { isLoading, rememberMe, setRememberMe, handleLogin } = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,12 +65,12 @@ export default function LoginPage() {
         {/* TO-DO: Refactor 삭제 */}
 
         <div className='bg-white/80 backdrop-blur-sm py-6 px-6 sm:py-8 sm:px-8 shadow-2xl rounded-2xl border border-white/20 hover:shadow-3xl transition-all duration-300'>
-          <form className='space-y-4 sm:space-y-6' onSubmit={handleSubmit}>
+          <div className='space-y-6'>
             {/* 카카오 로그인 버튼 */}
             <button
               type='button'
               onClick={signInWithKakao}
-              className='w-full rounded-xl bg-[#FEE500] hover:bg-[#FDD835] px-4 py-3.5 font-medium text-[#000000D9] transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md'
+              className='w-full rounded-xl bg-[#FEE500] hover:bg-[#FDD835] px-4 py-4 font-medium text-[#000000D9] transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl'
             >
               <svg className='w-5 h-5' viewBox='0 0 24 24' fill='currentColor'>
                 <path d='M12 3c5.514 0 10 3.592 10 8.007 0 4.917-5.145 7.961-9.91 7.961-1.937 0-3.383-.397-4.394-.644-.36.293-.722.586-1.084.879-1.163.94-2.318 1.797-3.612 1.797a.5.5 0 0 1-.5-.5c0-.426.263-1.136.611-1.823.258-.508.545-1.015.818-1.498C2.178 15.31 2 13.21 2 11.007 2 6.592 6.486 3 12 3zm0 1.5c-4.687 0-8.5 2.916-8.5 6.507 0 1.994.222 3.833 1.695 5.402a.5.5 0 0 1-.015.718c-.31.372-.641.84-.952 1.373.69-.228 1.315-.642 1.931-1.124.477-.374.953-.79 1.429-1.165a.5.5 0 0 1 .464-.075c.917.236 2.265.614 3.948.614 4.378 0 8.41-2.404 8.41-6.46 0-3.591-3.813-6.507-8.41-6.507z' />
@@ -77,15 +78,31 @@ export default function LoginPage() {
               카카오 로그인
             </button>
 
-            {/* 구분선 */}
-            <div className='relative flex items-center justify-center py-2'>
-              <div className='absolute inset-0 flex items-center'>
-                <div className='w-full border-t border-slate-200'></div>
-              </div>
-              <div className='relative px-4 text-xs text-slate-500 bg-white/80'>또는</div>
+            {/* 간단한 안내 */}
+            <div className='text-center text-sm text-slate-600'>
+              <p>수강생 여러분은 위 버튼을 클릭해주세요</p>
             </div>
+          </div>
 
-            {/* ID/PW 로그인 폼 */}
+          {/* 관리자 로그인 토글 - 작고 연하게 */}
+          <div className='text-center mt-8 pt-6 border-t border-slate-100'>
+            <button
+              type='button'
+              onClick={() => setShowAdminLogin(!showAdminLogin)}
+              className='text-xs text-slate-400 hover:text-slate-600 transition-colors duration-200'
+            >
+              {showAdminLogin ? '관리자 로그인 닫기 ▲' : '관리자이신가요? ▼'}
+            </button>
+          </div>
+
+          {/* 관리자 로그인 폼 - 숨김/표시 */}
+          {showAdminLogin && (
+            <form className='space-y-4 mt-6 pt-6 border-t border-slate-200 animate-fadeIn' onSubmit={handleSubmit}>
+              <div className='bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4'>
+                <p className='text-xs text-amber-800 font-medium'>⚠️ 관리자 전용 로그인</p>
+              </div>
+
+              {/* ID/PW 로그인 폼 */}
             <div>
               <label htmlFor='userId' className='block text-sm font-medium text-slate-700 mb-2'>
                 아이디
@@ -142,28 +159,21 @@ export default function LoginPage() {
               </label>
             </div>
 
-            <div className='text-xs text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-200'>
-              <p className='font-medium mb-2 text-slate-700'>로그인 방법:</p>
-              <div className='space-y-1'>
-                <p>• 카카오: 일반 사용자 로그인</p>
-                <p>• ID/PW: 관리자 로그인 (테스트용)</p>
-              </div>
-            </div>
-
-            <button
-              type='submit'
-              disabled={isLoading}
-              className='group relative w-full flex justify-center py-4 px-6 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg'
-            >
-              {isLoading ? (
-                <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                  <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                  <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                </svg>
-              ) : null}
-              로그인
-            </button>
-          </form>
+              <button
+                type='submit'
+                disabled={isLoading}
+                className='group relative w-full flex justify-center py-3 px-6 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200'
+              >
+                {isLoading ? (
+                  <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                    <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                    <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
+                  </svg>
+                ) : null}
+                관리자 로그인
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

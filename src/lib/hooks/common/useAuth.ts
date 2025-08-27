@@ -23,8 +23,15 @@ export function useAuth(requiredRole?: 'admin' | 'student') {
 
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        // 콜백 페이지에서는 OAuth 처리하지 않음 (중복 방지)
+        if (window.location.pathname === '/auth/callback') {
+          return;
+        }
         
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
         if (!session) {
           if (mounted) {
             router.push('/auth/login');
@@ -87,18 +94,18 @@ export function useAuth(requiredRole?: 'admin' | 'student') {
     checkAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_OUT' || !session) {
-          if (mounted) {
-            setUser(null);
-            router.push('/auth/login');
-          }
-        } else if (event === 'SIGNED_IN') {
-          checkAuth();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        if (mounted) {
+          setUser(null);
+          router.push('/auth/login');
         }
+      } else if (event === 'SIGNED_IN') {
+        checkAuth();
       }
-    );
+    });
 
     return () => {
       mounted = false;
