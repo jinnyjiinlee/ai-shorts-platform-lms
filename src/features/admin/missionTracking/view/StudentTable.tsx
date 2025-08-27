@@ -105,8 +105,8 @@ export default function StudentTable({
   return (
     <div className='space-y-4'>
       {/* 검색 및 필터링 */}
-      <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between'>
-        {/* 검색창 */}
+      <div className='flex flex-col gap-4'>
+        {/* 검색창 및 필터 */}
         <div className='relative flex-1 max-w-md'>
           <MagnifyingGlassIcon className='absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4' />
           <input
@@ -117,8 +117,6 @@ export default function StudentTable({
             className='w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
           />
         </div>
-
-        {/* 필터 버튼 */}
         <div className='flex gap-2 flex-wrap'>
           {[
             { key: 'all' as FilterType, label: '전체', color: 'bg-slate-100 text-slate-700' },
@@ -149,25 +147,25 @@ export default function StudentTable({
       {/* 테이블 컨테이너 */}
       <div className='relative'>
         {/* 고정된 테이블 헤더 */}
-        <div className='bg-slate-50 border-b-2 border-slate-200'>
-          <div className='grid grid-cols-[200px_120px_1fr] gap-6 px-2 py-3'>
-            <div className='font-semibold text-slate-900 text-sm p-2'>수강생명</div>
-            <div className='font-semibold text-slate-900 text-sm p-2 text-center'>제출률</div>
-            <div className='font-semibold text-slate-900 text-xs p-2 text-center'>주차별 상세</div>
+        <div className='border-b border-slate-200'>
+          <div className='grid grid-cols-[200px_120px_1fr] gap-6 px-4 py-3'>
+            <div className='font-semibold text-slate-900 text-sm'>수강생명</div>
+            <div className='font-semibold text-slate-900 text-sm text-center'>제출률</div>
+            <div className='font-semibold text-slate-900 text-sm text-center'>주차별 상세</div>
           </div>
         </div>
 
         {/* 스크롤 가능한 데이터 영역 */}
-        <div className='max-h-[600px] overflow-y-auto'>
-          <div className='divide-y divide-slate-200'>
+        <div className='overflow-y-auto'>
+          <div>
         {currentStudents.map((student) => {
           return (
             <div
               key={student.studentId}
-              className='grid grid-cols-[200px_120px_1fr] gap-6 hover:bg-slate-50 px-2 py-3'
+              className='grid grid-cols-[200px_120px_1fr] gap-6 px-4 py-2 hover:bg-slate-50/30 transition-colors duration-200'
             >
               {/* 수강생명 */}
-              <div className='font-medium text-slate-900 text-sm flex items-center p-2'>
+              <div className='font-medium text-slate-900 text-sm flex items-center'>
                 <div className='w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-xs font-medium mr-3'>
                   {student.studentName[0]}
                 </div>
@@ -175,10 +173,10 @@ export default function StudentTable({
               </div>
 
               {/* 제출률 */}
-              <div className='flex items-center justify-center p-2'>
+              <div className='flex items-center justify-center'>
                 <div className='flex items-center space-x-2'>
                   <div
-                    className={`text-xl font-bold ${
+                    className={`text-lg font-bold ${
                       student.submissionRate >= 80
                         ? 'text-green-600'
                         : student.submissionRate >= 60
@@ -197,7 +195,7 @@ export default function StudentTable({
               </div>
 
               {/* 주차별 상세 */}
-              <div className='flex items-center space-x-1 overflow-x-auto p-2'>
+              <div className='flex items-center justify-center space-x-2 overflow-x-auto'>
                 {weeklyData.map((week) => {
                   // 제출 정보를 model 함수로 가져오기
                   const { hasSubmission, content, submittedAt } = getStudentSubmissionForWeek(
@@ -207,33 +205,29 @@ export default function StudentTable({
                   );
 
                   return (
-                    <div key={week.missionId} className='flex flex-col items-center'>
-                      <button
-                        onClick={() =>
-                          hasSubmission &&
-                          onSubmissionClick({
-                            studentName: student.studentName,
-                            week: week.week,
-                            missionTitle: week.missionTitle,
-                            content: content,
-                            submittedAt: submittedAt,
-                            studentId: student.studentId,
-                          })
-                        }
-                        className={`w-8 h-8 rounded-lg text-xs font-medium transition-all ${
-                          hasSubmission
-                            ? 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer hover:scale-105'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                        disabled={!hasSubmission}
-                        title={`${week.week}주차 - ${hasSubmission ? '제출완료' : '미제출'}`}
-                      >
-                        {week.week}
-                      </button>
-                      <div className={`text-xs mt-1 ${hasSubmission ? 'text-green-600' : 'text-red-600'}`}>
-                        {hasSubmission ? '✓' : '✗'}
-                      </div>
-                    </div>
+                    <button
+                      key={week.missionId}
+                      onClick={() =>
+                        hasSubmission &&
+                        onSubmissionClick({
+                          studentName: student.studentName,
+                          week: week.week,
+                          missionTitle: week.missionTitle,
+                          content: content,
+                          submittedAt: submittedAt,
+                          studentId: student.studentId,
+                        })
+                      }
+                      className={`w-6 h-6 rounded-lg text-xs font-medium transition-all ${
+                        hasSubmission
+                          ? 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer hover:scale-105'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                      disabled={!hasSubmission}
+                      title={`${week.week}주차 - ${hasSubmission ? '제출완료' : '미제출'}`}
+                    >
+                      {week.week}
+                    </button>
                   );
                 })}
               </div>

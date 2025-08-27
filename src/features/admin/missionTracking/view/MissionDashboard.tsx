@@ -72,7 +72,7 @@ export default function MissionDashboard() {
       <StatsCards overallRate={overallRate} totalSubmissions={totalSubmissions} totalMissions={weeklyData.length} />
 
       <div className='bg-white rounded-2xl border border-slate-200 shadow-sm'>
-        <div className='flex h-[800px]'>
+        <div className='flex min-h-[600px]'>
           <div className='flex-1 border-r border-slate-200'>
             <div className='p-6 border-b border-slate-200'>
               <h2 className='text-xl font-semibold text-slate-900'>{selectedCohort}기 전체 제출 현황</h2>

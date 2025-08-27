@@ -1,3 +1,4 @@
+
 interface SelectedSubmission {
   studentName: string;
   week: number;
@@ -40,10 +41,35 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
             {/* 제출 내용 */}
             <div>
               <label className="text-sm font-medium text-slate-700 mb-2 block">제출 내용</label>
-              <div className="bg-slate-50 rounded-lg p-4 border">
-                <p className="text-slate-800 leading-relaxed whitespace-pre-wrap">
-                  {selectedSubmission.content}
-                </p>
+              <div className="bg-slate-50 rounded-lg p-4 border max-h-96 overflow-y-auto">
+                <div className="text-slate-800 leading-relaxed break-words">
+                  {selectedSubmission.content.split('\n').map((line, index) => {
+                    // URL 감지 및 링크로 변환
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+                    const parts = line.split(urlRegex);
+                    
+                    return (
+                      <div key={index} className="mb-2">
+                        {parts.map((part, partIndex) => {
+                          if (urlRegex.test(part)) {
+                            return (
+                              <a 
+                                key={partIndex}
+                                href={part} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 underline break-all block my-1"
+                              >
+                                {part}
+                              </a>
+                            );
+                          }
+                          return <span key={partIndex}>{part}</span>;
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
