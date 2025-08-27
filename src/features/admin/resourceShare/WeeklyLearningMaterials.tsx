@@ -153,12 +153,10 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
     <div className='space-y-6'>
       {/* 헤더 */}
       <AdminPageHeader
-        icon={<FolderOpenIcon className="w-6 h-6 text-slate-600" />}
-        title="주차별 학습자료"
+        icon={<FolderOpenIcon className='w-6 h-6 text-slate-600' />}
+        title='주차별 학습자료'
         description={
-          userRole === 'admin'
-            ? '주차별 학습자료를 업로드하고 관리하세요'
-            : '주차별 학습자료를 확인하고 다운로드하세요'
+          userRole === 'admin' ? '주차별 학습자료를 업로드하고 관리하세요' : '주차별 학습자료를 확인하고 다운로드하세요'
         }
         selectedCohort={selectedCohort}
         availableCohorts={availableCohorts}
@@ -191,28 +189,6 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
           </>
         }
       />
-
-      {/* 주차별 통계 (admin만 보임) */}
-      {userRole === 'admin' && (
-        <div className='bg-white rounded-2xl border border-slate-200 p-6'>
-          <h3 className='text-lg font-semibold text-slate-900 mb-4'>{selectedCohort}기 주차별 자료 현황</h3>
-          <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4'>
-            {getWeekStats().map((stat) => (
-              <div key={stat.week} className='text-center p-3 bg-slate-50 rounded-lg'>
-                <div className='text-lg font-bold text-slate-900'>{stat.week}주차</div>
-                <div className='text-sm text-slate-600'>
-                  {stat.published}/{stat.count}개 공개
-                </div>
-                <div
-                  className={`w-full h-1 rounded mt-2 ${
-                    stat.count === 0 ? 'bg-slate-200' : stat.published === stat.count ? 'bg-green-500' : 'bg-orange-500'
-                  }`}
-                ></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* 자료 목록 */}
       <div className='bg-white rounded-2xl border border-slate-200 shadow-sm'>
