@@ -22,6 +22,10 @@ export default function UserRegistrationManagement() {
   const [activeTab, setActiveTab] = useState<'students' | 'admins'>('students');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedAllUser, setSelectedAllUser] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -66,6 +70,110 @@ export default function UserRegistrationManagement() {
     }
   };
 
+  // 페이지네이션 로직
+  const filteredUsers = users.filter((user) => {
+    if (activeTab === 'students') {
+      return user.role === 'student' || !user.role;
+    }
+    if (activeTab === 'admins') {
+      return user.role === 'admin';
+    }
+    return false;
+  });
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    setSelectedUserIds([]);
+    setSelectedAllUser(false);
+  };
+
+  // 전체 선택/해제 핸들러 (현재 페이지만)
+  const handleSelectedAll = () => {
+    if (selectedAllUser) {
+      setSelectedUserIds([]);
+      setSelectedAllUser(false);
+    } else {
+      const currentPageUserIds = currentUsers.map((user) => user.id);
+      setSelectedUserIds(currentPageUserIds);
+      setSelectedAllUser(true);
+    }
+  };
+
+  // 개별 사용자 선택/해제 핸들러
+  const handleSelectedUser = (userId: string) => {
+    if (selectedUserIds.includes(userId)) {
+      const newSelectedIds = selectedUserIds.filter((id) => id !== userId);
+      setSelectedUserIds(newSelectedIds);
+      setSelectedAllUser(false);
+    } else {
+      const newSelectedIds = [...selectedUserIds, userId];
+      setSelectedUserIds(newSelectedIds);
+      if (newSelectedIds.length === currentUsers.length) {
+        setSelectedAllUser(true);
+      }
+    }
+  };
+
+  // 일괄 승인 핸들러
+  const handleBulkApproval = async () => {
+    if (selectedUserIds.length === 0) return;
+
+    try {
+      let successCount = 0;
+
+      for (const userId of selectedUserIds) {
+        const { error } = await supabase.from('profiles').upsert({ id: userId, status: 'approved' }).eq('id', userId);
+
+        if (!error) {
+          successCount++;
+          setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: 'approved' } : user)));
+        } else {
+          console.error(`사용자 ${userId} 승인 오류:`, error);
+        }
+      }
+
+      setSelectedUserIds([]);
+      setSelectedAllUser(false);
+      alert(`${successCount}명의 사용자가 승인되었습니다.`);
+    } catch (error) {
+      console.error('일괄 승인 오류:', error);
+      alert('일괄 승인 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 일괄 거부 핸들러
+  const handleBulkRejection = async () => {
+    if (selectedUserIds.length === 0) return;
+
+    try {
+      let successCount = 0;
+
+      for (const userId of selectedUserIds) {
+        const { error } = await supabase.from('profiles').upsert({ id: userId, status: 'rejected' }).eq('id', userId);
+
+        if (!error) {
+          successCount++;
+          setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: 'rejected' } : user)));
+        } else {
+          console.error(`사용자 ${userId} 거부 오류:`, error);
+        }
+      }
+
+      setSelectedUserIds([]);
+      setSelectedAllUser(false);
+      alert(`${successCount}명의 사용자가 거부되었습니다.`);
+    } catch (error) {
+      console.error('일괄 거부 오류:', error);
+      alert('일괄 거부 중 오류가 발생했습니다.');
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       approved: { text: '승인됨', color: 'bg-green-100 text-green-800 border-green-200' },
@@ -78,7 +186,7 @@ export default function UserRegistrationManagement() {
       color: 'bg-gray-100 text-gray-800 border-gray-200',
     };
 
-    return <span className={`px-2 py-1 rounded-full text-xs font-medium border ${config.color}`}>{config.text}</span>;
+    return <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${config.color}`}>{config.text}</span>;
   };
 
   const getRoleBadge = (role: string) => {
@@ -96,31 +204,12 @@ export default function UserRegistrationManagement() {
     const IconComponent = config.icon;
 
     return (
-      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
+      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
         <IconComponent className='w-3 h-3 mr-1' />
         {config.text}
       </span>
     );
   };
-
-  const filteredUsers = users.filter((user) => {
-    if (activeTab === 'students') {
-      if (user.role === 'student') {
-        return true;
-      }
-      return false;
-    }
-
-    if (activeTab === 'admins') {
-      if (user.role === 'admin') {
-        return true;
-      }
-      return false;
-    }
-
-    // 혹시 탭 값이 잘못 들어왔을 때는 아무도 안 보여주기
-    return false;
-  });
 
   const openDetailModal = (user: User) => {
     setSelectedUser(user);
@@ -158,7 +247,12 @@ export default function UserRegistrationManagement() {
         <div className='border-b border-slate-200'>
           <nav className='-mb-px flex'>
             <button
-              onClick={() => setActiveTab('students')}
+              onClick={() => {
+                setActiveTab('students');
+                setCurrentPage(1);
+                setSelectedUserIds([]);
+                setSelectedAllUser(false);
+              }}
               className={`py-4 px-6 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'students'
                   ? 'border-blue-500 text-blue-600'
@@ -174,7 +268,12 @@ export default function UserRegistrationManagement() {
               </div>
             </button>
             <button
-              onClick={() => setActiveTab('admins')}
+              onClick={() => {
+                setActiveTab('admins');
+                setCurrentPage(1);
+                setSelectedUserIds([]);
+                setSelectedAllUser(false);
+              }}
               className={`py-4 px-6 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'admins'
                   ? 'border-purple-500 text-purple-600'
@@ -192,63 +291,105 @@ export default function UserRegistrationManagement() {
           </nav>
         </div>
 
+        {/* 일괄 작업 버튼 영역 */}
+        {activeTab === 'students' && selectedUserIds.length > 0 && (
+          <div className='p-4 bg-blue-50 border-b border-blue-200'>
+            <div className='flex items-center justify-between'>
+              <span className='text-sm text-blue-800 font-medium'>{selectedUserIds.length}명이 선택됨</span>
+              <div className='flex space-x-2'>
+                <button
+                  onClick={handleBulkApproval}
+                  className='px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors'
+                >
+                  선택한 사용자 승인
+                </button>
+                <button
+                  onClick={handleBulkRejection}
+                  className='px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors'
+                >
+                  선택한 사용자 거부
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 사용자 목록 */}
         <div className='overflow-x-auto'>
           <table className='w-full'>
             <thead className='bg-slate-50'>
               <tr>
-                <th className='px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
+                {activeTab === 'students' && (
+                  <th className='px-4 py-2 text-left'>
+                    <input
+                      type='checkbox'
+                      checked={selectedAllUser}
+                      onChange={handleSelectedAll}
+                      className='w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500'
+                    />
+                  </th>
+                )}
+                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
                   사용자 정보
                 </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
+                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
                   역할
                 </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
+                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
                   기수
                 </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
+                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
                   상태
                 </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
+                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
                   가입일
                 </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
+                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
                   작업
                 </th>
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-slate-200'>
-              {filteredUsers.map((user) => (
+              {currentUsers.map((user) => (
                 <tr key={user.id} className='hover:bg-slate-50'>
-                  <td className='px-6 py-4'>
+                  {activeTab === 'students' && (
+                    <td className='px-4 py-2'>
+                      <input
+                        type='checkbox'
+                        checked={selectedUserIds.includes(user.id)}
+                        onChange={() => handleSelectedUser(user.id)}
+                        className='w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500'
+                      />
+                    </td>
+                  )}
+                  <td className='px-4 py-2'>
                     <div>
-                      <div className='text-lg font-bold text-slate-900'>{user.nickname || '닉네임 없음'}</div>
-                      <div className='text-sm text-slate-500 space-y-1'>
+                      <div className='text-sm font-bold text-slate-900'>{user.nickname || '닉네임 없음'}</div>
+                      <div className='text-xs text-slate-500 space-y-0'>
                         <div>{user.name || '실명 없음'}</div>
-                        <div>@{user.user_id}</div>
                         <div>{user.email}</div>
                       </div>
                     </div>
                   </td>
-                  <td className='px-6 py-4'>{getRoleBadge(user.role || 'student')}</td>
-                  <td className='px-6 py-4 text-sm text-slate-900'>{user.cohort ? `${user.cohort}기` : '-'}</td>
-                  <td className='px-6 py-4'>{getStatusBadge(user.status)}</td>
-                  <td className='px-6 py-4 text-sm text-slate-500'>
+                  <td className='px-4 py-2'>{getRoleBadge(user.role || 'student')}</td>
+                  <td className='px-4 py-2 text-xs text-slate-900'>{user.cohort ? `${user.cohort}기` : '-'}</td>
+                  <td className='px-4 py-2'>{getStatusBadge(user.status)}</td>
+                  <td className='px-4 py-2 text-xs text-slate-500'>
                     {new Date(user.created_at).toLocaleDateString('ko-KR')}
                   </td>
-                  <td className='px-6 py-4'>
-                    <div className='flex items-center space-x-2'>
+                  <td className='px-4 py-2'>
+                    <div className='flex items-center space-x-1'>
                       <button
                         onClick={() => openDetailModal(user)}
-                        className='text-blue-600 hover:text-blue-900 text-sm'
+                        className='text-blue-600 hover:text-blue-900 text-xs p-1'
                       >
-                        <EyeIcon className='w-4 h-4' />
+                        <EyeIcon className='w-3 h-3' />
                       </button>
 
                       {activeTab === 'students' && user.status !== 'approved' && (
                         <button
                           onClick={() => handleStatusUpdate(user.id, 'approved')}
-                          className='px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700'
+                          className='px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700'
                         >
                           승인
                         </button>
@@ -257,7 +398,7 @@ export default function UserRegistrationManagement() {
                       {activeTab === 'students' && user.status !== 'rejected' && (
                         <button
                           onClick={() => handleStatusUpdate(user.id, 'rejected')}
-                          className='px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700'
+                          className='px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700'
                         >
                           거부
                         </button>
@@ -269,6 +410,54 @@ export default function UserRegistrationManagement() {
             </tbody>
           </table>
         </div>
+
+        {/* 페이지네이션 */}
+        {totalPages > 1 && (
+          <div className='px-6 py-4 border-t border-slate-200 bg-white'>
+            <div className='flex items-center justify-between'>
+              <div className='text-sm text-slate-600'>
+                총 {filteredUsers.length}명 중 {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, filteredUsers.length)}
+                명 표시
+              </div>
+              <div className='flex items-center space-x-2'>
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className='px-3 py-2 text-sm border border-slate-300 rounded hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                  이전
+                </button>
+
+                <div className='flex space-x-1'>
+                  {[...Array(totalPages)].map((_, index) => {
+                    const pageNum = index + 1;
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`px-3 py-2 text-sm border rounded ${
+                          currentPage === pageNum
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : 'border-slate-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className='px-3 py-2 text-sm border border-slate-300 rounded hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                  다음
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 상세 정보 모달 */}
