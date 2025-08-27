@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { PlusIcon, FolderOpenIcon } from '@heroicons/react/24/outline';
+import AdminPageHeader from '@/components/admin/AdminPageHeader';
 import MaterialCard from './MaterialCard';
 import MaterialModal from './MaterialModal';
 
@@ -151,74 +152,45 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
   return (
     <div className='space-y-6'>
       {/* 헤더 */}
-      <div className='relative overflow-hidden bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 rounded-2xl p-8 text-white'>
-        <div className='absolute inset-0 opacity-20'>
-          <div className='absolute top-4 right-4 w-16 h-16 bg-white/10 rounded-full animate-pulse'></div>
-          <div className='absolute bottom-4 left-4 w-12 h-12 bg-white/10 rounded-full animate-pulse delay-300'></div>
-        </div>
-        <div className='relative z-10 flex items-center justify-between'>
-          <div className='flex items-center space-x-4'>
-            <div className='w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm'>
-              <FolderOpenIcon className='w-8 h-8 text-white' />
-            </div>
-            <div>
-              <h1 className='text-3xl font-bold mb-2'>주차별 학습자료</h1>
-              <p className='text-green-100 text-lg'>
-                {userRole === 'admin'
-                  ? '주차별 학습자료를 업로드하고 관리하세요'
-                  : '주차별 학습자료를 확인하고 다운로드하세요'}
-              </p>
-            </div>
-          </div>
-
-          <div className='flex items-center space-x-4'>
-            {/* 기수 선택 */}
-            <div className='flex items-center space-x-2'>
-              <label className='text-green-100 font-medium text-sm'>기수</label>
-              <select
-                value={selectedCohort}
-                onChange={(e) => setSelectedCohort(parseInt(e.target.value))}
-                className='px-4 py-2 bg-white/20 border border-white/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50'
-              >
-                {availableCohorts.map((cohort) => (
-                  <option key={cohort} value={cohort} className='text-slate-800'>
-                    {cohort}기
-                  </option>
-                ))}
-              </select>
-            </div>
-
+      <AdminPageHeader
+        icon={<FolderOpenIcon className="w-6 h-6 text-slate-600" />}
+        title="주차별 학습자료"
+        description={
+          userRole === 'admin'
+            ? '주차별 학습자료를 업로드하고 관리하세요'
+            : '주차별 학습자료를 확인하고 다운로드하세요'
+        }
+        selectedCohort={selectedCohort}
+        availableCohorts={availableCohorts}
+        onCohortChange={(cohort) => setSelectedCohort(cohort as number)}
+        actions={
+          <>
             {/* 주차 선택 */}
-            <div className='flex items-center space-x-2'>
-              <label className='text-green-100 font-medium text-sm'>주차</label>
-              <select
-                value={selectedWeek}
-                onChange={(e) => setSelectedWeek(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
-                className='px-4 py-2 bg-white/20 border border-white/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50'
-              >
-                <option value='all' className='text-slate-800'>
-                  전체 주차
+            <select
+              value={selectedWeek}
+              onChange={(e) => setSelectedWeek(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+              className='px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+            >
+              <option value='all'>전체 주차</option>
+              {availableWeeks.map((week) => (
+                <option key={week} value={week}>
+                  {week}주차
                 </option>
-                {availableWeeks.map((week) => (
-                  <option key={week} value={week} className='text-slate-800'>
-                    {week}주차
-                  </option>
-                ))}
-              </select>
-            </div>
+              ))}
+            </select>
 
             {userRole === 'admin' && (
               <button
                 onClick={handleCreateMaterial}
-                className='flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all transform hover:scale-105'
+                className='flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors'
               >
-                <PlusIcon className='w-5 h-5' />
+                <PlusIcon className='w-4 h-4' />
                 <span>자료 업로드</span>
               </button>
             )}
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* 주차별 통계 (admin만 보임) */}
       {userRole === 'admin' && (
