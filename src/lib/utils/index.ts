@@ -9,4 +9,6 @@ export * from './progressUtils';
 export * from './validationUtils';
 
 // UI utilities (Button)
-  export * from './buttonClassName';
+export * from './buttonClassName';
+
+export { dateUtils } from './dateUtils';
