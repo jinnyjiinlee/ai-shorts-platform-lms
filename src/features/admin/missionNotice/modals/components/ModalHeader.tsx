@@ -1,5 +1,6 @@
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Mission } from '@/lib/types/mission.types';
+import { Button } from '@/features/shared/ui/Button';
 
 interface ModalHeaderProps {
   mission: Mission;
@@ -15,9 +16,15 @@ export default function ModalHeader({ mission, onClose }: ModalHeaderProps) {
           {mission.week}주차 • {mission.cohort}기 • 총 {mission.submissions?.length || 0}건 제출
         </p>
       </div>
-      <button onClick={onClose} className='text-slate-400 hover:text-slate-600'>
+      <Button 
+        onClick={onClose} 
+        variant="ghost"
+        size="md"
+        isIconOnly
+        className='text-slate-400 hover:text-slate-600'
+      >
         <XMarkIcon className='w-6 h-6' />
-      </button>
+      </Button>
     </div>
   );
 }

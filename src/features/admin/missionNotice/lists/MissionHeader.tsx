@@ -1,4 +1,5 @@
 import { PlusIcon, ClipboardDocumentListIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { Select } from '@/features/shared/ui/Select';
 
 interface MissionHeaderProps {
   selectedCohort: string | 'all';
@@ -31,16 +32,18 @@ export default function MissionHeader({
         </div>
         
         <div className="flex items-center space-x-4">
-          <select
+          <Select
             value={selectedCohort}
-            onChange={(e) => onCohortChange(e.target.value)}
+            onChange={(value) => onCohortChange(value as string)}
+            options={[
+              { value: 'all', label: '전체 기수' },
+              ...availableCohorts.map(cohort => ({
+                value: cohort,
+                label: `${cohort}기`
+              }))
+            ]}
             className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="all">전체 기수</option>
-            {availableCohorts.map(cohort => (
-              <option key={cohort} value={cohort}>{cohort}기</option>
-            ))}
-          </select>
+          />
           
           {onRefresh && (
             <button

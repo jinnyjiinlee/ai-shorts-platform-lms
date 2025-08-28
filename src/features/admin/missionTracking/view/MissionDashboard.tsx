@@ -9,7 +9,7 @@ import { useMissionData } from '../controller/useMissionData';
 import { calculateOverallStats } from '../model/mission.calculator';
 
 export default function MissionDashboard() {
-  const [selectedCohort, setSelectedCohort] = useState<number>(1);
+  const [selectedCohort, setSelectedCohort] = useState<string>('1');
   const [selectedSubmission, setSelectedSubmission] = useState<{
     studentName: string;
     week: number;

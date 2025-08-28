@@ -1,6 +1,7 @@
 'use client';
 
 import { WeekSelectorProps } from '../shared/types';
+import { Select } from '@/features/shared/ui/Select';
 
 export default function MissionHeader({ 
   selectedWeek, 
@@ -29,16 +30,18 @@ export default function MissionHeader({
           {/* 주차 선택 드롭다운 - 개선된 디자인 */}
           <div className="flex items-center space-x-3">
             <label className="text-blue-100 font-medium">주차 선택</label>
-            <select
-              value={selectedWeek || ''}
-              onChange={(e) => onWeekChange(e.target.value ? parseInt(e.target.value) : null)}
+            <Select
+              value={selectedWeek?.toString() || ''}
+              onChange={(value) => onWeekChange(value ? Number(value) : null)}
+              options={[
+                { value: '', label: '전체 보기' },
+                ...Object.keys(missionsByWeek).map(week => ({
+                  value: week,
+                  label: `${week}주차`
+                }))
+              ]}
               className="px-4 py-2 bg-white/20 border border-white/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/30 transition-all duration-200"
-            >
-              <option value="" className="text-slate-800">전체 보기</option>
-              {Object.keys(missionsByWeek).map(week => (
-                <option key={week} value={week} className="text-slate-800">{week}주차</option>
-              ))}
-            </select>
+            />
           </div>
         </div>
       </div>

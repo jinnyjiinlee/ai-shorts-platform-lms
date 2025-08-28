@@ -1,6 +1,7 @@
 'use client';
 
 import MarkdownEditor from '../../columns/MarkdownEditor';
+import { InputField } from '@/features/shared/ui/InputField';
 
 interface AnnouncementFormProps {
   title: string;
@@ -21,16 +22,13 @@ export default function AnnouncementForm({
 }: AnnouncementFormProps) {
   return (
     <div className='space-y-6'>
-      <div>
-        <label className='block text-sm font-medium text-slate-700 mb-2'>공지사항 제목 *</label>
-        <input
-          type='text'
-          value={title}
-          onChange={(e) => onTitleChange(e.target.value)}
-          className='w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-          placeholder='공지사항 제목을 입력하세요'
-        />
-      </div>
+      <InputField
+        label='공지사항 제목'
+        value={title}
+        onChange={onTitleChange}
+        placeholder='공지사항 제목을 입력하세요'
+        required
+      />
 
       <div>
         <label className='block text-sm font-medium text-slate-700 mb-2'>공지사항 내용 *</label>

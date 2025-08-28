@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { XMarkIcon, EyeIcon, UserGroupIcon, ShieldCheckIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/features/shared/ui/Button';
+import { Badge } from '@/features/shared/ui/Badge';
 
 interface User {
   id: string;
@@ -177,38 +178,38 @@ export default function UserRegistrationManagement() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      approved: { text: '승인됨', color: 'bg-green-100 text-green-800 border-green-200' },
-      pending: { text: '대기중', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-      rejected: { text: '거부됨', color: 'bg-red-100 text-red-800 border-red-200' },
+      approved: { text: '승인됨', variant: 'success' as const },
+      pending: { text: '대기중', variant: 'warning' as const },
+      rejected: { text: '거부됨', variant: 'danger' as const },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || {
       text: '알 수 없음',
-      color: 'bg-gray-100 text-gray-800 border-gray-200',
+      variant: 'default' as const,
     };
 
-    return <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${config.color}`}>{config.text}</span>;
+    return <Badge variant={config.variant} size="sm">{config.text}</Badge>;
   };
 
   const getRoleBadge = (role: string) => {
     const roleConfig = {
-      admin: { text: '관리자', color: 'bg-purple-100 text-purple-800', icon: ShieldCheckIcon },
-      student: { text: '수강생', color: 'bg-blue-100 text-blue-800', icon: AcademicCapIcon },
+      admin: { text: '관리자', variant: 'info' as const, icon: ShieldCheckIcon },
+      student: { text: '수강생', variant: 'default' as const, icon: AcademicCapIcon },
     };
 
     const config = roleConfig[role as keyof typeof roleConfig] || {
       text: '사용자',
-      color: 'bg-gray-100 text-gray-800',
+      variant: 'default' as const,
       icon: UserGroupIcon,
     };
 
     const IconComponent = config.icon;
 
     return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+      <Badge variant={config.variant} size="sm" className="inline-flex items-center">
         <IconComponent className='w-3 h-3 mr-1' />
         {config.text}
-      </span>
+      </Badge>
     );
   };
 

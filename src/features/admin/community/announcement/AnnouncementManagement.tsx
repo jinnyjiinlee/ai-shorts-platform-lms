@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  SpeakerWaveIcon,
-  PlusIcon,
-} from '@heroicons/react/24/outline';
+import { SpeakerWaveIcon, PlusIcon } from '@heroicons/react/24/outline';
 import MarkdownEditor from '../columns/MarkdownEditor';
-import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import AdminPageHeader from '@/features/admin/ui/AdminPageHeader';
 import AdminContentCard from '@/components/admin/AdminContentCard';
-import AdminModal from '@/components/admin/AdminModal';
+import { Modal } from '@/features/shared/ui/Modal';
+import { Button } from '@/features/shared/ui/Button';
+import { InputField } from '@/features/shared/ui/InputField';
+import { Badge } from '@/features/shared/ui/Badge';
+import { Select } from '@/features/shared/ui/Select';
 
 interface Announcement {
   id: number;
@@ -21,28 +22,7 @@ interface Announcement {
 }
 
 export default function AnnouncementManagement() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([
-    {
-      id: 1,
-      title: '3월 우수 수강생 발표',
-      content: '이번 달 가장 열심히 활동해주신 수강생분들을 발표합니다! 축하드립니다 🎉',
-      cohort: '1',
-      author: '하대표',
-      createdAt: '2024-08-20',
-
-      pinned: true,
-    },
-    {
-      id: 2,
-      title: '4월 특별 라이브 강의 안내',
-      content: '4월 25일 오후 8시에 특별 라이브 강의가 진행됩니다. 많은 참여 바랍니다!',
-      cohort: 'all',
-      author: '하대표',
-      createdAt: '2024-08-18',
-
-      pinned: false,
-    },
-  ]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
   const [form, setForm] = useState({ title: '', content: '', cohort: '1', pinned: false });
   const [showForm, setShowForm] = useState(false);
@@ -105,12 +85,12 @@ export default function AnnouncementManagement() {
   return (
     <div className='space-y-6'>
       <AdminPageHeader
-        icon={<SpeakerWaveIcon className="w-6 h-6 text-slate-600" />}
-        title="공지사항"
-        description="중요한 소식과 업데이트를 전달하세요"
+        icon={<SpeakerWaveIcon className='w-6 h-6 text-slate-600' />}
+        title='공지사항'
+        description='중요한 소식과 업데이트를 전달하세요'
         selectedCohort={selectedCohort}
         availableCohorts={availableCohorts}
-        onCohortChange={(cohort) => setSelectedCohort(cohort as string)}
+        onCohortChange={(cohort) => setSelectedCohort(cohort)}
         actions={
           <button
             onClick={() => {
@@ -168,9 +148,9 @@ export default function AnnouncementManagement() {
                   createdAt={announcement.createdAt}
                   badges={[
                     announcement.pinned && (
-                      <span className='px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium'>
+                      <Badge variant='danger' size='sm'>
                         📌 고정
-                      </span>
+                      </Badge>
                     ),
                   ].filter(Boolean)}
                   onView={() => setViewingAnnouncement(announcement)}
@@ -202,73 +182,83 @@ export default function AnnouncementManagement() {
       </div>
 
       {/* 작성/수정 모달 */}
-      <AdminModal
+      <Modal
         show={showForm}
         title={editingAnnouncement ? '공지사항 수정' : '새 공지사항 작성'}
         onClose={() => {
           setShowForm(false);
           setEditingAnnouncement(null);
         }}
-        onSubmit={handleSubmit}
-        submitText={editingAnnouncement ? '수정 완료' : '작성 완료'}
+        size='4xl'
       >
-        <div className='space-y-6'>
-          <div>
-            <label className='block text-sm font-medium text-slate-700 mb-2'>제목</label>
-            <input
-              type='text'
+        <form onSubmit={handleSubmit}>
+          <div className='space-y-6'>
+            <InputField
+              label='제목'
               value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className='w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+              onChange={(value: string) => setForm({ ...form, title: value })}
               placeholder='공지사항 제목을 입력하세요'
               required
             />
-          </div>
 
-          <div>
-            <label className='block text-sm font-medium text-slate-700 mb-2'>대상 기수</label>
-            <select
+            <Select
+              label='대상 기수'
               value={form.cohort}
-              onChange={(e) => setForm({ ...form, cohort: e.target.value })}
-              className='w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-            >
-              <option value='all'>전체 기수</option>
-              {availableCohorts.map((cohort) => (
-                <option key={cohort} value={cohort}>
-                  {cohort}기
-                </option>
-              ))}
-            </select>
+              onChange={(value) => setForm({ ...form, cohort: value })}
+              options={[
+                { value: 'all', label: '전체 기수' },
+                ...availableCohorts.map((cohort) => ({ value: cohort, label: `${cohort}기` })),
+              ]}
+            />
+
+            <div>
+              <label className='block text-sm font-medium text-slate-700 mb-2'>내용</label>
+              <MarkdownEditor
+                value={form.content}
+                onChange={(value: string) => setForm({ ...form, content: value })}
+                placeholder='마크다운으로 공지사항 내용을 작성하세요!'
+                className='min-h-[300px]'
+              />
+            </div>
           </div>
 
-          <div>
-            <label className='block text-sm font-medium text-slate-700 mb-2'>내용</label>
-            <MarkdownEditor
-              value={form.content}
-              onChange={(value: string) => setForm({ ...form, content: value })}
-              placeholder='마크다운으로 공지사항 내용을 작성하세요!'
-              className='min-h-[300px]'
-            />
+          {/* 액션 버튼 */}
+          <div className='flex justify-end space-x-3 mt-6 pt-4 border-t border-slate-200'>
+            <Button
+              type='button'
+              onClick={() => {
+                setShowForm(false);
+                setEditingAnnouncement(null);
+              }}
+              variant='outline'
+            >
+              취소
+            </Button>
+            <Button type='submit' variant='primary'>
+              {editingAnnouncement ? '수정 완료' : '작성 완료'}
+            </Button>
           </div>
-        </div>
-      </AdminModal>
+        </form>
+      </Modal>
 
       {/* 상세보기 모달 */}
-      <AdminModal
+      <Modal
         show={!!viewingAnnouncement}
         title={viewingAnnouncement?.title || ''}
         onClose={() => setViewingAnnouncement(null)}
-        showActions={false}
+        size='2xl'
       >
         {viewingAnnouncement && (
           <div className='space-y-4'>
             <div className='flex items-center space-x-3'>
               {viewingAnnouncement.pinned && (
-                <span className='px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs'>📌 고정</span>
+                <Badge variant='danger' size='sm'>
+                  📌 고정
+                </Badge>
               )}
-              <span className='px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs'>
+              <Badge variant='info' size='sm'>
                 {viewingAnnouncement.cohort === 'all' ? '전체' : `${viewingAnnouncement.cohort}기`}
-              </span>
+              </Badge>
               <span className='text-sm text-slate-600'>{viewingAnnouncement.author}</span>
               <span className='text-sm text-slate-600'>{viewingAnnouncement.createdAt}</span>
             </div>
@@ -277,18 +267,15 @@ export default function AnnouncementManagement() {
               className='prose prose-slate max-w-none'
               dangerouslySetInnerHTML={{ __html: viewingAnnouncement.content }}
             />
-            
+
             <div className='pt-4 border-t border-slate-200 flex justify-end'>
-              <button
-                onClick={() => setViewingAnnouncement(null)}
-                className='px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors'
-              >
+              <Button onClick={() => setViewingAnnouncement(null)} variant='outline'>
                 닫기
-              </button>
+              </Button>
             </div>
           </div>
         )}
-      </AdminModal>
+      </Modal>
     </div>
   );
 }

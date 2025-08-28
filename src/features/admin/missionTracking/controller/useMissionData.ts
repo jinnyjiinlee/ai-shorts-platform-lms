@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { getOptimizedMissionData, getCohortList } from '../model/mission.service';
 import { WeeklyData, StudentSubmissionDetail } from '../model/mission.types';
 
-export function useMissionData(selectedCohort: number) {
+export function useMissionData(selectedCohort: string) {
   const [weeklyData, setWeeklyData] = useState<WeeklyData[]>([]);
-  const [availableCohorts, setAvailableCohorts] = useState<number[]>([1]);
+  const [availableCohorts, setAvailableCohorts] = useState<string[]>(['1']);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [allStudents, setAllStudents] = useState<StudentSubmissionDetail[]>([]);
@@ -19,9 +19,9 @@ export function useMissionData(selectedCohort: number) {
         setError(null);
 
         // 기수 목록과 최적화된 미션 데이터를 병렬로 조회
-        const [cohorts, missionData] = await Promise.all([getCohortList(), getOptimizedMissionData(selectedCohort)]);
+        const [cohorts, missionData] = await Promise.all([getCohortList(), getOptimizedMissionData(Number(selectedCohort))]);
 
-        setAvailableCohorts(cohorts);
+        setAvailableCohorts(cohorts.map(c => c.toString()));
         setWeeklyData(missionData.weeklyData);
         setAllStudents(missionData.allStudents);
         setStudentSubmissions(missionData.studentSubmissions);

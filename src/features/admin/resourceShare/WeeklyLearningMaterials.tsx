@@ -2,16 +2,17 @@
 
 import { useState } from 'react';
 import { PlusIcon, FolderOpenIcon } from '@heroicons/react/24/outline';
-import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import AdminPageHeader from '@/features/admin/ui/AdminPageHeader';
 import MaterialCard from './MaterialCard';
 import MaterialModal from './MaterialModal';
+import { Select } from '@/features/shared/ui/Select';
 
 interface LearningMaterial {
   id: number;
   title: string;
   description: string;
   week: number;
-  cohort: number;
+  cohort: string;
   uploadDate: string;
   fileUrl: string;
   fileName: string;
@@ -27,7 +28,7 @@ interface WeeklyLearningMaterialsProps {
 export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMaterialsProps) {
   const [materials, setMaterials] = useState<LearningMaterial[]>([]);
 
-  const [selectedCohort, setSelectedCohort] = useState<number>(1);
+  const [selectedCohort, setSelectedCohort] = useState<string>('1');
   const [selectedWeek, setSelectedWeek] = useState<number | 'all'>('all');
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'create' | 'edit' | 'view'>('create');
@@ -36,7 +37,7 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
     title: '',
     description: '',
     week: 1,
-    cohort: 1,
+    cohort: '1',
     fileName: '',
     fileSize: '',
     fileType: '',
@@ -44,7 +45,7 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
   });
 
   // 기수 목록 (확장 가능)
-  const availableCohorts = [1, 2, 3];
+  const availableCohorts = ['1', '2', '3'];
   const availableWeeks = Array.from({ length: 16 }, (_, i) => i + 1); // 1주차부터 16주차까지
 
   // 필터링된 자료 목록
@@ -160,22 +161,22 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
         }
         selectedCohort={selectedCohort}
         availableCohorts={availableCohorts}
-        onCohortChange={(cohort) => setSelectedCohort(cohort as number)}
+        onCohortChange={(cohort) => setSelectedCohort(cohort as string)}
         actions={
           <>
             {/* 주차 선택 */}
-            <select
-              value={selectedWeek}
-              onChange={(e) => setSelectedWeek(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+            <Select
+              value={selectedWeek === 'all' ? 'all' : selectedWeek.toString()}
+              onChange={(value) => setSelectedWeek(value === 'all' ? 'all' : Number(value))}
+              options={[
+                { value: 'all', label: '전체 주차' },
+                ...availableWeeks.map((week) => ({
+                  value: week.toString(),
+                  label: `${week}주차`,
+                })),
+              ]}
               className='px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-            >
-              <option value='all'>전체 주차</option>
-              {availableWeeks.map((week) => (
-                <option key={week} value={week}>
-                  {week}주차
-                </option>
-              ))}
-            </select>
+            />
 
             {userRole === 'admin' && (
               <button

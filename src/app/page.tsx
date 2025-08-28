@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { InputField } from '@/features/shared/ui/InputField';
 import { useLogin } from '@/features/auth/hooks/useLogin';
 import { supabase } from '@/lib/supabase/client';
 
@@ -103,22 +104,13 @@ export default function LoginPage() {
               </div>
 
               {/* ID/PW 로그인 폼 */}
-            <div>
-              <label htmlFor='userId' className='block text-sm font-medium text-slate-700 mb-2'>
-                아이디
-              </label>
-              <input
-                id='userId'
-                name='userId'
-                type='text'
-                autoComplete='username'
-                required
-                value={formData.userId}
-                onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
-                className='appearance-none relative block w-full px-4 py-3 border border-slate-300 placeholder-slate-400 text-slate-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/50'
-                placeholder='아이디를 입력하세요'
-              />
-            </div>
+            <InputField
+              label='아이디'
+              value={formData.userId}
+              onChange={(value: string) => setFormData({ ...formData, userId: value })}
+              placeholder='아이디를 입력하세요'
+              required
+            />
 
             <div>
               <label htmlFor='password' className='block text-sm font-medium text-slate-700 mb-2'>

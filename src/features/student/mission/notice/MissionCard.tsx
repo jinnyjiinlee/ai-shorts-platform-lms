@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { Badge } from '@/features/shared/ui/Badge';
 import { MissionCardProps } from '../shared/types';
 
 export default function MissionCard({ mission, onClick }: MissionCardProps) {
@@ -61,11 +62,12 @@ export default function MissionCard({ mission, onClick }: MissionCardProps) {
               {mission.title}
             </h4>
             <div className='flex items-center space-x-2'>
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 ${statusInfo.color}`}
+              <Badge 
+                variant={mission.isSubmitted ? 'success' : isOverdue ? 'danger' : 'info'}
+                size='sm'
               >
                 {statusInfo.text}
-              </span>
+              </Badge>
             </div>
           </div>
 

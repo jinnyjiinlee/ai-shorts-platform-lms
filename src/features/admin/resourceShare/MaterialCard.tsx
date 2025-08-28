@@ -8,13 +8,14 @@ import {
   TrashIcon,
   ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
+import { Badge } from '@/features/shared/ui/Badge';
 
 interface LearningMaterial {
   id: number;
   title: string;
   description: string;
   week: number;
-  cohort: number;
+  cohort: string;
   uploadDate: string;
   fileUrl: string;
   fileName: string;
@@ -52,20 +53,16 @@ export default function MaterialCard({
         <div className="flex-1">
           <div className="flex items-center space-x-3 mb-2">
             <h3 className="text-lg font-medium text-slate-900">{material.title}</h3>
-            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            <Badge variant='info' size='sm'>
               {material.week}주차
-            </span>
-            <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
+            </Badge>
+            <Badge variant='info' size='sm'>
               {material.cohort}기
-            </span>
+            </Badge>
             {userRole === 'admin' && (
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                material.isPublished 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-gray-100 text-gray-800'
-              }`}>
+              <Badge variant={material.isPublished ? 'success' : 'default'} size='sm'>
                 {material.isPublished ? '공개' : '비공개'}
-              </span>
+              </Badge>
             )}
           </div>
           

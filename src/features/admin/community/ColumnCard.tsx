@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ChatBubbleLeftIcon, HeartIcon, ShareIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { Button } from '@/features/shared/ui/Button';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 interface Comment {
@@ -179,10 +180,14 @@ export default function ColumnCard({ column, currentUser }: ColumnCardProps) {
             <span className="text-sm font-medium">{comments.length}</span>
           </button>
 
-          <button className="flex items-center space-x-2 text-slate-500 hover:text-blue-600 transition-colors">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="flex items-center space-x-2"
+          >
             <ShareIcon className="w-5 h-5" />
             <span className="text-sm font-medium">공유</span>
-          </button>
+          </Button>
         </div>
       </div>
 

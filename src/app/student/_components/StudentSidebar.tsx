@@ -85,6 +85,12 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
         { id: 'columns', name: '칼럼', href: '/student/community/columns' },
       ],
     },
+    {
+      id: 'studentLounge',
+      name: '수강생 라운지',
+      icon: ChatBubbleLeftRightIcon,
+      subItems: [{ id: 'qna', name: '[1기] QnA ', href: '/student/studentLounge/qna' }],
+    },
   ];
 
   const toggleSubmenu = (menuId: string) => {

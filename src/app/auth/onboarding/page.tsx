@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
+import { InputField } from '@/features/shared/ui/InputField';
+import { Select } from '@/features/shared/ui/Select';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -102,77 +104,31 @@ export default function OnboardingPage() {
 
         <form onSubmit={handleSubmit} className='space-y-6'>
           {/* 실명 입력 */}
-          <div>
-            <label
-              className='block text-sm 
-  font-medium text-slate-700 mb-2'
-            >
-              실명 <span className='text-red-500'>*</span>
-            </label>
-            <input
-              type='text'
-              required
-              maxLength={6}
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  name: e.target.value,
-                })
-              }
-              className='w-full px-4 py-3 border
-  border-slate-300 rounded-xl focus:outline-none
-  focus:ring-2 focus:ring-blue-500'
-              placeholder='실명을 입력하세요 (최대
-  6자)'
-            />
-          </div>
+          <InputField
+            label='실명'
+            value={formData.name}
+            onChange={(value: string) => setFormData({ ...formData, name: value })}
+            placeholder='실명을 입력하세요 (최대 6자)'
+            required
+          />
 
           {/* 휴대폰 번호 */}
-          <div>
-            <label
-              className='block text-sm 
-  font-medium text-slate-700 mb-2'
-            >
-              휴대폰 번호 <span className='text-red-500'>*</span>
-            </label>
-            <input
-              type='tel'
-              required
-              pattern='[0-9]{10,11}'
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  phone: e.target.value.replace(/[^0-9]/g, ''),
-                })
-              }
-              className='w-full px-4 py-3 border
-  border-slate-300 rounded-xl focus:outline-none
-  focus:ring-2 focus:ring-blue-500'
-              placeholder='01012345678 (- 없이 입력)'
-            />
-          </div>
+          <InputField
+            label='휴대폰 번호'
+            type='tel'
+            value={formData.phone}
+            onChange={(value: string) => setFormData({ ...formData, phone: value.replace(/[^0-9]/g, '') })}
+            placeholder='01012345678 (- 없이 입력)'
+            required
+          />
 
           {/* 자동 생성된 별명 */}
-          <div>
-            <label
-              className='block text-sm 
-  font-medium text-slate-700 mb-2'
-            >
-              별명 (자동 생성)
-            </label>
-            <input
-              type='text'
-              value={formData.nickname}
-              readOnly
-              className='w-full px-4 py-3 
-  bg-slate-100 border border-slate-300 rounded-xl 
-  text-slate-600'
-              placeholder='실명과 전화번호 입력시 
-  자동 생성'
-            />
-          </div>
+          <InputField
+            label='별명 (자동 생성)'
+            value={formData.nickname}
+            disabled
+            placeholder='실명과 전화번호 입력시 자동 생성'
+          />
 
           {/* 기수 선택 */}
           <div>
@@ -182,20 +138,17 @@ export default function OnboardingPage() {
             >
               기수 선택 <span className='text-red-500'>*</span>
             </label>
-            <select
+            <Select
               value={formData.cohort}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  cohort: e.target.value,
-                })
-              }
+              onChange={(value: string) => setFormData({
+                ...formData,
+                cohort: value as string,
+              })}
+              options={[{ value: '1기', label: '1기' }]}
               className='w-full px-4 py-3 border
   border-slate-300 rounded-xl focus:outline-none
   focus:ring-2 focus:ring-blue-500'
-            >
-              <option value='1기'>1</option>
-            </select>
+            />
           </div>
 
           {/* 제출 버튼 */}

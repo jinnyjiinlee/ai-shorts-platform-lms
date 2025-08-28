@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ArrowDownTrayIcon, CloudArrowUpIcon, DocumentIcon } from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon, CloudArrowUpIcon, DocumentIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import MarkdownEditor from '../community/columns/MarkdownEditor';
+import { Button } from '@/features/shared/ui/Button';
+import { Select } from '@/features/shared/ui/Select';
 
 interface LearningMaterial {
   id: number;
   title: string;
   description: string;
   week: number;
-  cohort: number;
+  cohort: string;
   uploadDate: string;
   fileUrl: string;
   fileName: string;
@@ -22,7 +24,7 @@ type MaterialFormData = {
   title: string;
   description: string;
   week: number;
-  cohort: number;
+  cohort: string;
   fileName: string;
   fileSize: string;
   fileType: string;
@@ -35,7 +37,7 @@ interface MaterialModalProps {
   material?: LearningMaterial | null;
   formData: MaterialFormData;
   availableWeeks: number[];
-  availableCohorts: number[];
+  availableCohorts: string[];
   onClose: () => void;
   onSave: () => void;
   onDownload?: (material: LearningMaterial) => void;
@@ -92,32 +94,28 @@ export default function MaterialModal({
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-2'>주차</label>
-                  <select
-                    value={formData.week}
-                    onChange={(e) => onFormDataChange({ ...formData, week: parseInt(e.target.value) })}
+                  <Select
+                    value={formData.week.toString()}
+                    onChange={(value) => onFormDataChange({ ...formData, week: Number(value) })}
+                    options={availableWeeks.map((week) => ({
+                      value: week.toString(),
+                      label: `${week}주차`
+                    }))}
                     className='w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                  >
-                    {availableWeeks.map((week) => (
-                      <option key={week} value={week}>
-                        {week}주차
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-2'>기수</label>
-                  <select
+                  <Select
                     value={formData.cohort}
-                    onChange={(e) => onFormDataChange({ ...formData, cohort: parseInt(e.target.value) })}
+                    onChange={(value) => onFormDataChange({ ...formData, cohort: value })}
+                    options={availableCohorts.map((cohort) => ({
+                      value: cohort,
+                      label: `${cohort}기`
+                    }))}
                     className='w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                  >
-                    {availableCohorts.map((cohort) => (
-                      <option key={cohort} value={cohort}>
-                        {cohort}기
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
 
@@ -135,18 +133,18 @@ export default function MaterialModal({
               </div>
             </div>
             <div className='p-6 border-t border-slate-200 flex justify-end space-x-3'>
-              <button
+              <Button
                 onClick={onClose}
-                className='px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors'
+                variant="outline"
               >
                 취소
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={onSave}
-                className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
+                variant="primary"
               >
                 {type === 'create' ? '업로드' : '수정'}
-              </button>
+              </Button>
             </div>
           </>
         )}
@@ -167,11 +165,15 @@ export default function MaterialModal({
                     </span>
                   </div>
                 </div>
-                <button onClick={onClose} className='text-slate-400 hover:text-slate-600'>
-                  <svg className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-                  </svg>
-                </button>
+                <Button 
+                  onClick={onClose} 
+                  variant="ghost"
+                  size="md"
+                  isIconOnly
+                  className='text-slate-400 hover:text-slate-600'
+                >
+                  <XMarkIcon className='w-6 h-6' />
+                </Button>
               </div>
             </div>
 

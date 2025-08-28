@@ -1,10 +1,12 @@
 'use client';
 
 import ReactMarkdown from 'react-markdown';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { MissionModalProps } from '../shared/types';
 import TextSubmission from './TextSubmission';
 import CompletionStatus from './CompletionStatus';
-import { useToast } from '@/features/ui/useToast';
+import { useToast } from '@/features/shared/ui/Toast';
+import { Button } from '@/features/shared/ui/Button';
 
 export default function MissionModal({ mission, onClose, onSubmit, refreshMissions }: MissionModalProps) {
   const { addToast, ToastContainer } = useToast();
@@ -43,12 +45,15 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
                 </span>
               </div>
             </div>
-            <button onClick={onClose} className='text-slate-400 hover:text-slate-600'>
-              <span className='sr-only'>닫기</span>
-              <svg className='w-6 h-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-              </svg>
-            </button>
+            <Button
+              onClick={onClose}
+              variant='ghost'
+              size='md'
+              isIconOnly
+              className='text-slate-400 hover:text-slate-600'
+            >
+              <XMarkIcon className='w-6 h-6' />
+            </Button>
           </div>
         </div>
 
@@ -117,7 +122,7 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
             onSubmissionComplete={async () => {
               try {
                 // 제출 완료 후 미션 상태 업데이트
-                addToast('success', '미션 제출 완료!', '미션이 성공적으로 제출되었습니다. 🎉');
+                addToast('미션이 성공적으로 제출되었습니다. 🎉', 'success');
                 onClose();
                 // 새로고침 대신 데이터만 다시 불러오기
                 if (refreshMissions) {
@@ -125,7 +130,7 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
                 }
               } catch (error) {
                 console.error('미션 목록 새로고침 오류:', error);
-                addToast('error', '업데이트 오류', '미션 목록을 새로고침하는 중 오류가 발생했습니다.');
+                addToast('미션 목록을 새로고침하는 중 오류가 발생했습니다.', 'error');
                 // 오류 시에만 새로고침
                 window.location.reload();
               }

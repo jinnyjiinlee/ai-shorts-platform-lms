@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/hooks/common/useAuth';
 import StudentSidebar from './_components/StudentSidebar';
 import StudentHeader from './_components/StudentHeader';
-import SkipToContent from '@/features/ui/SkipToContent';
+import { SkipToContent } from '@/features/shared/ui/SkipToContent';
 import { useState } from 'react';
 
 export default function StudentLayout({ children }: { children: React.ReactNode }) {

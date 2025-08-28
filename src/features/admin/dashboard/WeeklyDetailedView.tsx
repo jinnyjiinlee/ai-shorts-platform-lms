@@ -1,5 +1,6 @@
 'use client';
 
+import { Badge } from '@/features/shared/ui/Badge';
 import { CohortData } from '../../admin/dashboard/types';
 
 interface WeeklyDetailedViewProps {
@@ -15,17 +16,18 @@ export default function WeeklyDetailedView({ selectedCohortData }: WeeklyDetaile
             <div key={week.week} className='bg-slate-50 rounded-lg p-3 hover:bg-slate-100 transition-colors'>
               <div className='flex items-center justify-between mb-2'>
                 <h3 className='text-sm font-semibold text-slate-900'>{week.week}주차</h3>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                <Badge
+                  variant={
                     week.rate >= 80
-                      ? 'bg-green-100 text-green-800'
+                      ? 'success'
                       : week.rate >= 60
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-orange-100 text-orange-800'
-                  }`}
+                      ? 'info'
+                      : 'warning'
+                  }
+                  size='sm'
                 >
                   {week.rate}%
-                </span>
+                </Badge>
               </div>
 
               <div className='space-y-2'>

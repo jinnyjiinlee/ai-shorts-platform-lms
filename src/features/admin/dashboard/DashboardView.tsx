@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { UsersIcon } from '@heroicons/react/24/outline';
+import { Badge } from '@/features/shared/ui/Badge';
 import DashboardHeader from './DashboardHeader';
 import StatCard from './StatCard';
 import WeeklySubmissionChart from './WeeklySubmissionChart';
@@ -166,7 +167,7 @@ export default function DashboardView() {
           icon={<UsersIcon className='w-5 h-5 sm:w-6 sm:h-6 text-slate-600' />}
           badge={{
             text: `${overallStats.activeStudentsCount}명 활동중`,
-            color: 'bg-slate-100 text-slate-600',
+            variant: 'default',
           }}
         />
         <StatCard
@@ -176,7 +177,7 @@ export default function DashboardView() {
           icon={<span className='text-lg sm:text-xl'>📋</span>}
           badge={{
             text: '처리 필요',
-            color: 'bg-orange-100 text-orange-600',
+            variant: 'warning',
           }}
         />
       </div>

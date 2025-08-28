@@ -1,4 +1,5 @@
 import { Mission, MissionSubmission } from '@/lib/types/mission.types';
+import { Badge } from '@/features/shared/ui/Badge';
 
 interface SubmissionListTabProps {
   mission: Mission;
@@ -26,11 +27,11 @@ export default function SubmissionListTab({ mission, onGradeSubmission }: Submis
             <div className='flex-1'>
               <div className='flex items-center space-x-3 mb-3'>
                 <h4 className='font-medium text-slate-900'>{submission.studentName}</h4>
-                <span className='px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium'>제출완료</span>
+                <Badge variant='info' size='sm'>제출완료</Badge>
                 {submission.grade && (
-                  <span className='px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium'>
+                  <Badge variant='success' size='sm'>
                     {submission.grade}점
-                  </span>
+                  </Badge>
                 )}
               </div>
 

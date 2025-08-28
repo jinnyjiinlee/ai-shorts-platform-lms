@@ -3,8 +3,12 @@
 import { useState } from 'react';
 import { PlusIcon, PencilIcon, TrashIcon, EyeIcon, CalendarIcon, UserIcon } from '@heroicons/react/24/outline';
 import MarkdownEditor from './MarkdownEditor';
-import AdminPageHeader from '@/components/admin/AdminPageHeader';
-import AdminModal from '@/components/admin/AdminModal';
+import AdminPageHeader from '@/features/admin/ui/AdminPageHeader';
+import { Modal } from '@/features/shared/ui/Modal';
+import { Button } from '@/features/shared/ui/Button';
+import { InputField } from '@/features/shared/ui/InputField';
+import { Badge } from '@/features/shared/ui/Badge';
+import { Select } from '@/features/shared/ui/Select';
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
 import AdminContentCard from '@/components/admin/AdminContentCard';
 
@@ -12,41 +16,22 @@ interface Column {
   id: number;
   title: string;
   content: string;
-  cohort: number;
+  cohort: string;
   createdAt: string;
   author: string;
   isPublished: boolean;
 }
 
 export default function GuidebookManagement() {
-  const [columns, setColumns] = useState<Column[]>([
-    {
-      id: 1,
-      title: '유튜브 쇼츠 알고리즘 완전 정복',
-      content: '유튜브 쇼츠 알고리즘의 작동 원리와 활용법에 대해 상세히 설명합니다...',
-      cohort: 1,
-      createdAt: '2024-08-20',
-      author: '하대표',
-      isPublished: true,
-    },
-    {
-      id: 2,
-      title: '첫 영상에서 구독자 1000명 모으기',
-      content: '성공적인 첫 영상 제작을 위한 전략과 주의사항들을 정리해드립니다...',
-      cohort: 1,
-      createdAt: '2024-08-18',
-      author: '하대표',
-      isPublished: false,
-    },
-  ]);
+  const [columns, setColumns] = useState<Column[]>([]);
 
-  const [form, setForm] = useState({ title: '', content: '', cohort: 1, isPublished: true });
+  const [form, setForm] = useState({ title: '', content: '', cohort: '1', isPublished: true });
   const [showForm, setShowForm] = useState(false);
   const [editingColumn, setEditingColumn] = useState<Column | null>(null);
   const [viewingColumn, setViewingColumn] = useState<Column | null>(null);
-  const [selectedCohort, setSelectedCohort] = useState<number | 'all'>('all');
+  const [selectedCohort, setSelectedCohort] = useState<string | 'all'>('all');
 
-  const availableCohorts = [1, 2, 3];
+  const availableCohorts = ['1', '2', '3'];
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -64,7 +49,7 @@ export default function GuidebookManagement() {
       setColumns([newColumn, ...columns]);
     }
 
-    setForm({ title: '', content: '', cohort: 1, isPublished: true });
+    setForm({ title: '', content: '', cohort: '1', isPublished: true });
     setShowForm(false);
   };
 
@@ -97,12 +82,12 @@ export default function GuidebookManagement() {
         description='전문가의 노하우와 인사이트를 공유하세요'
         selectedCohort={selectedCohort}
         availableCohorts={availableCohorts}
-        onCohortChange={(cohort) => setSelectedCohort(cohort === 'all' ? 'all' : (cohort as number))}
+        onCohortChange={(cohort) => setSelectedCohort(cohort)}
         actions={
           <button
             onClick={() => {
               setEditingColumn(null);
-              setForm({ title: '', content: '', cohort: 1, isPublished: true });
+              setForm({ title: '', content: '', cohort: '1', isPublished: true });
               setShowForm(true);
             }}
             className='flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors'
@@ -128,7 +113,7 @@ export default function GuidebookManagement() {
             <button
               onClick={() => {
                 setEditingColumn(null);
-                setForm({ title: '', content: '', cohort: 1, isPublished: true });
+                setForm({ title: '', content: '', cohort: '1', isPublished: true });
                 setShowForm(true);
               }}
               className='mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
@@ -147,14 +132,9 @@ export default function GuidebookManagement() {
                 author={column.author}
                 createdAt={column.createdAt}
                 badges={[
-                  <span
-                    key='status'
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      column.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
+                  <Badge key='status' variant={column.isPublished ? 'success' : 'default'} size='sm'>
                     {column.isPublished ? '공개' : '비공개'}
-                  </span>,
+                  </Badge>,
                 ]}
                 onView={() => setViewingColumn(column)}
                 onEdit={() => handleEdit(column)}
@@ -189,72 +169,78 @@ export default function GuidebookManagement() {
       </div>
 
       {/* 작성/수정 모달 */}
-      <AdminModal
+      <Modal
         show={showForm}
         title={editingColumn ? '칼럼 수정' : '새 칼럼 작성'}
         onClose={() => {
           setShowForm(false);
           setEditingColumn(null);
         }}
-        onSubmit={handleSubmit}
-        submitText={editingColumn ? '수정 완료' : '작성 완료'}
+        size='4xl'
       >
-        <div className='space-y-6'>
-          <div>
-            <label className='block text-sm font-medium text-slate-700 mb-2'>칼럼 제목</label>
-            <input
-              type='text'
+        <form onSubmit={handleSubmit}>
+          <div className='space-y-6'>
+            <InputField
+              label='칼럼 제목'
               value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className='w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+              onChange={(value: string) => setForm({ ...form, title: value })}
               placeholder='칼럼 제목을 입력하세요'
               required
             />
-          </div>
 
-          <div>
-            <label className='block text-sm font-medium text-slate-700 mb-2'>대상 기수</label>
-            <select
+            <Select
+              label='대상 기수'
               value={form.cohort}
-              onChange={(e) => setForm({ ...form, cohort: parseInt(e.target.value) })}
-              className='w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+              onChange={(value) => setForm({ ...form, cohort: value })}
+              options={availableCohorts.map((cohort) => ({ value: cohort, label: `${cohort}기` }))}
+            />
+
+            <div>
+              <label className='block text-sm font-medium text-slate-700 mb-2'>칼럼 내용</label>
+              <MarkdownEditor
+                value={form.content}
+                onChange={(value) => setForm({ ...form, content: value })}
+                placeholder='마크다운으로 칼럼 내용을 작성하세요!'
+                className='min-h-[300px]'
+              />
+            </div>
+
+            <div className='flex items-center'>
+              <input
+                type='checkbox'
+                checked={form.isPublished}
+                onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
+                className='rounded border-gray-300'
+              />
+              <label className='ml-2 text-sm text-slate-700'>즉시 공개</label>
+            </div>
+          </div>
+
+          {/* 액션 버튼 */}
+          <div className='flex justify-end space-x-3 mt-6 pt-4 border-t border-slate-200'>
+            <Button
+              type='button'
+              onClick={() => {
+                setShowForm(false);
+                setEditingColumn(null);
+              }}
+              variant='outline'
             >
-              {availableCohorts.map((cohort) => (
-                <option key={cohort} value={cohort}>
-                  {cohort}기
-                </option>
-              ))}
-            </select>
+              취소
+            </Button>
+            <Button type='submit' variant='primary'>
+              {editingColumn ? '수정 완료' : '작성 완료'}
+            </Button>
           </div>
-
-          <div>
-            <label className='block text-sm font-medium text-slate-700 mb-2'>칼럼 내용</label>
-            <MarkdownEditor
-              value={form.content}
-              onChange={(value) => setForm({ ...form, content: value })}
-              placeholder='마크다운으로 칼럼 내용을 작성하세요!'
-              className='min-h-[300px]'
-            />
-          </div>
-
-          <div className='flex items-center'>
-            <input
-              type='checkbox'
-              checked={form.isPublished}
-              onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
-              className='rounded border-gray-300'
-            />
-            <label className='ml-2 text-sm text-slate-700'>즉시 공개</label>
-          </div>
-        </div>
-      </AdminModal>
+        </form>
+      </Modal>
 
       {/* 상세보기 모달 */}
-      <AdminModal
+      <Modal
         show={!!viewingColumn}
         title={viewingColumn?.title || ''}
         onClose={() => setViewingColumn(null)}
-        showActions={false}
+        size='2xl'
       >
         {viewingColumn && (
           <div className='space-y-4'>
@@ -267,16 +253,13 @@ export default function GuidebookManagement() {
             <div className='prose prose-slate max-w-none' dangerouslySetInnerHTML={{ __html: viewingColumn.content }} />
 
             <div className='pt-4 border-t border-slate-200 flex justify-end'>
-              <button
-                onClick={() => setViewingColumn(null)}
-                className='px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors'
-              >
+              <Button onClick={() => setViewingColumn(null)} variant='outline'>
                 닫기
-              </button>
+              </Button>
             </div>
           </div>
         )}
-      </AdminModal>
+      </Modal>
     </div>
   );
 }

@@ -99,7 +99,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     },
     { href: '/admin/missionNotice', name: '미션 공지', icon: ClipboardDocumentListIcon },
     { href: '/admin/missionTracking', name: '미션 달성', icon: ChartBarIcon },
-    { href: '/admin/studentManagement', name: '수강생', icon: UsersIcon },
+    // To -DO Icon 변경
+    {
+      href: '/admin/studentLounge',
+      name: '수강생 라운지',
+      icon: ChatBubbleLeftRightIcon,
+      subItems: [{ href: '/admin/studentLounge/qna', name: '[1기] QnA' }],
+    },
+    { href: '/admin/studentManagement', name: '수강생 관리', icon: UsersIcon },
     { href: '/admin/resourceShare', name: '자료 공유', icon: AcademicCapIcon },
     { href: '/admin/settings', name: '설정', icon: Cog6ToothIcon },
   ];
