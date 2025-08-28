@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { Button } from '@/features/shared/ui/Button';
 
 interface AdminModalProps {
   show: boolean;
@@ -46,12 +47,14 @@ export default function AdminModal({
         {/* 헤더 */}
         <div className='p-6 border-b border-slate-200 flex items-center justify-between'>
           <h3 className='text-xl font-semibold text-slate-900'>{title}</h3>
-          <button 
+          <Button 
             onClick={onClose}
-            className='text-slate-400 hover:text-slate-600 p-1'
+            variant="ghost"
+            isIconOnly
+            size="md"
           >
             <XMarkIcon className='w-6 h-6' />
-          </button>
+          </Button>
         </div>
 
         {/* 컨텐츠 */}
@@ -63,20 +66,20 @@ export default function AdminModal({
           {/* 액션 버튼 */}
           {showActions && (
             <div className='p-6 border-t border-slate-200 flex justify-end space-x-3'>
-              <button
+              <Button
                 type='button'
                 onClick={onClose}
-                className='px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors'
+                variant='outline'
               >
                 {cancelText}
-              </button>
+              </Button>
               {onSubmit && (
-                <button
+                <Button
                   type='submit'
-                  className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
+                  variant='primary'
                 >
                   {submitText}
-                </button>
+                </Button>
               )}
             </div>
           )}

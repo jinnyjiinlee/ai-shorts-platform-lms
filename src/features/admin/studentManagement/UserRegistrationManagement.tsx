@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { XMarkIcon, EyeIcon, UserGroupIcon, ShieldCheckIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import { supabase } from '@/lib/supabase/client';
+import { Button } from '@/features/shared/ui/Button';
 
 interface User {
   id: string;
@@ -297,18 +298,21 @@ export default function UserRegistrationManagement() {
             <div className='flex items-center justify-between'>
               <span className='text-sm text-blue-800 font-medium'>{selectedUserIds.length}명이 선택됨</span>
               <div className='flex space-x-2'>
-                <button
+                <Button
                   onClick={handleBulkApproval}
-                  className='px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors'
+                  variant='primary'
+                  size='sm'
+                  className='bg-green-600 hover:bg-green-700 focus:ring-green-500'
                 >
                   선택한 사용자 승인
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleBulkRejection}
-                  className='px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors'
+                  variant='danger'
+                  size='sm'
                 >
                   선택한 사용자 거부
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -379,29 +383,35 @@ export default function UserRegistrationManagement() {
                   </td>
                   <td className='px-4 py-2'>
                     <div className='flex items-center space-x-1'>
-                      <button
+                      <Button
                         onClick={() => openDetailModal(user)}
-                        className='text-blue-600 hover:text-blue-900 text-xs p-1'
+                        variant='ghost'
+                        size='xs'
+                        isIconOnly
+                        className='text-blue-600 hover:text-blue-900'
                       >
                         <EyeIcon className='w-3 h-3' />
-                      </button>
+                      </Button>
 
                       {activeTab === 'students' && user.status !== 'approved' && (
-                        <button
+                        <Button
                           onClick={() => handleStatusUpdate(user.id, 'approved')}
-                          className='px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700'
+                          variant='primary'
+                          size='xs'
+                          className='bg-green-600 hover:bg-green-700 focus:ring-green-500'
                         >
                           승인
-                        </button>
+                        </Button>
                       )}
 
                       {activeTab === 'students' && user.status !== 'rejected' && (
-                        <button
+                        <Button
                           onClick={() => handleStatusUpdate(user.id, 'rejected')}
-                          className='px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700'
+                          variant='danger'
+                          size='xs'
                         >
                           거부
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </td>
@@ -420,40 +430,40 @@ export default function UserRegistrationManagement() {
                 명 표시
               </div>
               <div className='flex items-center space-x-2'>
-                <button
+                <Button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className='px-3 py-2 text-sm border border-slate-300 rounded hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                  variant='outline'
+                  size='sm'
                 >
                   이전
-                </button>
+                </Button>
 
                 <div className='flex space-x-1'>
                   {[...Array(totalPages)].map((_, index) => {
                     const pageNum = index + 1;
                     return (
-                      <button
+                      <Button
                         key={pageNum}
                         onClick={() => handlePageChange(pageNum)}
-                        className={`px-3 py-2 text-sm border rounded ${
-                          currentPage === pageNum
-                            ? 'bg-blue-600 text-white border-blue-600'
-                            : 'border-slate-300 hover:bg-slate-50'
-                        }`}
+                        variant={currentPage === pageNum ? 'primary' : 'outline'}
+                        size='sm'
+                        className={currentPage === pageNum ? '' : 'hover:bg-slate-50'}
                       >
                         {pageNum}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
 
-                <button
+                <Button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className='px-3 py-2 text-sm border border-slate-300 rounded hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                  variant='outline'
+                  size='sm'
                 >
                   다음
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -466,9 +476,15 @@ export default function UserRegistrationManagement() {
           <div className='bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
             <div className='flex items-center justify-between p-6 border-b border-slate-200'>
               <h3 className='text-lg font-semibold text-slate-900'>사용자 상세 정보</h3>
-              <button onClick={closeDetailModal} className='text-slate-400 hover:text-slate-600'>
+              <Button 
+                onClick={closeDetailModal} 
+                variant='ghost'
+                size='md'
+                isIconOnly
+                className='text-slate-400 hover:text-slate-600'
+              >
                 <XMarkIcon className='w-6 h-6' />
-              </button>
+              </Button>
             </div>
 
             <div className='p-6 space-y-6'>
@@ -522,27 +538,29 @@ export default function UserRegistrationManagement() {
                 <div className='pt-4 border-t border-slate-200'>
                   <div className='flex space-x-3'>
                     {selectedUser.status !== 'approved' && (
-                      <button
+                      <Button
                         onClick={() => {
                           handleStatusUpdate(selectedUser.id, 'approved');
                           closeDetailModal();
                         }}
-                        className='flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700'
+                        variant='primary'
+                        className='flex-1 bg-green-600 hover:bg-green-700 focus:ring-green-500'
                       >
                         승인하기
-                      </button>
+                      </Button>
                     )}
 
                     {selectedUser.status !== 'rejected' && (
-                      <button
+                      <Button
                         onClick={() => {
                           handleStatusUpdate(selectedUser.id, 'rejected');
                           closeDetailModal();
                         }}
-                        className='flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700'
+                        variant='danger'
+                        className='flex-1'
                       >
                         거부하기
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>
