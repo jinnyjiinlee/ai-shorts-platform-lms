@@ -1,4 +1,4 @@
-import { Mission, MissionSubmission } from '@/lib/types/mission.types';
+import { Mission, MissionSubmission } from '@/types/domains/mission';
 import { useState } from 'react';
 import ModalHeader from './components/ModalHeader';
 import TabNavigation from './components/TabNavigation';

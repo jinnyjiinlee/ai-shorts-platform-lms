@@ -17,12 +17,6 @@ export default function OnboardingPage() {
     // profile_image: 1,
   });
 
-  // // 프로필 이미지 랜덤 생성 (1-6)
-  // useEffect(() => {
-  //   const randomImage = Math.floor(Math.random() * 6) + 1;
-  //   setFormData((prev) => ({ ...prev, profile_image: randomImage }));
-  // }, []);
-
   // 실명과 전화번호 입력시 별명 자동 생성
   useEffect(() => {
     if (formData.name.length >= 2 && formData.phone.length >= 4) {

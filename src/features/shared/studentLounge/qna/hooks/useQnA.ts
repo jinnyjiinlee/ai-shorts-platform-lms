@@ -1,6 +1,6 @@
 // hooks/useQnA.ts
 import { useState, useEffect } from 'react';
-import { Question } from '../types';
+import { Question } from '@/types/domains/qna';
 import { fetchQuestions, createQuestion, deleteQuestion, updateQuestion, createAnswer } from '../qnaService';
 import { usePagination } from '@/features/shared/ui/Pagination/usePagination';
 

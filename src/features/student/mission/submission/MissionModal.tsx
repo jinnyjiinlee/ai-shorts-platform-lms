@@ -2,7 +2,8 @@
 
 import ReactMarkdown from 'react-markdown';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { MissionModalProps } from '../shared/types';
+import { MissionModalProps } from '../types';
+import { Modal } from '@/features/shared/ui/Modal';
 import TextSubmission from './TextSubmission';
 import CompletionStatus from './CompletionStatus';
 import { useToast } from '@/features/shared/ui/Toast';
@@ -26,8 +27,14 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
   };
 
   return (
-    <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50'>
-      <div className='bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto'>
+    <>
+      <Modal 
+        show={!!mission} 
+        onClose={onClose} 
+        showHeader={false}
+        size="lg"
+        bodyClassName="p-0"
+      >
         {/* Header */}
         <div className='p-6 border-b border-slate-200'>
           <div className='flex justify-between items-start'>
@@ -117,7 +124,7 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
           <TextSubmission
             missionId={mission.id}
             isSubmitted={mission.isSubmitted || false}
-            dueDate={mission.dueDate}
+            dueDate={mission.due_date}
             existingSubmissionContent={mission.submissionContent}
             onSubmissionComplete={async () => {
               try {
@@ -146,7 +153,7 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
           )}
 
           {/* 제출 완료 상태 */}
-          <CompletionStatus isCompleted={mission.status === 'completed'} />
+          <CompletionStatus isCompleted={mission.isSubmitted || false} />
 
           {/* 닫기 버튼 */}
           <div className='flex justify-end space-x-3 pt-4'>
@@ -158,8 +165,9 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
             </button>
           </div>
         </div>
-      </div>
+      </Modal>
+      
       <ToastContainer />
-    </div>
+    </>
   );
 }

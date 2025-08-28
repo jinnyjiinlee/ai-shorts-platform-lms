@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
-import { Mission } from '../shared/types';
+import { Mission } from '@/types/domains/mission';
 
 export const fetchStudentMissions = async (studentCohort: number): Promise<Mission[]> => {
   try {
@@ -44,12 +44,23 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
       const submission = submissionMap.get(mission.id);
 
       return {
+        // 🏗️ 필수 DB 필드들
         id: mission.id,
         title: mission.title,
-        description: mission.description,
+        description: mission.description || '',
+        content: mission.content || '',
+        status: mission.status || 'published',
+        category: mission.category || '',
+        points: mission.points || 0,
+        difficulty: mission.difficulty || 'medium',
+        created_at: mission.created_at || '',
+        updated_at: mission.updated_at || '',
+        created_by: mission.created_by || '',
+        due_date: mission.due_date,
+        cohort: mission.cohort || '1',
         week: mission.week || 1,
 
-        dueDate: mission.due_date,
+        // 🎨 UI에서 사용되는 계산된 필드들
         dueDateFormatted: new Date(mission.due_date).toLocaleString('ko-KR', {
           year: 'numeric',
           month: 'long',
@@ -67,11 +78,10 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
               minute: '2-digit',
             })
           : undefined,
-        status: submission ? ('submitted' as const) : ('pending' as const),
         submission_type: mission.submission_type || 'file',
         feedback: undefined,
         submissionContent: submission?.content || '',
-      };
+      } as Mission;
     });
 
     return missionList.sort((a, b) => b.week - a.week);

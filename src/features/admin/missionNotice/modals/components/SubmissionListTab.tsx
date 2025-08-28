@@ -1,4 +1,4 @@
-import { Mission, MissionSubmission } from '@/lib/types/mission.types';
+import { Mission, MissionSubmission } from '@/types/domains/mission';
 import { Badge } from '@/features/shared/ui/Badge';
 
 interface SubmissionListTabProps {
@@ -38,7 +38,7 @@ export default function SubmissionListTab({ mission, onGradeSubmission }: Submis
               <div className='space-y-3 text-sm text-slate-600 mb-3'>
                 <div>
                   <span className='font-medium text-slate-700'>제출일:</span>
-                  <p className='mt-1'>{submission.submittedAt}</p>
+                  <p className='mt-1'>{submission.submitted_at}</p>
                 </div>
                 <div>
                   <span className='font-medium text-slate-700'>제출 내용:</span>

@@ -6,20 +6,10 @@ import AdminPageHeader from '@/features/admin/ui/AdminPageHeader';
 import MaterialCard from './MaterialCard';
 import MaterialModal from './MaterialModal';
 import { Select } from '@/features/shared/ui/Select';
-
-interface LearningMaterial {
-  id: number;
-  title: string;
-  description: string;
-  week: number;
-  cohort: string;
-  uploadDate: string;
-  fileUrl: string;
-  fileName: string;
-  fileSize: string;
-  fileType: string;
-  isPublished: boolean;
-}
+import { useModal } from '@/features/shared/hooks/useModal';
+import { useFormState } from '@/features/shared/hooks/useFormState';
+import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
+import { LearningMaterial } from '@/types/domains/resource';
 
 interface WeeklyLearningMaterialsProps {
   userRole: 'admin' | 'student';
@@ -27,13 +17,12 @@ interface WeeklyLearningMaterialsProps {
 
 export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMaterialsProps) {
   const [materials, setMaterials] = useState<LearningMaterial[]>([]);
-
   const [selectedCohort, setSelectedCohort] = useState<string>('1');
   const [selectedWeek, setSelectedWeek] = useState<number | 'all'>('all');
-  const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'create' | 'edit' | 'view'>('create');
-  const [selectedMaterial, setSelectedMaterial] = useState<LearningMaterial | null>(null);
-  const [formData, setFormData] = useState({
+
+  const modal = useModal<LearningMaterial>();
+  const { form: formData, updateForm: setFormData, resetForm } = useFormState({
     title: '',
     description: '',
     week: 1,
@@ -75,12 +64,11 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
       fileType: 'PDF',
       isPublished: true,
     });
-    setShowModal(true);
+    modal.openModal();
   };
 
   const handleEditMaterial = (material: LearningMaterial) => {
     setModalType('edit');
-    setSelectedMaterial(material);
     setFormData({
       title: material.title,
       description: material.description,
@@ -91,16 +79,15 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
       fileType: material.fileType,
       isPublished: material.isPublished,
     });
-    setShowModal(true);
+    modal.openModal(material);
   };
 
   const handleViewMaterial = (material: LearningMaterial) => {
     setModalType('view');
-    setSelectedMaterial(material);
-    setShowModal(true);
+    modal.openView(material);
   };
 
-  const saveMaterial = () => {
+  const { submitting, submit: saveMaterial } = useAsyncSubmit(async () => {
     const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
     if (modalType === 'create') {
@@ -111,14 +98,14 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
         fileUrl: `/materials/${formData.fileName}`,
       };
       setMaterials([...materials, newMaterial]);
-    } else if (modalType === 'edit' && selectedMaterial) {
+    } else if (modalType === 'edit' && modal.selectedItem) {
       setMaterials(
-        materials.map((material) => (material.id === selectedMaterial.id ? { ...material, ...formData } : material))
+        materials.map((material) => (material.id === modal.selectedItem!.id ? { ...material, ...formData } : material))
       );
     }
 
-    setShowModal(false);
-  };
+    modal.closeModal();
+  });
 
   const deleteMaterial = (materialId: number) => {
     if (confirm('정말로 이 자료를 삭제하시겠습니까?')) {
@@ -227,13 +214,16 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
       </div>
 
       <MaterialModal
-        show={showModal}
+        show={modal.isOpen || !!modal.viewItem}
         type={modalType}
-        material={selectedMaterial}
+        material={modal.viewItem || modal.selectedItem}
         formData={formData}
         availableWeeks={availableWeeks}
         availableCohorts={availableCohorts}
-        onClose={() => setShowModal(false)}
+        onClose={() => {
+          modal.closeModal();
+          modal.closeView();
+        }}
         onSave={saveMaterial}
         onDownload={handleDownload}
         onFormDataChange={setFormData}

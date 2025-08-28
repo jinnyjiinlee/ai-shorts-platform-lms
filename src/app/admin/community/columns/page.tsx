@@ -1,5 +1,5 @@
-import GuidebookManagement from '@/features/admin/community/columns/columnsManagement';
+import ColumnsManagement from '@/features/admin/community/columns/ColumnsManagement';
 
 export default function ColumnsPage() {
-  return <GuidebookManagement />;
+  return <ColumnsManagement />;
 }

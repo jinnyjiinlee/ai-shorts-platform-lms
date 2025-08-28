@@ -5,20 +5,9 @@ import { ArrowDownTrayIcon, CloudArrowUpIcon, DocumentIcon, XMarkIcon } from '@h
 import MarkdownEditor from '../community/columns/MarkdownEditor';
 import { Button } from '@/features/shared/ui/Button';
 import { Select } from '@/features/shared/ui/Select';
-
-interface LearningMaterial {
-  id: number;
-  title: string;
-  description: string;
-  week: number;
-  cohort: string;
-  uploadDate: string;
-  fileUrl: string;
-  fileName: string;
-  fileSize: string;
-  fileType: string;
-  isPublished: boolean;
-}
+import { FormModal } from '@/features/shared/ui/Modal';
+import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
+import { LearningMaterial } from '@/types/domains/resource';
 
 type MaterialFormData = {
   title: string;
@@ -56,14 +45,31 @@ export default function MaterialModal({
   onDownload,
   onFormDataChange,
 }: MaterialModalProps) {
+  const { submitting, submit } = useAsyncSubmit(async () => {
+    if (type === 'create' || type === 'edit') {
+      await onSave();
+    }
+  });
+
   if (!show) return null;
+
+  const getModalTitle = () => {
+    if (type === 'create') return '새 학습자료 업로드';
+    if (type === 'edit') return '학습자료 수정';
+    return '학습자료 상세';
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submit();
+  };
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50'>
       <div className='bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto'>
         {/* 자료 생성/수정 모달 */}
         {(type === 'create' || type === 'edit') && (
-          <>
+          <form onSubmit={handleFormSubmit}>
             <div className='p-6 border-b border-slate-200'>
               <h3 className='text-xl font-semibold text-slate-900'>
                 {type === 'create' ? '새 학습자료 업로드' : '학습자료 수정'}
@@ -134,19 +140,23 @@ export default function MaterialModal({
             </div>
             <div className='p-6 border-t border-slate-200 flex justify-end space-x-3'>
               <Button
+                type="button"
                 onClick={onClose}
                 variant="outline"
+                disabled={submitting}
               >
                 취소
               </Button>
               <Button
-                onClick={onSave}
+                type="submit"
                 variant="primary"
+                disabled={submitting}
+                isLoading={submitting}
               >
                 {type === 'create' ? '업로드' : '수정'}
               </Button>
             </div>
-          </>
+          </form>
         )}
 
         {/* 자료 상세보기 모달 */}

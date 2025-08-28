@@ -1,4 +1,6 @@
-// QnA 관련 타입 정의
+// 🎯 통합 Q&A 도메인 타입 정의
+// 모든 Q&A 관련 타입을 여기서 중앙 관리
+
 export interface Question {
   id: string;
   title: string;
@@ -34,3 +36,6 @@ export interface QuestionFormData {
 export interface AnswerFormData {
   content: string;
 }
+
+// 🎯 Q&A 관련 공통 타입들
+export type QuestionStatus = 'open' | 'answered';

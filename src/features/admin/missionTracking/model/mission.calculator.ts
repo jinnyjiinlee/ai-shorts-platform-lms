@@ -1,4 +1,4 @@
-import { WeeklyData, StudentSubmissionDetail } from './mission.types';
+import { WeeklyData, StudentSubmissionDetail } from '../types';
 
 /**
  * 학생별 제출 통계 계산

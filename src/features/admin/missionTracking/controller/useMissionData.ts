@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getOptimizedMissionData, getCohortList } from '../model/mission.service';
-import { WeeklyData, StudentSubmissionDetail } from '../model/mission.types';
+import { WeeklyData, StudentSubmissionDetail } from '../types';
 
 export function useMissionData(selectedCohort: string) {
   const [weeklyData, setWeeklyData] = useState<WeeklyData[]>([]);

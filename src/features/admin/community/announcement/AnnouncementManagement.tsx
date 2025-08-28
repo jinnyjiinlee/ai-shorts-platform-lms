@@ -10,30 +10,26 @@ import { Button } from '@/features/shared/ui/Button';
 import { InputField } from '@/features/shared/ui/InputField';
 import { Badge } from '@/features/shared/ui/Badge';
 import { Select } from '@/features/shared/ui/Select';
-
-interface Announcement {
-  id: number;
-  title: string;
-  content: string;
-  cohort: string | 'all';
-  author: string;
-  createdAt: string;
-  pinned: boolean;
-}
+import { useModal } from '@/features/shared/hooks/useModal';
+import { useFormState } from '@/features/shared/hooks/useFormState';
+import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
+import { Announcement } from '@/types/domains/community';
 
 export default function AnnouncementManagement() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-
-  const [form, setForm] = useState({ title: '', content: '', cohort: '1', pinned: false });
-  const [showForm, setShowForm] = useState(false);
-  const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
-  const [viewingAnnouncement, setViewingAnnouncement] = useState<Announcement | null>(null);
   const [selectedCohort, setSelectedCohort] = useState<string | 'all'>('all');
+
+  const modal = useModal<Announcement>();
+  const { form, updateForm, resetForm, startEdit, isEditing } = useFormState({
+    title: '',
+    content: '',
+    cohort: '1',
+    pinned: false,
+  });
 
   const availableCohorts = ['1', '2', '3'];
 
-  const handleSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const { submitting, submit } = useAsyncSubmit(async () => {
     const newAnnouncement: Announcement = {
       ...form,
       id: Date.now(),
@@ -41,39 +37,37 @@ export default function AnnouncementManagement() {
       createdAt: new Date().toISOString().split('T')[0],
     };
 
-    if (editingAnnouncement) {
+    if (modal.selectedItem) {
       setAnnouncements(
         announcements.map((ann) =>
-          ann.id === editingAnnouncement.id ? { ...newAnnouncement, id: editingAnnouncement.id } : ann
+          ann.id === modal.selectedItem!.id ? { ...newAnnouncement, id: modal.selectedItem!.id } : ann
         )
       );
-      setEditingAnnouncement(null);
     } else {
       setAnnouncements([newAnnouncement, ...announcements]);
     }
 
-    setForm({ title: '', content: '', cohort: '1', pinned: false });
-    setShowForm(false);
+    resetForm();
+    modal.closeModal();
+  });
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    submit();
   };
 
   const handleEdit = (announcement: Announcement) => {
-    setForm({
-      title: announcement.title,
-      content: announcement.content,
-      cohort: announcement.cohort,
-      pinned: announcement.pinned,
-    });
-    setEditingAnnouncement(announcement);
-    setShowForm(true);
+    startEdit(announcement);
+    modal.openModal(announcement);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string | number) => {
     if (confirm('정말로 이 공지사항을 삭제하시겠습니까?')) {
       setAnnouncements(announcements.filter((ann) => ann.id !== id));
     }
   };
 
-  const togglePinned = (id: number) => {
+  const togglePinned = (id: string | number) => {
     setAnnouncements(announcements.map((ann) => (ann.id === id ? { ...ann, pinned: !ann.pinned } : ann)));
   };
 
@@ -94,9 +88,8 @@ export default function AnnouncementManagement() {
         actions={
           <button
             onClick={() => {
-              setEditingAnnouncement(null);
-              setForm({ title: '', content: '', cohort: '1', pinned: false });
-              setShowForm(true);
+              resetForm();
+              modal.openModal();
             }}
             className='flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors'
           >
@@ -120,9 +113,8 @@ export default function AnnouncementManagement() {
             <p className='text-lg mb-2'>아직 작성된 공지사항이 없습니다.</p>
             <button
               onClick={() => {
-                setEditingAnnouncement(null);
-                setForm({ title: '', content: '', cohort: '1', pinned: false });
-                setShowForm(true);
+                resetForm();
+                modal.openModal();
               }}
               className='mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
             >
@@ -153,7 +145,7 @@ export default function AnnouncementManagement() {
                       </Badge>
                     ),
                   ].filter(Boolean)}
-                  onView={() => setViewingAnnouncement(announcement)}
+                  onView={() => modal.openView(announcement)}
                   onEdit={() => handleEdit(announcement)}
                   onDelete={() => handleDelete(announcement.id)}
                   extraActions={[
@@ -183,12 +175,9 @@ export default function AnnouncementManagement() {
 
       {/* 작성/수정 모달 */}
       <Modal
-        show={showForm}
-        title={editingAnnouncement ? '공지사항 수정' : '새 공지사항 작성'}
-        onClose={() => {
-          setShowForm(false);
-          setEditingAnnouncement(null);
-        }}
+        show={modal.isOpen}
+        title={modal.selectedItem ? '공지사항 수정' : '새 공지사항 작성'}
+        onClose={modal.closeModal}
         size='4xl'
       >
         <form onSubmit={handleSubmit}>
@@ -196,7 +185,7 @@ export default function AnnouncementManagement() {
             <InputField
               label='제목'
               value={form.title}
-              onChange={(value: string) => setForm({ ...form, title: value })}
+              onChange={(value: string) => updateForm({ title: value })}
               placeholder='공지사항 제목을 입력하세요'
               required
             />
@@ -204,7 +193,7 @@ export default function AnnouncementManagement() {
             <Select
               label='대상 기수'
               value={form.cohort}
-              onChange={(value) => setForm({ ...form, cohort: value })}
+              onChange={(value) => updateForm({ cohort: value })}
               options={[
                 { value: 'all', label: '전체 기수' },
                 ...availableCohorts.map((cohort) => ({ value: cohort, label: `${cohort}기` })),
@@ -215,7 +204,7 @@ export default function AnnouncementManagement() {
               <label className='block text-sm font-medium text-slate-700 mb-2'>내용</label>
               <MarkdownEditor
                 value={form.content}
-                onChange={(value: string) => setForm({ ...form, content: value })}
+                onChange={(value: string) => updateForm({ content: value })}
                 placeholder='마크다운으로 공지사항 내용을 작성하세요!'
                 className='min-h-[300px]'
               />
@@ -224,52 +213,40 @@ export default function AnnouncementManagement() {
 
           {/* 액션 버튼 */}
           <div className='flex justify-end space-x-3 mt-6 pt-4 border-t border-slate-200'>
-            <Button
-              type='button'
-              onClick={() => {
-                setShowForm(false);
-                setEditingAnnouncement(null);
-              }}
-              variant='outline'
-            >
+            <Button type='button' onClick={modal.closeModal} variant='outline' disabled={submitting}>
               취소
             </Button>
-            <Button type='submit' variant='primary'>
-              {editingAnnouncement ? '수정 완료' : '작성 완료'}
+            <Button type='submit' variant='primary' disabled={submitting} isLoading={submitting}>
+              {modal.selectedItem ? '수정 완료' : '작성 완료'}
             </Button>
           </div>
         </form>
       </Modal>
 
       {/* 상세보기 모달 */}
-      <Modal
-        show={!!viewingAnnouncement}
-        title={viewingAnnouncement?.title || ''}
-        onClose={() => setViewingAnnouncement(null)}
-        size='2xl'
-      >
-        {viewingAnnouncement && (
+      <Modal show={!!modal.viewItem} title={modal.viewItem?.title || ''} onClose={modal.closeView} size='2xl'>
+        {modal.viewItem && (
           <div className='space-y-4'>
             <div className='flex items-center space-x-3'>
-              {viewingAnnouncement.pinned && (
+              {modal.viewItem.pinned && (
                 <Badge variant='danger' size='sm'>
                   📌 고정
                 </Badge>
               )}
               <Badge variant='info' size='sm'>
-                {viewingAnnouncement.cohort === 'all' ? '전체' : `${viewingAnnouncement.cohort}기`}
+                {modal.viewItem.cohort === 'all' ? '전체' : `${modal.viewItem.cohort}기`}
               </Badge>
-              <span className='text-sm text-slate-600'>{viewingAnnouncement.author}</span>
-              <span className='text-sm text-slate-600'>{viewingAnnouncement.createdAt}</span>
+              <span className='text-sm text-slate-600'>{modal.viewItem.author}</span>
+              <span className='text-sm text-slate-600'>{modal.viewItem.createdAt}</span>
             </div>
 
             <div
               className='prose prose-slate max-w-none'
-              dangerouslySetInnerHTML={{ __html: viewingAnnouncement.content }}
+              dangerouslySetInnerHTML={{ __html: modal.viewItem.content }}
             />
 
             <div className='pt-4 border-t border-slate-200 flex justify-end'>
-              <Button onClick={() => setViewingAnnouncement(null)} variant='outline'>
+              <Button onClick={modal.closeView} variant='outline'>
                 닫기
               </Button>
             </div>

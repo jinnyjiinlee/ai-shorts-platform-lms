@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Modal } from '@/features/shared/ui/Modal';
 import { InputField } from '@/features/shared/ui/InputField';
 import { Button } from '@/features/shared/ui/Button';
+import { useFormState } from '@/features/shared/hooks/useFormState';
+import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
 
 interface QuestionCreateModalProps {
   show: boolean;
@@ -12,43 +14,39 @@ interface QuestionCreateModalProps {
 }
 
 export default function QuestionCreateModal({ show, onClose, onSubmit }: QuestionCreateModalProps) {
-  const [form, setForm] = useState({
+  const { form, updateForm, resetForm } = useFormState({
     title: '',
     content: '',
   });
-  const [submitting, setSubmitting] = useState(false);
+  
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const { submitting, submit } = useAsyncSubmit(async () => {
     // 유효성 검사
     if (!form.title.trim() || !form.content.trim()) {
       setError('제목과 내용을 모두 입력해주세요.');
       return;
     }
 
-    try {
-      setSubmitting(true);
-      setError(null);
-      
-      // 비동기 API 호출
-      await onSubmit(form);
-      
-      // 성공시 폼 초기화 및 모달 닫기
-      setForm({ title: '', content: '' });
-      onClose();
-    } catch (err) {
+    setError(null);
+    await onSubmit(form);
+    resetForm();
+    onClose();
+  }, {
+    onError: (err) => {
       console.error('질문 작성 실패:', err);
       setError('질문 작성에 실패했습니다. 다시 시도해주세요.');
-    } finally {
-      setSubmitting(false);
     }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submit();
   };
 
   const handleClose = () => {
-    setForm({ title: '', content: '' }); // 폼 초기화
-    setError(null); // 에러 초기화
+    resetForm();
+    setError(null);
     onClose();
   };
 
@@ -66,7 +64,7 @@ export default function QuestionCreateModal({ show, onClose, onSubmit }: Questio
           <InputField
             label='제목'
             value={form.title}
-            onChange={(value) => setForm({ ...form, title: value })}
+            onChange={(value) => updateForm({ title: value })}
             placeholder='질문 제목을 입력하세요'
             required
           />
@@ -75,7 +73,7 @@ export default function QuestionCreateModal({ show, onClose, onSubmit }: Questio
             <label className='block text-sm font-medium text-slate-700 mb-2'>질문 내용</label>
             <textarea
               value={form.content}
-              onChange={(e) => setForm({ ...form, content: e.target.value })}
+              onChange={(e) => updateForm({ content: e.target.value })}
               placeholder='질문 내용을 상세히 입력하세요...'
               className='w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2
   focus:ring-blue-500 focus:border-transparent transition-all min-h-[150px] resize-vertical'

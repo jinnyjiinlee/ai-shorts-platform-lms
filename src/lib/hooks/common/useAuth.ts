@@ -3,15 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../supabase/client';
-
-interface User {
-  id: string;
-  email: string;
-  role: 'admin' | 'student';
-  status: 'pending' | 'approved' | 'rejected';
-  name?: string;
-  nickname?: string;
-}
+import { User } from '@/types/domains/user';
 
 export function useAuth(requiredRole?: 'admin' | 'student') {
   const [user, setUser] = useState<User | null>(null);
@@ -75,8 +67,11 @@ export function useAuth(requiredRole?: 'admin' | 'student') {
             email: session.user.email!,
             role: profile.role,
             status: profile.status,
-            name: profile.name,
-            nickname: profile.nickname,
+            name: profile.name || '',
+            nickname: profile.nickname || '',
+            cohort: (profile as any).cohort || 1,
+            created_at: (profile as any).created_at || new Date().toISOString(),
+            updated_at: (profile as any).updated_at || new Date().toISOString(),
           });
         }
       } catch (error) {

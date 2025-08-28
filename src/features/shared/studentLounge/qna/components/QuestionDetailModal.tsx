@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { Modal } from '@/features/shared/ui/Modal';
 import { Badge } from '@/features/shared/ui/Badge';
 import { Button } from '@/features/shared/ui/Button';
-import { Question } from '../types';
+import { Question } from '@/types/domains/qna';
+import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
+import { useFormState } from '@/features/shared/hooks/useFormState';
 
 interface QuestionDetailModalProps {
   show: boolean;
@@ -24,53 +26,39 @@ export default function QuestionDetailModal({
   onEditQuestion,
 }: QuestionDetailModalProps) {
   const [answerContent, setAnswerContent] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
+  
   // 수정 모드 상태 관리
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState({
+  const { form: editForm, updateForm, isEditing, startEdit, cancelEdit } = useFormState({
     title: '',
     content: '',
   });
 
+  // 답변 작성 로직
+  const { submitting: answerSubmitting, submit: submitAnswer } = useAsyncSubmit(async () => {
+    if (!answerContent.trim() || !onCreateAnswer || !question) return;
+    await onCreateAnswer(question.id, answerContent);
+    setAnswerContent('');
+    onClose();
+  });
+
+  // 질문 수정 로직
+  const { submitting: editSubmitting, submit: submitEdit } = useAsyncSubmit(async () => {
+    if (!editForm.title.trim() || !editForm.content.trim() || !onEditQuestion || !question) return;
+    await onEditQuestion(question.id, editForm.title, editForm.content);
+    cancelEdit();
+    onClose();
+  });
+
   if (!question) return null;
 
-  const handleAnswerSubmit = async (e: React.FormEvent) => {
+  const handleAnswerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!answerContent.trim() || !onCreateAnswer) return;
-
-    try {
-      setSubmitting(true);
-      await onCreateAnswer(question.id, answerContent);
-      setAnswerContent('');
-      onClose();
-    } catch (error) {
-      console.error('답변 작성 실패:', error);
-    } finally {
-      setSubmitting(false);
-    }
+    submitAnswer();
   };
 
-  // 수정 모드 처리 함수들
-  const handleEditSubmit = async (e: React.FormEvent) => {
+  const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editForm.title.trim() || !editForm.content.trim() || !onEditQuestion) return;
-
-    try {
-      setSubmitting(true);
-      await onEditQuestion(question.id, editForm.title, editForm.content);
-      setIsEditing(false);
-      onClose(); // 수정 후 모달 닫기
-    } catch (error) {
-      console.error('질문 수정 실패:', error);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleEditCancel = () => {
-    setIsEditing(false);
-    setEditForm({ title: '', content: '' });
+    submitEdit();
   };
 
   return (
@@ -87,7 +75,7 @@ export default function QuestionDetailModal({
                   <input
                     type='text'
                     value={editForm.title}
-                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                    onChange={(e) => updateForm({ title: e.target.value })}
                     className='w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
                     required
                   />
@@ -96,17 +84,17 @@ export default function QuestionDetailModal({
                   <label className='block text-sm font-medium text-slate-700 mb-2'>내용</label>
                   <textarea
                     value={editForm.content}
-                    onChange={(e) => setEditForm({ ...editForm, content: e.target.value })}
+                    onChange={(e) => updateForm({ content: e.target.value })}
                     className='w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all min-h-[150px] resize-vertical'
                     required
                   />
                 </div>
                 <div className='flex justify-end space-x-3'>
-                  <Button type='button' onClick={handleEditCancel} variant='outline' disabled={submitting}>
+                  <Button type='button' onClick={cancelEdit} variant='outline' disabled={editSubmitting}>
                     취소
                   </Button>
-                  <Button type='submit' variant='primary' disabled={submitting} isLoading={submitting}>
-                    {submitting ? '저장중...' : '저장'}
+                  <Button type='submit' variant='primary' disabled={editSubmitting} isLoading={editSubmitting}>
+                    {editSubmitting ? '저장중...' : '저장'}
                   </Button>
                 </div>
               </div>
@@ -158,11 +146,11 @@ export default function QuestionDetailModal({
               required
             />
             <div className='flex justify-end space-x-3 mt-4'>
-              <Button type='button' onClick={onClose} variant='outline' disabled={submitting}>
+              <Button type='button' onClick={onClose} variant='outline' disabled={answerSubmitting}>
                 취소
               </Button>
-              <Button type='submit' variant='primary' disabled={submitting} isLoading={submitting}>
-                {submitting ? '등록중...' : '답변 등록'}
+              <Button type='submit' variant='primary' disabled={answerSubmitting} isLoading={answerSubmitting}>
+                {answerSubmitting ? '등록중...' : '답변 등록'}
               </Button>
             </div>
           </form>
@@ -176,10 +164,7 @@ export default function QuestionDetailModal({
               {userRole === 'student' && onEditQuestion && (
                 <Button
                   variant='outline'
-                  onClick={() => {
-                    setEditForm({ title: question.title, content: question.content });
-                    setIsEditing(true);
-                  }}
+                  onClick={() => startEdit({ title: question.title, content: question.content })}
                 >
                   수정
                 </Button>

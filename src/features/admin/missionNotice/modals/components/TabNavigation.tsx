@@ -1,5 +1,5 @@
 import { DocumentTextIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
-import { Mission } from '@/lib/types/mission.types';
+import { Mission } from '@/types/domains/mission';
 
 interface TabNavigationProps {
   activeTab: 'mission' | 'submissions';

@@ -4,25 +4,7 @@ import { useState } from 'react';
 import { ChatBubbleLeftIcon, HeartIcon, ShareIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/features/shared/ui/Button';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
-
-interface Comment {
-  id: string;
-  author: string;
-  content: string;
-  createdAt: string;
-  isOwner: boolean;
-}
-
-interface Column {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  createdAt: string;
-  likes: number;
-  commentCount: number;
-  isLiked: boolean;
-}
+import { Column, Comment } from '@/types/domains/community';
 
 interface ColumnCardProps {
   column: Column;
@@ -33,7 +15,7 @@ export default function ColumnCard({ column, currentUser }: ColumnCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [isLiked, setIsLiked] = useState(column.isLiked);
-  const [likeCount, setLikeCount] = useState(column.likes);
+  const [likeCount, setLikeCount] = useState(column.likes || 0);
   const [comments, setComments] = useState<Comment[]>([
     {
       id: '1',

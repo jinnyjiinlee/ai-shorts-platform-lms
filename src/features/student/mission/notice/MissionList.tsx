@@ -1,7 +1,7 @@
 'use client';
 
 import { PlayIcon, DocumentArrowUpIcon } from '@heroicons/react/24/outline';
-import { MissionListProps } from '../shared/types';
+import { MissionListProps } from '../types';
 
 export default function MissionList({ 
   missions, 
@@ -25,7 +25,7 @@ export default function MissionList({
                 </span>
               </div>
               <div className="flex items-center space-x-4 text-sm text-slate-500">
-                <span>📅 마감일: {mission.dueDate}</span>
+                <span>📅 마감일: {mission.due_date}</span>
                 {mission.submittedAt && (
                   <span>✅ 제출일: {mission.submittedAt}</span>
                 )}

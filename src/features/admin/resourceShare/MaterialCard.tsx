@@ -9,20 +9,7 @@ import {
   ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
 import { Badge } from '@/features/shared/ui/Badge';
-
-interface LearningMaterial {
-  id: number;
-  title: string;
-  description: string;
-  week: number;
-  cohort: string;
-  uploadDate: string;
-  fileUrl: string;
-  fileName: string;
-  fileSize: string;
-  fileType: string;
-  isPublished: boolean;
-}
+import { LearningMaterial } from '@/types/domains/resource';
 
 interface MaterialCardProps {
   material: LearningMaterial;

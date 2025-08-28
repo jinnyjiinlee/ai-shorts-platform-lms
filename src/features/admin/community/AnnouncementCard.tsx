@@ -2,16 +2,7 @@
 
 import { useState } from 'react';
 import { MegaphoneIcon, StarIcon } from '@heroicons/react/24/outline';
-
-interface Announcement {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  createdAt: string;
-  isPinned: boolean;
-  cohort?: number;
-}
+import { Announcement } from '@/types/domains/community';
 
 interface AnnouncementCardProps {
   announcement: Announcement;

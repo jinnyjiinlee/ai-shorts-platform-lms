@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mission } from '@/lib/types/mission.types';
+import { Mission } from '@/types/domains/mission';
 
 export const useModalState = () => {
   const [showModal, setShowModal] = useState(false);

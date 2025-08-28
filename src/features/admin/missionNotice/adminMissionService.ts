@@ -16,7 +16,7 @@ interface MissionFormData {
   cohort: string;
   week: number;
 }
-import { Mission } from '@/lib/types/mission.types';
+import { Mission } from '@/types/domains/mission';
 
 export const fetchMissions = async (): Promise<Mission[]> => {
   try {

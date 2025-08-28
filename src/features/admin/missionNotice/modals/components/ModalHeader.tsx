@@ -1,5 +1,5 @@
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { Mission } from '@/lib/types/mission.types';
+import { Mission } from '@/types/domains/mission';
 import { Button } from '@/features/shared/ui/Button';
 
 interface ModalHeaderProps {

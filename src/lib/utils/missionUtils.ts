@@ -1,4 +1,4 @@
-import { Mission } from '@/lib/types/mission.types';
+import { Mission } from '@/types/domains/mission';
 
 interface WeeklyProgress {
   week: number;

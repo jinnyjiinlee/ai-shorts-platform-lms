@@ -6,6 +6,6 @@ export { default as StatsCards } from './view/StatsCards';
 
 export { useMissionData } from './controller/useMissionData';
 
-export * from './model/mission.types';
+export * from './types';
 export * from './model/mission.service';
 export * from './model/mission.calculator';

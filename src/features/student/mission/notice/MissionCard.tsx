@@ -2,11 +2,11 @@
 
 import { CheckCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { Badge } from '@/features/shared/ui/Badge';
-import { MissionCardProps } from '../shared/types';
+import { MissionCardProps } from '../types';
 
 export default function MissionCard({ mission, onClick }: MissionCardProps) {
   // 마감일이 지났는지 확인
-  const isOverdue = mission.dueDate ? new Date(mission.dueDate) < new Date() : false;
+  const isOverdue = mission.due_date ? new Date(mission.due_date) < new Date() : false;
   
   // 상태 결정: 제출완료 > 마감 > 진행중
   const getStatusInfo = () => {

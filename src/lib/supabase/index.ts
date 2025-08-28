@@ -2,14 +2,14 @@
 export { supabase } from './client';
 
 // Type exports
-export type { UserRegistrationData, ProfileData, AuthError } from '../types/auth.types';
+export type { UserRegistrationData, ProfileData, AuthError } from '@/types/domains/auth';
 
 // Auth exports
 export { signUp, signIn, signOut, getCurrentUser } from './auth';
 
 // Helper object for backward compatibility
 export const authHelpers = {
-  signUp: async (userData: import('../types/auth.types').UserRegistrationData) => {
+  signUp: async (userData: import('@/types/domains/auth').UserRegistrationData) => {
     const { signUp } = await import('./auth');
     return signUp(userData);
   },

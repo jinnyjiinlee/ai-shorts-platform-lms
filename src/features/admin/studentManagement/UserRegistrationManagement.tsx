@@ -5,71 +5,70 @@ import { XMarkIcon, EyeIcon, UserGroupIcon, ShieldCheckIcon, AcademicCapIcon } f
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/features/shared/ui/Button';
 import { Badge } from '@/features/shared/ui/Badge';
-
-interface User {
-  id: string;
-  user_id: string;
-  nickname: string;
-  name: string;
-  email: string;
-  created_at: string;
-  cohort: string;
-  status: string;
-  role: string;
-}
+import { AdminUserView } from '@/types/domains/user';
+import { useModal } from '@/features/shared/hooks/useModal';
+import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
 
 export default function UserRegistrationManagement() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<AdminUserView[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'students' | 'admins'>('students');
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedAllUser, setSelectedAllUser] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  
+  const modal = useModal<AdminUserView>();
   const usersPerPage = 10;
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setIsLoading(true);
-        const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+  // 사용자 데이터 로딩
+  const { submitting: loadingUsers, submit: fetchUsers } = useAsyncSubmit(async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
 
-        if (error) {
-          console.error('사용자 데이터 조회 오류:', error);
-          return;
-        }
+    if (error) {
+      console.error('사용자 데이터 조회 오류:', error);
+      return;
+    }
 
-        if (data) {
-          setUsers(data);
-        }
-      } catch (error) {
-        console.error('사용자 데이터 가져오기 오류:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (data) {
+      setUsers(data);
+    }
+  }, {
+    onError: (error) => {
+      console.error('사용자 데이터 가져오기 오류:', error);
+    },
+    onSuccess: () => {
+      setIsLoading(false);
+    }
+  });
 
-    fetchUsers();
-  }, []);
+  // 상태 업데이트
+  const { submitting: updatingStatus, submit: updateStatus } = useAsyncSubmit<{ userId: string, newStatus: string }>(async (data) => {
+    if (!data) return;
+    const { userId, newStatus } = data;
+    const { error } = await supabase.from('profiles').upsert({ id: userId, status: newStatus }).eq('id', userId);
 
-  const handleStatusUpdate = async (userId: string, newStatus: string) => {
-    try {
-      const { error } = await supabase.from('profiles').upsert({ id: userId, status: newStatus }).eq('id', userId);
+    if (error) {
+      console.error('상태 업데이트 오류:', error);
+      alert('상태 업데이트에 실패했습니다.');
+      return;
+    }
 
-      if (error) {
-        console.error('상태 업데이트 오류:', error);
-        alert('상태 업데이트에 실패했습니다.');
-        return;
-      }
-
-      setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: newStatus } : user)));
-
-      alert('상태가 업데이트되었습니다.');
-    } catch (error) {
+    setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: newStatus as 'approved' | 'pending' | 'rejected' } : user)));
+    alert('상태가 업데이트되었습니다.');
+  }, {
+    onError: (error) => {
       console.error('상태 업데이트 오류:', error);
       alert('상태 업데이트에 실패했습니다.');
     }
+  });
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleStatusUpdate = (userId: string, newStatus: string) => {
+    updateStatus({ userId, newStatus });
   };
 
   // 페이지네이션 로직
@@ -123,31 +122,31 @@ export default function UserRegistrationManagement() {
   };
 
   // 일괄 승인 핸들러
-  const handleBulkApproval = async () => {
+  const { submitting: bulkApproving, submit: bulkApproval } = useAsyncSubmit(async () => {
     if (selectedUserIds.length === 0) return;
 
-    try {
-      let successCount = 0;
+    let successCount = 0;
 
-      for (const userId of selectedUserIds) {
-        const { error } = await supabase.from('profiles').upsert({ id: userId, status: 'approved' }).eq('id', userId);
+    for (const userId of selectedUserIds) {
+      const { error } = await supabase.from('profiles').upsert({ id: userId, status: 'approved' }).eq('id', userId);
 
-        if (!error) {
-          successCount++;
-          setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: 'approved' } : user)));
-        } else {
-          console.error(`사용자 ${userId} 승인 오류:`, error);
-        }
+      if (!error) {
+        successCount++;
+        setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: 'approved' } : user)));
+      } else {
+        console.error(`사용자 ${userId} 승인 오류:`, error);
       }
+    }
 
-      setSelectedUserIds([]);
-      setSelectedAllUser(false);
-      alert(`${successCount}명의 사용자가 승인되었습니다.`);
-    } catch (error) {
+    setSelectedUserIds([]);
+    setSelectedAllUser(false);
+    alert(`${successCount}명의 사용자가 승인되었습니다.`);
+  }, {
+    onError: (error) => {
       console.error('일괄 승인 오류:', error);
       alert('일괄 승인 중 오류가 발생했습니다.');
     }
-  };
+  });
 
   // 일괄 거부 핸들러
   const handleBulkRejection = async () => {
@@ -213,14 +212,12 @@ export default function UserRegistrationManagement() {
     );
   };
 
-  const openDetailModal = (user: User) => {
-    setSelectedUser(user);
-    setIsDetailModalOpen(true);
+  const openDetailModal = (user: AdminUserView) => {
+    modal.openView(user);
   };
 
   const closeDetailModal = () => {
-    setSelectedUser(null);
-    setIsDetailModalOpen(false);
+    modal.closeView();
   };
 
   if (isLoading) {
@@ -300,7 +297,7 @@ export default function UserRegistrationManagement() {
               <span className='text-sm text-blue-800 font-medium'>{selectedUserIds.length}명이 선택됨</span>
               <div className='flex space-x-2'>
                 <Button
-                  onClick={handleBulkApproval}
+                  onClick={() => bulkApproval()}
                   variant='primary'
                   size='sm'
                   className='bg-green-600 hover:bg-green-700 focus:ring-green-500'
@@ -472,7 +469,7 @@ export default function UserRegistrationManagement() {
       </div>
 
       {/* 상세 정보 모달 */}
-      {isDetailModalOpen && selectedUser && (
+      {modal.viewItem && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'>
           <div className='bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
             <div className='flex items-center justify-between p-6 border-b border-slate-200'>
@@ -492,57 +489,59 @@ export default function UserRegistrationManagement() {
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-1'>닉네임</label>
-                  <div className='text-lg font-bold text-slate-900'>{selectedUser.nickname || '없음'}</div>
+                  <div className='text-lg font-bold text-slate-900'>{modal.viewItem.nickname || '없음'}</div>
                 </div>
 
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-1'>실명</label>
-                  <div className='text-sm text-slate-900'>{selectedUser.name || '없음'}</div>
+                  <div className='text-sm text-slate-900'>{modal.viewItem.name || '없음'}</div>
                 </div>
 
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-1'>아이디</label>
-                  <div className='text-sm text-slate-900'>{selectedUser.user_id}</div>
+                  <div className='text-sm text-slate-900'>{modal.viewItem.user_id}</div>
                 </div>
 
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-1'>이메일</label>
-                  <div className='text-sm text-slate-900'>{selectedUser.email}</div>
+                  <div className='text-sm text-slate-900'>{modal.viewItem.email}</div>
                 </div>
 
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-1'>역할</label>
-                  <div>{getRoleBadge(selectedUser.role || 'student')}</div>
+                  <div>{getRoleBadge(modal.viewItem.role || 'student')}</div>
                 </div>
 
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-1'>기수</label>
                   <div className='text-sm text-slate-900'>
-                    {selectedUser.cohort ? `${selectedUser.cohort}기` : '미지정'}
+                    {modal.viewItem.cohort ? `${modal.viewItem.cohort}기` : '미지정'}
                   </div>
                 </div>
 
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-1'>상태</label>
-                  <div>{getStatusBadge(selectedUser.status)}</div>
+                  <div>{getStatusBadge(modal.viewItem.status)}</div>
                 </div>
 
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-1'>가입일</label>
                   <div className='text-sm text-slate-900'>
-                    {new Date(selectedUser.created_at).toLocaleString('ko-KR')}
+                    {new Date(modal.viewItem.created_at).toLocaleString('ko-KR')}
                   </div>
                 </div>
               </div>
 
-              {selectedUser.role === 'student' && (
+              {modal.viewItem.role === 'student' && (
                 <div className='pt-4 border-t border-slate-200'>
                   <div className='flex space-x-3'>
-                    {selectedUser.status !== 'approved' && (
+                    {modal.viewItem.status !== 'approved' && (
                       <Button
                         onClick={() => {
-                          handleStatusUpdate(selectedUser.id, 'approved');
-                          closeDetailModal();
+                          if (modal.viewItem) {
+                            handleStatusUpdate(modal.viewItem.id, 'approved');
+                            closeDetailModal();
+                          }
                         }}
                         variant='primary'
                         className='flex-1 bg-green-600 hover:bg-green-700 focus:ring-green-500'
@@ -551,11 +550,13 @@ export default function UserRegistrationManagement() {
                       </Button>
                     )}
 
-                    {selectedUser.status !== 'rejected' && (
+                    {modal.viewItem.status !== 'rejected' && (
                       <Button
                         onClick={() => {
-                          handleStatusUpdate(selectedUser.id, 'rejected');
-                          closeDetailModal();
+                          if (modal.viewItem) {
+                            handleStatusUpdate(modal.viewItem.id, 'rejected');
+                            closeDetailModal();
+                          }
                         }}
                         variant='danger'
                         className='flex-1'

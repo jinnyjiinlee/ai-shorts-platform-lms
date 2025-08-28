@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { WeeklyData, StudentSubmissionDetail } from '../model/mission.types';
+import { WeeklyData, StudentSubmissionDetail } from '../types';
 import { calculateStudentStats, getStudentSubmissionForWeek } from '../model/mission.calculator';
 import { Pagination } from '@/features/shared/ui/Pagination';
 import { Badge } from '@/features/shared/ui/Badge';

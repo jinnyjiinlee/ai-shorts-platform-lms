@@ -1,14 +1,6 @@
-// Auth types
-export * from './auth.types';
-
-// User types
-export * from './user.types';
-
-// Mission types
-export * from './mission.types';
-
-// Dashboard types
-export * from './dashboard.types';
+// 🎯 기존 호환성을 위한 Re-export
+// 새로운 통합 타입 구조로 리다이렉트
+export * from '@/types';
 
 // Common types
 export interface ApiResponse<T> {

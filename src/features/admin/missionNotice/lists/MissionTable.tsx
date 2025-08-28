@@ -1,7 +1,7 @@
 // admin - use
 
 import { ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
-import { Mission } from '@/lib/types/mission.types';
+import { Mission } from '@/types/domains/mission';
 
 interface MissionTableProps {
   missions: Mission[];

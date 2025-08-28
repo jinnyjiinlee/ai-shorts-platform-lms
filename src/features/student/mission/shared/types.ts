@@ -1,18 +1,6 @@
-// 미션 관리 관련 타입 정의
-export interface Mission {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-  week: number;
-  isSubmitted?: boolean;
-  submittedAt?: string;
-  status: 'pending' | 'submitted' | 'completed';
-  submission_type: 'file' | 'text';
-  feedback?: string;
-  submissionContent?: string;
-  dueDateFormatted: string;
-}
+// 🎯 통합 타입에서 Mission 가져와서 재export
+import type { Mission } from '@/types/domains/mission';
+export type { Mission };
 
 export interface MissionCardProps {
   mission: Mission;

@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
-import { WeeklyData, StudentSubmissionDetail } from './mission.types';
+import { WeeklyData, StudentSubmissionDetail } from '../types';
 
 // 기수 목록 조회
 export const getCohortList = async (): Promise<number[]> => {

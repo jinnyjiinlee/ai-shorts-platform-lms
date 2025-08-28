@@ -15,7 +15,7 @@ import SubmissionListModal from './modals/SubmissionListModal';
 import { useMissionManagement } from './hooks/useMissionManagement';
 import { useModalState } from './hooks/useModalState';
 import { getFilteredMissions, getAvailableCohorts } from '@/lib/utils/missionUtils';
-import { Mission } from '@/lib/types/mission.types';
+import { Mission } from '@/types/domains/mission';
 
 export default function MissionManagement() {
   const { missions, isLoading, saveMission, removeMission, refreshMissions } = useMissionManagement();

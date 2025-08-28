@@ -1,3 +1,6 @@
+// 🎯 통합 Auth 도메인 타입 정의
+// 모든 인증 관련 타입을 여기서 중앙 관리
+
 export interface UserRegistrationData {
   userId: string;
   nickname: string;
@@ -8,7 +11,6 @@ export interface UserRegistrationData {
   avatar_url: string; 
 }
 
-// 사용
 export interface ProfileData {
   id: string;
   name: string;
@@ -24,3 +26,7 @@ export interface AuthError {
   details?: Record<string, unknown>;
   hint?: string;
 }
+
+// 🎯 인증 관련 공통 타입들
+export type AuthRole = 'student' | 'admin';
+export type AuthStatus = 'pending' | 'approved' | 'rejected';

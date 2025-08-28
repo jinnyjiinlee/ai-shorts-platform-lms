@@ -3,7 +3,7 @@
  */
 
 import { supabase } from '@/lib/supabase/client';
-import { Question, Answer } from './types';
+import { Question, Answer } from '@/types/domains/qna';
 
 /**
  * 질문 목록 조회

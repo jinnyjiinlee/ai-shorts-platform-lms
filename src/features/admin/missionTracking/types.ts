@@ -1,4 +1,5 @@
-// MissionTracking 관련 타입 정의
+// 🎨 Mission Tracking UI 전용 타입들
+// 이 파일은 Admin Mission Tracking 기능에서만 사용되는 UI 타입들을 관리
 
 export interface WeeklyData {
   week: number;

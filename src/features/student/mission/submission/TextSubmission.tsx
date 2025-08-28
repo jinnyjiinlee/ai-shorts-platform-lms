@@ -6,6 +6,8 @@ import {
   getExistingSubmission,
   hasSubmitted,
 } from '@/features/student/mission/submission/missionSubmitService';
+import { useFormState } from '@/features/shared/hooks/useFormState';
+import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
 
 interface TextSubmissionProps {
   missionId?: string; // 어떤 미션에 대한 제출인지 (uuid)
@@ -22,20 +24,17 @@ export default function TextSubmission({
   dueDate,
   existingSubmissionContent,
 }: TextSubmissionProps) {
-  // 입력창에 입력 중인 값
-  const [textContent, setTextContent] = useState('');
-  // DB나 부모에서 받은 "이미 제출된 내용"
+  // 기본 상태들
   const [existingContent, setExistingContent] = useState<string>(existingSubmissionContent || '');
-  // 제출 여부 (내부 상태)
   const [isSubmittedState, setIsSubmittedState] = useState<boolean>(!!isSubmittedProp);
-  // 편집 모드 여부
-  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [okMsg, setOkMsg] = useState<string | null>(null);
 
-  // UI 제어용 상태
-  const [loading, setLoading] = useState(false); // 초기화 중 로딩 상태
-  const [isSubmitting, setIsSubmitting] = useState(false); // 제출 버튼 클릭 시 로딩 상태
-  const [errorMsg, setErrorMsg] = useState<string | null>(null); // 오류 메시지
-  const [okMsg, setOkMsg] = useState<string | null>(null); // 성공 메시지
+  // 폼 상태 관리
+  const { form, updateForm, resetForm, isEditing, startEdit, cancelEdit } = useFormState({
+    textContent: '',
+  });
 
   // 외부 props가 바뀌면 내부 상태도 갱신
   useEffect(() => {
@@ -89,49 +88,44 @@ export default function TextSubmission({
     return isSubmittedState && !isOverdue;
   }, [isSubmittedState, isOverdue]);
 
-  // 편집 시작: 기존 제출 내용을 textarea에 불러오기
+  // 제출 로직
+  const { submitting: isSubmitting, submit: handleSubmit } = useAsyncSubmit(async () => {
+    if (!missionId) throw new Error('미션 ID가 없습니다.');
+    const body = form.textContent.trim();
+    if (!body) throw new Error('제출할 내용을 입력해주세요.');
+
+    setOkMsg(null);
+    setErrorMsg(null);
+
+    // 실제 제출 로직
+    await submitMission({ missionId, content: body });
+
+    // 제출 성공 후 상태 업데이트
+    setExistingContent(body);
+    setIsSubmittedState(true);
+    cancelEdit();
+    
+    setOkMsg(canResubmit ? '재제출(수정) 완료!' : '제출 완료!');
+    onSubmissionComplete?.();
+  }, {
+    onError: (e) => {
+      setErrorMsg(e?.message ?? '제출 중 알 수 없는 오류가 발생했습니다.');
+    }
+  });
+
+  // 편집 시작: 기존 제출 내용을 폼에 불러오기
   const startEditing = () => {
-    setTextContent(existingContent || '');
-    setIsEditing(true);
+    updateForm({ textContent: existingContent || '' });
+    startEdit({ textContent: existingContent || '' });
     setOkMsg(null);
     setErrorMsg(null);
   };
 
   // 편집 취소: 입력값 리셋
   const cancelEditing = () => {
-    setTextContent('');
-    setIsEditing(false);
+    cancelEdit();
     setOkMsg(null);
     setErrorMsg(null);
-  };
-
-  // 제출/재제출 처리
-  const handleSubmit = async () => {
-    try {
-      setIsSubmitting(true);
-      setOkMsg(null);
-      setErrorMsg(null);
-
-      if (!missionId) throw new Error('미션 ID가 없습니다.');
-      const body = textContent.trim();
-      if (!body) throw new Error('제출할 내용을 입력해주세요.');
-
-      // ✅ 실제 제출 로직 (우리가 만든 service 호출)
-      await submitMission({ missionId, content: body });
-
-      // 제출 성공 후 상태 업데이트
-      setExistingContent(body);
-      setIsSubmittedState(true);
-      setIsEditing(false);
-      setTextContent('');
-
-      setOkMsg(canResubmit ? '재제출(수정) 완료!' : '제출 완료!');
-      onSubmissionComplete?.();
-    } catch (e: any) {
-      setErrorMsg(e?.message ?? '제출 중 알 수 없는 오류가 발생했습니다.');
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   // 1) 초기화 중 로딩
@@ -205,8 +199,8 @@ export default function TextSubmission({
           {isOverdue ? '제출 마감됨' : '텍스트 제출 (링크 포함 가능)'}
         </h4>
         <textarea
-          value={textContent}
-          onChange={(e) => setTextContent(e.target.value)}
+          value={form.textContent}
+          onChange={(e) => updateForm({ textContent: e.target.value })}
           disabled={isOverdue}
           className={`w-full h-32 px-4 py-3 border rounded-lg transition-all resize-none ${
             isOverdue
@@ -220,7 +214,7 @@ export default function TextSubmission({
       <div className='flex justify-end space-x-3 pt-4 border-t border-slate-200'>
         <button
           onClick={handleSubmit}
-          disabled={isSubmitting || !textContent.trim() || isOverdue}
+          disabled={isSubmitting || !form.textContent.trim() || isOverdue}
           className={`px-6 py-2 text-white rounded-lg transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed ${
             canResubmit ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'
           }`}
