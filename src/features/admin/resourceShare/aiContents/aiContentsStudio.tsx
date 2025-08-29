@@ -43,7 +43,7 @@ export default function AiContentsStudio({ userRole }: AiContentsStudioProps) {
     },
     {
       title: '핫 시즌 상품 추천',
-      description: '트렌딩 키워드를 입력하시면 해당 키워드에 맞는 상품 링크를 찾아드립니다.',
+      description: '트렌딩 키워드를 입력시 해당 키워드에 맞는 상품 링크를 찾아드립니다.',
       icon: '📊',
       emoji: '🎆',
       gradient: 'from-yellow-500 via-orange-500 to-red-500',
