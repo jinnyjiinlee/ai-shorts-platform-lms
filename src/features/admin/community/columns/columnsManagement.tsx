@@ -39,7 +39,9 @@ export default function ColumnsManagement() {
     };
 
     if (modal.selectedItem) {
-      setColumns(columns.map((col) => (col.id === modal.selectedItem!.id ? { ...newColumn, id: modal.selectedItem!.id } : col)));
+      setColumns(
+        columns.map((col) => (col.id === modal.selectedItem!.id ? { ...newColumn, id: modal.selectedItem!.id } : col))
+      );
     } else {
       setColumns([newColumn, ...columns]);
     }
@@ -212,12 +214,7 @@ export default function ColumnsManagement() {
 
           {/* 액션 버튼 */}
           <div className='flex justify-end space-x-3 mt-6 pt-4 border-t border-slate-200'>
-            <Button
-              type='button'
-              onClick={modal.closeModal}
-              variant='outline'
-              disabled={submitting}
-            >
+            <Button type='button' onClick={modal.closeModal} variant='outline' disabled={submitting}>
               취소
             </Button>
             <Button type='submit' variant='primary' disabled={submitting} isLoading={submitting}>
@@ -228,21 +225,21 @@ export default function ColumnsManagement() {
       </Modal>
 
       {/* 상세보기 모달 */}
-      <Modal
-        show={!!modal.viewItem}
-        title={modal.viewItem?.title || ''}
-        onClose={modal.closeView}
-        size='2xl'
-      >
+      <Modal show={!!modal.viewItem} title={modal.viewItem?.title || ''} onClose={modal.closeView} size='2xl'>
         {modal.viewItem && (
           <div className='space-y-4'>
             <div className='flex items-center space-x-3'>
-              <span className='px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs'>{modal.viewItem.cohort}기</span>
+              <span className='px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs'>
+                {modal.viewItem.cohort}기
+              </span>
               <span className='text-sm text-slate-600'>{modal.viewItem.author}</span>
               <span className='text-sm text-slate-600'>{modal.viewItem.createdAt}</span>
             </div>
 
-            <div className='prose prose-slate max-w-none' dangerouslySetInnerHTML={{ __html: modal.viewItem.content }} />
+            <div
+              className='prose prose-slate max-w-none'
+              dangerouslySetInnerHTML={{ __html: modal.viewItem.content }}
+            />
 
             <div className='pt-4 border-t border-slate-200 flex justify-end'>
               <Button onClick={modal.closeView} variant='outline'>
