@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { XMarkIcon, EyeIcon, UserGroupIcon, ShieldCheckIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/features/shared/ui/Button';
@@ -10,58 +11,83 @@ import { useModal } from '@/features/shared/hooks/useModal';
 import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
 
 export default function UserRegistrationManagement() {
+  const searchParams = useSearchParams();
   const [users, setUsers] = useState<AdminUserView[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'students' | 'admins'>('students');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedAllUser, setSelectedAllUser] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   const modal = useModal<AdminUserView>();
   const usersPerPage = 10;
 
   // 사용자 데이터 로딩
-  const { submitting: loadingUsers, submit: fetchUsers } = useAsyncSubmit(async () => {
-    setIsLoading(true);
-    const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+  const { submitting: loadingUsers, submit: fetchUsers } = useAsyncSubmit(
+    async () => {
+      setIsLoading(true);
+      const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('사용자 데이터 조회 오류:', error);
-      return;
-    }
+      if (error) {
+        console.error('사용자 데이터 조회 오류:', error);
+        return;
+      }
 
-    if (data) {
-      setUsers(data);
-    }
-  }, {
-    onError: (error) => {
-      console.error('사용자 데이터 가져오기 오류:', error);
+      if (data) {
+        setUsers(data);
+      }
     },
-    onSuccess: () => {
-      setIsLoading(false);
+    {
+      onError: (error) => {
+        console.error('사용자 데이터 가져오기 오류:', error);
+      },
+      onSuccess: () => {
+        setIsLoading(false);
+      },
     }
-  });
+  );
 
   // 상태 업데이트
-  const { submitting: updatingStatus, submit: updateStatus } = useAsyncSubmit<{ userId: string, newStatus: string }>(async (data) => {
-    if (!data) return;
-    const { userId, newStatus } = data;
-    const { error } = await supabase.from('profiles').upsert({ id: userId, status: newStatus }).eq('id', userId);
+  const { submitting: updatingStatus, submit: updateStatus } = useAsyncSubmit<{ userId: string; newStatus: string }>(
+    async (data) => {
+      if (!data) return;
+      const { userId, newStatus } = data;
+      const { error } = await supabase.from('profiles').upsert({ id: userId, status: newStatus }).eq('id', userId);
 
-    if (error) {
-      console.error('상태 업데이트 오류:', error);
-      alert('상태 업데이트에 실패했습니다.');
-      return;
-    }
+      if (error) {
+        console.error('상태 업데이트 오류:', error);
+        alert('상태 업데이트에 실패했습니다.');
+        return;
+      }
 
-    setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: newStatus as 'approved' | 'pending' | 'rejected' } : user)));
-    alert('상태가 업데이트되었습니다.');
-  }, {
-    onError: (error) => {
-      console.error('상태 업데이트 오류:', error);
-      alert('상태 업데이트에 실패했습니다.');
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.id === userId ? { ...user, status: newStatus as 'approved' | 'pending' | 'rejected' } : user
+        )
+      );
+      alert('상태가 업데이트되었습니다.');
+    },
+    {
+      onError: (error) => {
+        console.error('상태 업데이트 오류:', error);
+        alert('상태 업데이트에 실패했습니다.');
+      },
     }
-  });
+  );
+
+  useEffect(() => {
+    // URL 파라미터에서 status와 tab 읽기
+    const statusParam = searchParams.get('status');
+    const tabParam = searchParams.get('tab') as 'students' | 'admins';
+    
+    if (statusParam) {
+      setStatusFilter(statusParam);
+    }
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchUsers();
@@ -71,15 +97,45 @@ export default function UserRegistrationManagement() {
     updateStatus({ userId, newStatus });
   };
 
+  // 상태별 카운트 계산
+  const statusCounts = users.reduce(
+    (counts, user) => {
+      // 현재 탭에 해당하는 사용자만 계산
+      let includeUser = false;
+      if (activeTab === 'students') {
+        includeUser = user.role === 'student' || !user.role;
+      } else if (activeTab === 'admins') {
+        includeUser = user.role === 'admin';
+      }
+
+      if (includeUser) {
+        counts.all++;
+        const status = user.status || 'unknown';
+        counts[status] = (counts[status] || 0) + 1;
+      }
+
+      return counts;
+    },
+    { all: 0, approved: 0, pending: 0, rejected: 0, unknown: 0 } as Record<string, number>
+  );
+
   // 페이지네이션 로직
   const filteredUsers = users.filter((user) => {
+    // 역할별 필터
+    let roleMatch = false;
     if (activeTab === 'students') {
-      return user.role === 'student' || !user.role;
+      roleMatch = user.role === 'student' || !user.role;
+    } else if (activeTab === 'admins') {
+      roleMatch = user.role === 'admin';
     }
-    if (activeTab === 'admins') {
-      return user.role === 'admin';
+
+    // 상태별 필터
+    let statusMatch = true;
+    if (statusFilter !== 'all') {
+      statusMatch = user.status === statusFilter;
     }
-    return false;
+
+    return roleMatch && statusMatch;
   });
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -122,31 +178,34 @@ export default function UserRegistrationManagement() {
   };
 
   // 일괄 승인 핸들러
-  const { submitting: bulkApproving, submit: bulkApproval } = useAsyncSubmit(async () => {
-    if (selectedUserIds.length === 0) return;
+  const { submitting: bulkApproving, submit: bulkApproval } = useAsyncSubmit(
+    async () => {
+      if (selectedUserIds.length === 0) return;
 
-    let successCount = 0;
+      let successCount = 0;
 
-    for (const userId of selectedUserIds) {
-      const { error } = await supabase.from('profiles').upsert({ id: userId, status: 'approved' }).eq('id', userId);
+      for (const userId of selectedUserIds) {
+        const { error } = await supabase.from('profiles').upsert({ id: userId, status: 'approved' }).eq('id', userId);
 
-      if (!error) {
-        successCount++;
-        setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: 'approved' } : user)));
-      } else {
-        console.error(`사용자 ${userId} 승인 오류:`, error);
+        if (!error) {
+          successCount++;
+          setUsers((prev) => prev.map((user) => (user.id === userId ? { ...user, status: 'approved' } : user)));
+        } else {
+          console.error(`사용자 ${userId} 승인 오류:`, error);
+        }
       }
-    }
 
-    setSelectedUserIds([]);
-    setSelectedAllUser(false);
-    alert(`${successCount}명의 사용자가 승인되었습니다.`);
-  }, {
-    onError: (error) => {
-      console.error('일괄 승인 오류:', error);
-      alert('일괄 승인 중 오류가 발생했습니다.');
+      setSelectedUserIds([]);
+      setSelectedAllUser(false);
+      alert(`${successCount}명의 사용자가 승인되었습니다.`);
+    },
+    {
+      onError: (error) => {
+        console.error('일괄 승인 오류:', error);
+        alert('일괄 승인 중 오류가 발생했습니다.');
+      },
     }
-  });
+  );
 
   // 일괄 거부 핸들러
   const handleBulkRejection = async () => {
@@ -187,7 +246,11 @@ export default function UserRegistrationManagement() {
       variant: 'default' as const,
     };
 
-    return <Badge variant={config.variant} size="sm">{config.text}</Badge>;
+    return (
+      <Badge variant={config.variant} size='sm'>
+        {config.text}
+      </Badge>
+    );
   };
 
   const getRoleBadge = (role: string) => {
@@ -205,12 +268,42 @@ export default function UserRegistrationManagement() {
     const IconComponent = config.icon;
 
     return (
-      <Badge variant={config.variant} size="sm" className="inline-flex items-center">
+      <Badge variant={config.variant} size='sm' className='inline-flex items-center'>
         <IconComponent className='w-3 h-3 mr-1' />
         {config.text}
       </Badge>
     );
   };
+
+  // 필터 태그 컴포넌트
+  const FilterTag = ({
+    label,
+    count,
+    active,
+    onClick,
+    variant = 'default',
+  }: {
+    label: string;
+    count: number;
+    active: boolean;
+    onClick: () => void;
+    variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
+  }) => (
+    <div className='mb-2'>
+      <Badge
+        selectable
+        selected={active}
+        onClick={onClick}
+        variant={active ? 'info' : variant}
+        className='w-full justify-between cursor-pointer hover:opacity-80 transition-all'
+      >
+        <span>{label}</span>
+        <span className='ml-2 text-gray-500 text-xs'>
+          {count}
+        </span>
+      </Badge>
+    </div>
+  );
 
   const openDetailModal = (user: AdminUserView) => {
     modal.openView(user);
@@ -248,6 +341,7 @@ export default function UserRegistrationManagement() {
             <button
               onClick={() => {
                 setActiveTab('students');
+                setStatusFilter('all');
                 setCurrentPage(1);
                 setSelectedUserIds([]);
                 setSelectedAllUser(false);
@@ -269,6 +363,7 @@ export default function UserRegistrationManagement() {
             <button
               onClick={() => {
                 setActiveTab('admins');
+                setStatusFilter('all');
                 setCurrentPage(1);
                 setSelectedUserIds([]);
                 setSelectedAllUser(false);
@@ -290,6 +385,64 @@ export default function UserRegistrationManagement() {
           </nav>
         </div>
 
+        {/* 상태 필터 태그 */}
+        <div className='p-4 border-b border-slate-200 bg-slate-50'>
+          <div className='flex justify-end gap-2'>
+            <FilterTag
+              label='전체'
+              count={statusCounts.all}
+              active={statusFilter === 'all'}
+              onClick={() => {
+                setStatusFilter('all');
+                setCurrentPage(1);
+              }}
+              variant='default'
+            />
+            <FilterTag
+              label='승인됨'
+              count={statusCounts.approved}
+              active={statusFilter === 'approved'}
+              onClick={() => {
+                setStatusFilter('approved');
+                setCurrentPage(1);
+              }}
+              variant='success'
+            />
+            <FilterTag
+              label='대기중'
+              count={statusCounts.pending}
+              active={statusFilter === 'pending'}
+              onClick={() => {
+                setStatusFilter('pending');
+                setCurrentPage(1);
+              }}
+              variant='warning'
+            />
+            <FilterTag
+              label='거부됨'
+              count={statusCounts.rejected}
+              active={statusFilter === 'rejected'}
+              onClick={() => {
+                setStatusFilter('rejected');
+                setCurrentPage(1);
+              }}
+              variant='danger'
+            />
+            {statusCounts.unknown > 0 && (
+              <FilterTag
+                label='알 수 없음'
+                count={statusCounts.unknown}
+                active={statusFilter === 'unknown'}
+                onClick={() => {
+                  setStatusFilter('unknown');
+                  setCurrentPage(1);
+                }}
+                variant='default'
+              />
+            )}
+          </div>
+        </div>
+
         {/* 일괄 작업 버튼 영역 */}
         {activeTab === 'students' && selectedUserIds.length > 0 && (
           <div className='p-4 bg-blue-50 border-b border-blue-200'>
@@ -304,11 +457,7 @@ export default function UserRegistrationManagement() {
                 >
                   선택한 사용자 승인
                 </Button>
-                <Button
-                  onClick={handleBulkRejection}
-                  variant='danger'
-                  size='sm'
-                >
+                <Button onClick={handleBulkRejection} variant='danger' size='sm'>
                   선택한 사용자 거부
                 </Button>
               </div>
@@ -403,11 +552,7 @@ export default function UserRegistrationManagement() {
                       )}
 
                       {activeTab === 'students' && user.status !== 'rejected' && (
-                        <Button
-                          onClick={() => handleStatusUpdate(user.id, 'rejected')}
-                          variant='danger'
-                          size='xs'
-                        >
+                        <Button onClick={() => handleStatusUpdate(user.id, 'rejected')} variant='danger' size='xs'>
                           거부
                         </Button>
                       )}
@@ -474,8 +619,8 @@ export default function UserRegistrationManagement() {
           <div className='bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
             <div className='flex items-center justify-between p-6 border-b border-slate-200'>
               <h3 className='text-lg font-semibold text-slate-900'>사용자 상세 정보</h3>
-              <Button 
-                onClick={closeDetailModal} 
+              <Button
+                onClick={closeDetailModal}
                 variant='ghost'
                 size='md'
                 isIconOnly

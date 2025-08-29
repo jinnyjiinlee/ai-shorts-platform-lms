@@ -12,12 +12,14 @@ interface StatCardProps {
     text: string;
     variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
   };
+  onClick?: () => void;
 }
 
-export default function StatCard({ title, value, subtitle, icon, badge }: StatCardProps) {
+export default function StatCard({ title, value, subtitle, icon, badge, onClick }: StatCardProps) {
   return (
     <Button
       variant='ghost'
+      onClick={onClick}
       className='group w-full justify-start h-auto p-4 bg-gradient-to-r from-slate-50/50 to-white hover:from-slate-100/50 hover:to-slate-50 border border-slate-100 hover:border-slate-200 rounded-2xl transition-all duration-300 hover:shadow-md hover:shadow-slate-200/20'
     >
       <div className='flex items-center gap-4 w-full'>

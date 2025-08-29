@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { UsersIcon } from '@heroicons/react/24/outline';
 import { Badge } from '@/features/shared/ui/Badge';
 import DashboardHeader from './DashboardHeader';
@@ -21,7 +22,8 @@ const convertToCohortData = (dashboardData: CohortDashboardData): CohortData => 
     ...dashboardData,
     name: `${dashboardData.cohort}기`,
     completedMissions: Math.floor(dashboardData.totalMissions * (dashboardData.submissionRate / 100)),
-    color: parseInt(dashboardData.cohort) % 3 === 0 ? 'blue' : parseInt(dashboardData.cohort) % 2 === 0 ? 'green' : 'purple',
+    color:
+      parseInt(dashboardData.cohort) % 3 === 0 ? 'blue' : parseInt(dashboardData.cohort) % 2 === 0 ? 'green' : 'purple',
     statusColor:
       dashboardData.status === 'active'
         ? 'bg-green-100 text-green-800'
@@ -38,6 +40,7 @@ const convertToCohortData = (dashboardData: CohortDashboardData): CohortData => 
 };
 
 export default function DashboardView() {
+  const router = useRouter();
   const [activeCohorts, setActiveCohorts] = useState<string[]>(['1']); // 진행 중인 기수
   const [selectedCohort, setSelectedCohort] = useState<string | null>('1'); // 선택된 기수 (상세 보기용)
   const [weeklyViewMode, setWeeklyViewMode] = useState<'compact' | 'detailed'>('compact'); // 주차별 보기 모드
@@ -47,6 +50,10 @@ export default function DashboardView() {
   const [cohortData, setCohortData] = useState<CohortDashboardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const navigateToUserManagement = (status: string, tab: 'students' | 'admins' = 'students') => {
+    router.push(`/admin/studentManagement?status=${status}&tab=${tab}`);
+  };
 
   // 데이터 불러오기
   useEffect(() => {
@@ -169,6 +176,7 @@ export default function DashboardView() {
             text: `${overallStats.activeStudentsCount}명 활동중`,
             variant: 'default',
           }}
+          onClick={() => navigateToUserManagement('all')}
         />
         <StatCard
           title='승인 대기'
@@ -179,6 +187,7 @@ export default function DashboardView() {
             text: '처리 필요',
             variant: 'warning',
           }}
+          onClick={() => navigateToUserManagement('pending')}
         />
       </div>
 
