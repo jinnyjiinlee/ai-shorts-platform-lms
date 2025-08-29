@@ -56,7 +56,15 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
       subItems: [{ href: '/admin/studentLounge/qna', name: '[1기] QnA' }],
     },
     { href: '/admin/studentManagement', name: '수강생 관리', icon: UsersIcon },
-    { href: '/admin/resourceShare', name: '자료 공유', icon: AcademicCapIcon },
+    {
+      href: '/admin/resourceShare',
+      name: '학습 자료',
+      icon: AcademicCapIcon,
+      subItems: [
+        { href: '/admin/resourceShare/weeklyResource', name: '주차별 학습자료' },
+        { href: '/admin/resourceShare/aiContentsStudio', name: 'AI 콘텐츠 스튜디오' },
+      ],
+    },
     { href: '/admin/settings', name: '설정', icon: Cog6ToothIcon },
   ];
 
