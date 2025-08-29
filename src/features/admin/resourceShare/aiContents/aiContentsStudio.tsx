@@ -18,6 +18,18 @@ export default function AiContentsStudio({ userRole }: AiContentsStudioProps) {
       color: 'purple',
     },
     {
+      title: '인스타 프로필 마스터',
+      description: 'AI 기반 퍼스널 브랜딩 최적화를 도와드립니다.',
+      icon: '📱',
+      emoji: '⭐',
+      gradient: 'from-pink-500 via-purple-500 to-indigo-500',
+      bgGradient: 'from-pink-50 to-indigo-50',
+      link: 'https://m.site.naver.com/1Nsqo',
+      features: ['맞춤형 프로필 구조', '검색·팔로우 유도 최적화', '계정 목적별 주제 추천'],
+      color: 'pink',
+      comingSoon: false,
+    },
+    {
       title: '핫 트렌드 콘텐츠 생성',
       description: '실시간 트렌드를 분석하여 바이럴 가능성이 높은 아이디어를 제안합니다.',
       icon: '💡',
@@ -98,7 +110,7 @@ export default function AiContentsStudio({ userRole }: AiContentsStudioProps) {
         </div>
 
         {/* Tools Grid */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6'>
           {aiTools.map((tool, index) => (
             <div key={`ai-tool-${tool.title}-${index}`} className='group relative'>
               <div
