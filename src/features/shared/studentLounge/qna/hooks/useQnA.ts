@@ -42,9 +42,10 @@ export const useQnA = (userRole: 'admin' | 'student', userCohort?: string) => {
 
       const data = await fetchQuestions();
 
-      // 학생은 본인 기수만, 관리자는 전체
-      const filtered = userRole === 'student' && userCohort ? data.filter((q) => q.cohort === userCohort) : data;
-
+      // 학생은 본인 기수만, 관리자는 전체 질문
+      const filtered = userCohort
+        ? data.filter((q) => q.cohort === userCohort) // userCohort는 props로 받은 게시판 cohort
+        : data;
       setQuestions(filtered);
     } catch (err) {
       setError('질문 목록을 불러오는데 실패했습니다.');
@@ -119,7 +120,6 @@ export const useQnA = (userRole: 'admin' | 'student', userCohort?: string) => {
     setSelectedQuestion(question);
     setShowDetailModal(true);
   };
-
 
   // 초기 로드
   useEffect(() => {
