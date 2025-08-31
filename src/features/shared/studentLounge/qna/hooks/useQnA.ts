@@ -41,12 +41,12 @@ export const useQnA = (userRole: 'admin' | 'student', userCohort?: string) => {
       setError(null);
 
       const data = await fetchQuestions();
-
-      // 학생은 본인 기수만, 관리자는 전체 질문
-      const filtered = userCohort
-        ? data.filter((q) => q.cohort === userCohort) // userCohort는 props로 받은 게시판 cohort
-        : data;
-      setQuestions(filtered);
+  
+      // 1기 전용 게시판이므로 모든 질문 표시
+      // 필터링 불필요: 어차피 1기 학생들의 질문만 있음
+      // 나중에 2기 게시판은 별도 라우트(/qna2)로 구현 예정
+      setQuestions(data);
+      
     } catch (err) {
       setError('질문 목록을 불러오는데 실패했습니다.');
       console.error(err);
