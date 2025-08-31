@@ -36,10 +36,10 @@ export default function AiContentsStudio({ userRole }: AiContentsStudioProps) {
       emoji: '🚀',
       gradient: 'from-blue-500 via-purple-500 to-pink-500',
       bgGradient: 'from-blue-50 to-purple-50',
-      link: '#',
+      link: 'https://chatgpt.com/g/g-68a2147e70208191be2a59353169344f-has-teurendeu-kontenceu-saengseonggi',
       features: ['최신 트렌드 반영', '시선 끄는 아이디어', '다양한 플랫폼 적용'],
       color: 'blue',
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       title: '핫 시즌 상품 추천',
@@ -48,10 +48,10 @@ export default function AiContentsStudio({ userRole }: AiContentsStudioProps) {
       emoji: '🎆',
       gradient: 'from-yellow-500 via-orange-500 to-red-500',
       bgGradient: 'from-yellow-50 to-orange-50',
-      link: '#',
+      link: 'https://chatgpt.com/g/g-68a2190cf34c819182f33fef55d7c448-has-sijeun-sangpum-cuceongi',
       features: ['시즌별 인기템 큐레이션', '소비자 관심도 높은 아이템', '쇼핑.마케팅 높은 활용도'],
       color: 'yellow',
-      comingSoon: true,
+      comingSoon: false,
     },
     {
       title: '쇼츠 대본 생성',
@@ -60,10 +60,10 @@ export default function AiContentsStudio({ userRole }: AiContentsStudioProps) {
       emoji: '🎯',
       gradient: 'from-green-500 via-teal-500 to-blue-500',
       bgGradient: 'from-green-50 to-teal-50',
-      link: '#',
+      link: 'https://chatgpt.com/g/g-6875efcf1e3c8191894618ece05b3559-syoceu-daebon-saengseonggi',
       features: ['후킹 도입부 제안', '짧고 임팩트 있는 전개', '플랫폼별 최적화 지원'],
       color: 'green',
-      comingSoon: true,
+      comingSoon: false,
     },
   ];
 
