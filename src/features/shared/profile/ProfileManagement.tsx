@@ -99,12 +99,15 @@ export default function ProfileManagement({ userRole = 'student' }: ProfileManag
 
       const { error } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          id: user.id,
           name: formData.name.trim(),
           nickname: formData.nickname.trim(),
           phone: formData.phone.trim(),
-        })
-        .eq('id', user.id);
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'id'
+        });
 
       if (error) throw error;
 
