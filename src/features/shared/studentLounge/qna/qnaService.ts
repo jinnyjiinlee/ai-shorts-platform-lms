@@ -131,13 +131,15 @@ export const updateQuestion = async (questionId: string, title: string, content:
 
     const { data, error } = await supabase
       .from('qna_questions')
-      .update({
+      .upsert({
+        id: questionId,
+        student_id: user.id,
         title,
         content,
         updated_at: new Date().toISOString(), // 수정 시간 갱신
+      }, {
+        onConflict: 'id'
       })
-      .eq('id', questionId)
-      .eq('student_id', user.id) // 본인 확인 - 중요!
       .select()
       .single();
 
@@ -232,11 +234,14 @@ export const createAnswer = async (questionId: string, content: string): Promise
     // 2. 질문 상태를 'answered'로 업데이트
     const { error: updateError } = await supabase
       .from('qna_questions')
-      .update({
+      .upsert({
+        id: questionId,
         status: 'answered',
         updated_at: new Date().toISOString(),
-      })
-      .eq('id', questionId);
+      }, {
+        onConflict: 'id',
+        ignoreDuplicates: false
+      });
 
     if (updateError) {
       // 상태 업데이트 실패해도 답변은 이미 작성됨
@@ -271,12 +276,14 @@ export const updateAnswer = async (answerId: string, content: string): Promise<A
 
     const { data, error } = await supabase
       .from('qna_answers')
-      .update({
+      .upsert({
+        id: answerId,
+        admin_id: user.id,
         content,
         updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'id'
       })
-      .eq('id', answerId)
-      .eq('admin_id', user.id) // 본인 확인
       .select()
       .single();
 

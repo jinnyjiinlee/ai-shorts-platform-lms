@@ -17,9 +17,6 @@ export default function CompletionStatus({ isCompleted }: CompletionStatusProps)
           </div>
           <div>
             <p className='font-medium text-green-900'>미션을 성공적으로 완료했습니다!</p>
-            <p className='text-sm text-green-700'>
-              시장 분석이 체계적이고 인사이트가 뛰어납니다. 다음 미션에서도 이 수준을 유지해주세요.
-            </p>
           </div>
         </div>
       </div>
