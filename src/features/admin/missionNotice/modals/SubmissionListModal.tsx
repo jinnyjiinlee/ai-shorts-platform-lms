@@ -26,7 +26,7 @@ export default function SubmissionListModal({ show, mission, onClose }: Submissi
 
         <div className='p-6'>
           {activeTab === 'mission' && <MissionInfoTab mission={mission} />}
-          {activeTab === 'submissions' && <SubmissionListTab mission={mission} onGradeSubmission={onGradeSubmission} />}
+          {activeTab === 'submissions' && <SubmissionListTab mission={mission} />}
         </div>
 
         <div className='p-6 border-t border-slate-200 flex justify-end'>
