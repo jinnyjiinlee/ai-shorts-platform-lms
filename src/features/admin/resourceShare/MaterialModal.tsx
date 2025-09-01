@@ -26,7 +26,6 @@ interface MaterialModalProps {
   material?: LearningMaterial | null;
   formData: MaterialFormData;
   availableWeeks: number[];
-  availableCohorts: string[];
   onClose: () => void;
   onSave: () => void;
   onDownload?: (material: LearningMaterial) => void;
@@ -39,7 +38,6 @@ export default function MaterialModal({
   material,
   formData,
   availableWeeks,
-  availableCohorts,
   onClose,
   onSave,
   onDownload,
@@ -113,14 +111,11 @@ export default function MaterialModal({
 
                 <div>
                   <label className='block text-sm font-medium text-slate-700 mb-2'>기수</label>
-                  <Select
-                    value={formData.cohort}
-                    onChange={(value) => onFormDataChange({ ...formData, cohort: value })}
-                    options={availableCohorts.map((cohort) => ({
-                      value: cohort,
-                      label: `${cohort}기`
-                    }))}
-                    className='w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                  <input
+                    type='text'
+                    value='1기'
+                    disabled
+                    className='w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed'
                   />
                 </div>
               </div>
@@ -171,7 +166,7 @@ export default function MaterialModal({
                       {material.week}주차
                     </span>
                     <span className='px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs'>
-                      {material.cohort}기
+                      1기
                     </span>
                   </div>
                 </div>

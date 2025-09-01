@@ -17,7 +17,6 @@ interface WeeklyLearningMaterialsProps {
 
 export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMaterialsProps) {
   const [materials, setMaterials] = useState<LearningMaterial[]>([]);
-  const [selectedCohort, setSelectedCohort] = useState<string>('1');
   const [selectedWeek, setSelectedWeek] = useState<number | 'all'>('all');
   const [modalType, setModalType] = useState<'create' | 'edit' | 'view'>('create');
 
@@ -33,13 +32,11 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
     isPublished: true,
   });
 
-  // 기수 목록 (확장 가능)
-  const availableCohorts = ['1', '2', '3'];
   const availableWeeks = Array.from({ length: 16 }, (_, i) => i + 1); // 1주차부터 16주차까지
 
-  // 필터링된 자료 목록
+  // 필터링된 자료 목록 (1기 전용)
   const getFilteredMaterials = () => {
-    let filtered = materials.filter((material) => material.cohort === selectedCohort);
+    let filtered = materials.filter((material) => material.cohort === '1');
 
     if (selectedWeek !== 'all') {
       filtered = filtered.filter((material) => material.week === selectedWeek);
@@ -58,7 +55,7 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
       title: '',
       description: '',
       week: 1,
-      cohort: selectedCohort,
+      cohort: '1',
       fileName: '',
       fileSize: '',
       fileType: 'PDF',
@@ -128,7 +125,7 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
   };
 
   const getWeekStats = () => {
-    const filtered = materials.filter((m) => m.cohort === selectedCohort);
+    const filtered = materials.filter((m) => m.cohort === '1');
     const weeks = [...new Set(filtered.map((m) => m.week))].sort();
     return weeks.map((week) => ({
       week,
@@ -144,11 +141,8 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
         icon={<FolderOpenIcon className='w-6 h-6 text-slate-600' />}
         title='주차별 학습자료'
         description={
-          userRole === 'admin' ? '주차별 학습자료를 업로드하고 관리하세요' : '주차별 학습자료를 확인하고 다운로드하세요'
+          userRole === 'admin' ? '1기 주차별 학습자료를 업로드하고 관리하세요' : '1기 주차별 학습자료를 확인하고 다운로드하세요'
         }
-        selectedCohort={selectedCohort}
-        availableCohorts={availableCohorts}
-        onCohortChange={(cohort) => setSelectedCohort(cohort as string)}
         actions={
           <>
             {/* 주차 선택 */}
@@ -182,7 +176,7 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
       <div className='bg-white rounded-2xl border border-slate-200 shadow-sm'>
         <div className='p-6 border-b border-slate-200'>
           <h2 className='text-xl font-semibold text-slate-900'>
-            {selectedCohort}기 {selectedWeek === 'all' ? '전체' : `${selectedWeek}주차`} 학습자료
+            1기 {selectedWeek === 'all' ? '전체' : `${selectedWeek}주차`} 학습자료
           </h2>
         </div>
 
@@ -219,7 +213,6 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
         material={modal.viewItem || modal.selectedItem}
         formData={formData}
         availableWeeks={availableWeeks}
-        availableCohorts={availableCohorts}
         onClose={() => {
           modal.closeModal();
           modal.closeView();
