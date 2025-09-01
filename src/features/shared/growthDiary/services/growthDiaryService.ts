@@ -59,14 +59,32 @@ export class GrowthDiaryService {
   }
 
   static async update(id: string, dto: UpdateGrowthDiaryDto) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error('로그인이 필요합니다.');
+    }
+
     const { data, error } = await supabase
       .from('growth_diary')
-      .update({ ...dto, updated_at: new Date().toISOString() })
-      .eq('id', id)
+      .upsert({
+        id,
+        student_id: user.id,
+        ...dto,
+        updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'id'
+      })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('일기 수정 오류:', error);
+      throw new Error('일기 수정 중 오류가 발생했습니다. 본인의 일기만 수정 가능합니다.');
+    }
+    
     return data;
   }
 

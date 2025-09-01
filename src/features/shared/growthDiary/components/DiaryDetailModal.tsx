@@ -5,6 +5,8 @@ import { Button } from '@/features/shared/ui/Button';
 import { GrowthDiary } from '@/types/domains/growthDiary';
 import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
 import { useFormState } from '@/features/shared/hooks/useFormState';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase/client';
 
 interface DiaryDetailModalProps {
   show: boolean;
@@ -21,11 +23,23 @@ export default function DiaryDetailModal({
   onClose,
   onEditDiary,
 }: DiaryDetailModalProps) {
+  // 현재 사용자 ID 상태
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
   // 수정 모드 상태 관리
   const { form: editForm, updateForm, isEditing, startEdit, cancelEdit } = useFormState({
     title: '',
     content: '',
   });
+
+  // 현재 로그인한 사용자 정보 가져오기
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
 
   // 일기 수정 로직
   const { submitting: editSubmitting, submit: submitEdit } = useAsyncSubmit(async () => {
@@ -44,6 +58,9 @@ export default function DiaryDetailModal({
 
   const displayName = diary.profiles?.nickname || diary.profiles?.name || '익명';
   const createdAt = new Date(diary.created_at).toLocaleDateString();
+  
+  // 본인이 작성한 일기인지 확인
+  const isMyDiary = currentUserId && diary.student_id === currentUserId;
 
   return (
     <Modal show={show} title='성장 일기 상세보기' onClose={onClose} size='2xl'>
@@ -108,8 +125,8 @@ export default function DiaryDetailModal({
         {!isEditing && (
           <div className='flex justify-between items-center pt-4 border-t border-slate-200'>
             <div>
-              {/* 학생이고 본인 일기면 수정 버튼 표시 */}
-              {userRole === 'student' && onEditDiary && (
+              {/* 학생이고 본인이 작성한 일기면 수정 버튼 표시 */}
+              {userRole === 'student' && onEditDiary && isMyDiary && (
                 <Button
                   variant='outline'
                   onClick={() => startEdit({ title: diary.title, content: diary.content })}

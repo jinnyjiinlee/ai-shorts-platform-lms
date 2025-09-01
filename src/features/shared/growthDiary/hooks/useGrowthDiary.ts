@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { GrowthDiary } from '@/types/domains/growthDiary';
 import { GrowthDiaryService } from '../services/growthDiaryService';
 import { usePagination } from '@/features/shared/ui/Pagination/usePagination';
+import { supabase } from '@/lib/supabase/client';
 
 /**
  * 성장일기 관련 모든 로직을 관리하는 Custom Hook
@@ -16,6 +17,7 @@ export const useGrowthDiary = (userRole: 'admin' | 'student', cohort: string = '
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDiaryModal, setShowDiaryModal] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // 일기 상세 모달 상태 관리
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -104,6 +106,15 @@ export const useGrowthDiary = (userRole: 'admin' | 'student', cohort: string = '
     setShowDetailModal(true);
   };
 
+  // 현재 사용자 정보 가져오기
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
+
   // 초기 로드
   useEffect(() => {
     loadDiaries();
@@ -118,6 +129,7 @@ export const useGrowthDiary = (userRole: 'admin' | 'student', cohort: string = '
     showDiaryModal,
     showDetailModal,
     selectedDiary,
+    currentUserId,
 
     // 페이지네이션 관련
     paginatedDiaries,

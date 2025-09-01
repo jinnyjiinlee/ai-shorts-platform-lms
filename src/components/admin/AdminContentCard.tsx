@@ -15,8 +15,8 @@ interface AdminContentCardProps {
   createdAt: string;
   badges?: ReactNode[];
   onView: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   extraActions?: ReactNode[];
 }
 
@@ -75,13 +75,15 @@ export default function AdminContentCard({
           </button>
 
           {/* 수정 */}
-          <button
-            onClick={onEdit}
-            className='p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors'
-            title='수정'
-          >
-            <PencilIcon className='w-5 h-5' />
-          </button>
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              className='p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors'
+              title='수정'
+            >
+              <PencilIcon className='w-5 h-5' />
+            </button>
+          )}
 
           {/* 추가 액션들 (고정, 발행상태 등) */}
           {extraActions.map((action, index) => (
@@ -89,13 +91,15 @@ export default function AdminContentCard({
           ))}
 
           {/* 삭제 */}
-          <button
-            onClick={onDelete}
-            className='p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors'
-            title='삭제'
-          >
-            <TrashIcon className='w-5 h-5' />
-          </button>
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className='p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors'
+              title='삭제'
+            >
+              <TrashIcon className='w-5 h-5' />
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -38,6 +38,7 @@ export default function GrowthDiaryBoard({ userRole, cohort }: GrowthDiaryBoardP
     showDetailModal,
     selectedDiary,
     setShowDetailModal,
+    currentUserId,
 
     // 페이지네이션 관련
     paginatedDiaries,
@@ -99,24 +100,34 @@ export default function GrowthDiaryBoard({ userRole, cohort }: GrowthDiaryBoardP
               )}
             </div>
           ) : (
-            paginatedDiaries.map((diary) => (
-              <AdminContentCard
-                key={diary.id}
-                title={diary.title}
-                content={diary.content}
-                cohort={cohort}
-                author={diary.profiles?.nickname || diary.profiles?.name || '작성자'}
-                createdAt={formatDate(diary.created_at)}
-                badges={[]}
-                onView={() => handleViewDiary(diary)}
-                onEdit={() => handleViewDiary(diary)} // 일기 상세보기 모달로 이동
-                onDelete={
-                  userRole === 'student'
-                    ? () => handleDeleteMyDiary(diary.id)
-                    : () => handleAdminDelete(diary.id)
-                }
-              />
-            ))
+            paginatedDiaries.map((diary) => {
+              // 본인이 작성한 일기인지 확인
+              const isMyDiary = currentUserId && diary.student_id === currentUserId;
+              
+              return (
+                <AdminContentCard
+                  key={diary.id}
+                  title={diary.title}
+                  content={diary.content}
+                  cohort={cohort}
+                  author={diary.profiles?.nickname || diary.profiles?.name || '작성자'}
+                  createdAt={formatDate(diary.created_at)}
+                  badges={[]}
+                  onView={() => handleViewDiary(diary)}
+                  // 학생이고 본인 일기이거나 관리자인 경우만 수정 가능
+                  onEdit={(userRole === 'student' && isMyDiary) || userRole === 'admin' 
+                    ? () => handleViewDiary(diary) 
+                    : undefined}
+                  // 학생이고 본인 일기이거나 관리자인 경우만 삭제 가능
+                  onDelete={(userRole === 'student' && isMyDiary) || userRole === 'admin'
+                    ? userRole === 'student'
+                      ? () => handleDeleteMyDiary(diary.id)
+                      : () => handleAdminDelete(diary.id)
+                    : undefined
+                  }
+                />
+              );
+            })
           )}
         </div>
       </div>
