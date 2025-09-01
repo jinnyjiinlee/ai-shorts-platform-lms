@@ -124,7 +124,7 @@ export default function QuestionDetailModal({
         {/* 기존 답변 표시 */}
         {question.answer && (
           <div>
-            <h4 className='text-md font-medium text-slate-900 mb-3'>관리자 답변</h4>
+            <h4 className='text-md font-medium text-slate-900 mb-3'>코치 답변</h4>
             <div className='p-4 bg-blue-50 border border-blue-200 rounded-lg'>
               <p className='text-slate-800 whitespace-pre-wrap'>{question.answer.content}</p>
               <div className='text-sm text-slate-600 mt-2'>
