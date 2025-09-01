@@ -157,6 +157,23 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
                   </div>
                 </div>
               )}
+              {feedbacks.length > 0 && (
+                <div className='mb-3 p-2 bg-slate-50 rounded-lg border'>
+                  <div className='flex justify-between items-center text-xs text-slate-600'>
+                    <span>👤 작성자: {feedbacks[0].admin_nickname || '알 수 없음'}</span>
+                    <span>📅 {feedbacks[0].created_at 
+                      ? new Date(feedbacks[0].created_at).toLocaleString('ko-KR', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })
+                      : '날짜 정보 없음'
+                    }</span>
+                  </div>
+                </div>
+              )}
               <textarea
                 value={feedbackComment}
                 onChange={(e) => setFeedbackComment(e.target.value)}
