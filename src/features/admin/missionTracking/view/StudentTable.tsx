@@ -29,6 +29,7 @@ interface StudentSubmissionTableProps {
     content: string;
     submittedAt: string;
     studentId: string;
+    submissionId: string;
   }) => void;
 }
 
@@ -205,7 +206,7 @@ export default function StudentTable({
                   <div className='flex items-center justify-center space-x-2 overflow-x-auto'>
                     {weeklyData.map((week) => {
                       // 제출 정보를 model 함수로 가져오기
-                      const { hasSubmission, content, submittedAt } = getStudentSubmissionForWeek(
+                      const { hasSubmission, content, submittedAt, submissionId } = getStudentSubmissionForWeek(
                         student.studentId,
                         week.missionId,
                         studentSubmissions
@@ -216,13 +217,14 @@ export default function StudentTable({
                           key={week.missionId}
                           onClick={() =>
                             hasSubmission &&
-                            onSubmissionClick({
+                            submissionId && onSubmissionClick({
                               studentName: student.studentName,
                               week: week.week,
                               missionTitle: week.missionTitle,
                               content: content,
                               submittedAt: submittedAt,
                               studentId: student.studentId,
+                              submissionId: submissionId,
                             })
                           }
                           className={`w-6 h-6 rounded-lg text-xs font-medium transition-all ${

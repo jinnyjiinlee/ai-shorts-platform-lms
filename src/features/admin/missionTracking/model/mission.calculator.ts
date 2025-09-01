@@ -56,5 +56,6 @@ export const getStudentSubmissionForWeek = (
     hasSubmission: submission?.submitted || false,
     content: submission?.content || '제출 내용이 없습니다.',
     submittedAt: submission?.submittedAt || '제출일 정보 없음',
+    submissionId: submission?.submissionId || null,
   };
 };

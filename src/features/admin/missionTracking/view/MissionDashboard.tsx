@@ -17,6 +17,7 @@ export default function MissionDashboard() {
     content: string;
     submittedAt: string;
     studentId: string;
+    submissionId: string;
   } | null>(null);
 
   const { weeklyData, availableCohorts, isLoading, error, allStudents, studentSubmissions } =

@@ -45,6 +45,7 @@ const getAllSubmissions = async (cohort: number) => {
     .from('mission_submit')
     .select(
       `
+      id,
       mission_id,
       student_id,
       submitted_at,
@@ -61,6 +62,7 @@ const getAllSubmissions = async (cohort: number) => {
 
 // 중복 제출 제거 (같은 학생의 최신 제출만 유지)
 interface SubmissionData {
+  id: string,
   mission_id: string;
   student_id: string;
   submitted_at: string;
@@ -88,6 +90,7 @@ interface SubmissionInfo {
   submitted: boolean;
   content: string;
   submittedAt: string;
+  submissionId: string;
 }
 
 const buildSubmissionMap = (submissions: SubmissionData[]) => {
@@ -102,6 +105,7 @@ const buildSubmissionMap = (submissions: SubmissionData[]) => {
       submitted: true,
       content: sub.content || '',
       submittedAt: new Date(sub.submitted_at).toLocaleString('ko-KR'),
+      submissionId: sub.id,
     });
   });
 
@@ -183,7 +187,7 @@ export const getStudentSubmissions = async (missionId: string, cohort: number): 
       getStudents(cohort),
       supabase
         .from('mission_submit')
-        .select('mission_id, student_id, submitted_at, status, content')
+        .select('id, mission_id, student_id, submitted_at, status, content')
         .eq('mission_id', missionId)
         .then(({ data, error }) => {
           if (error) throw error;
