@@ -13,16 +13,65 @@ export interface Announcement {
 }
 
 export interface Column {
-  id: string | number;
+  id: string;
   title: string;
   content: string;
+  summary?: string;
   author: string;
-  createdAt: string;
-  cohort?: string | number;
-  likes?: number;
-  commentCount?: number;
+  author_id?: string;
+  cohort?: string;
+  
+  // 상태 관리
+  status: 'draft' | 'published' | 'archived';
+  is_featured: boolean;
+  
+  // 메타데이터
+  slug?: string;
+  thumbnail_url?: string;
+  meta_description?: string;
+  reading_time?: number;
+  
+  // 통계
+  view_count: number;
+  like_count: number;
   isLiked?: boolean;
-  isPublished?: boolean;
+  
+  // 시간
+  created_at: string;
+  updated_at?: string;
+  published_at?: string;
+  
+  // 관계
+  profiles?: {
+    name?: string;
+    nickname?: string;
+  };
+}
+
+// Column 생성용 DTO
+export interface CreateColumnDto {
+  title: string;
+  content: string;
+  summary?: string;
+  cohort?: string;
+  status?: 'draft' | 'published';
+  is_featured?: boolean;
+  slug?: string;
+  thumbnail_url?: string;
+  meta_description?: string;
+}
+
+// Column 수정용 DTO
+export interface UpdateColumnDto {
+  title?: string;
+  content?: string;
+  summary?: string;
+  cohort?: string;
+  status?: 'draft' | 'published' | 'archived';
+  is_featured?: boolean;
+  slug?: string;
+  thumbnail_url?: string;
+  meta_description?: string;
 }
 
 export interface Comment {

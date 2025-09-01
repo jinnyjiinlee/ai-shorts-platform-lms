@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { MegaphoneIcon, ChatBubbleLeftRightIcon, PlusIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/features/shared/ui/Button';
 import { Badge } from '@/features/shared/ui/Badge';
-// AnnouncementCard는 더 이상 사용하지 않음 (shared 폴더로 이동)
-import ColumnCard from './ColumnCard';
+// 기존 카드들은 shared 폴더로 이동됨
+import ColumnCard from '@/features/shared/columns/components/ColumnCard';
 
 interface CommunityViewProps {
   userRole: 'student' | 'admin';
@@ -125,7 +125,14 @@ export default function CommunityView({ userRole, currentUser = '김학생' }: C
                 className='border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow animate-slide-up'
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <ColumnCard column={column} currentUser={currentUser} />
+                <ColumnCard 
+                  column={column} 
+                  onView={() => console.log('View column:', column.id)}
+                  onToggleLike={async (id) => {
+                    console.log('Toggle like:', id);
+                    return true;
+                  }}
+                />
               </div>
             ))}
           </div>
