@@ -6,7 +6,6 @@ import {
   HomeIcon,
   ClipboardDocumentListIcon,
   ChatBubbleLeftRightIcon,
-  AcademicCapIcon,
   ChevronDownIcon,
   PlayIcon,
   UserCircleIcon,
@@ -89,7 +88,10 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
       id: 'studentLounge',
       name: '수강생 라운지',
       icon: ChatBubbleLeftRightIcon,
-      subItems: [{ id: 'qna', name: '[1기] QnA ', href: '/student/studentLounge/qna' }],
+      subItems: [
+        { id: 'qna', name: '[1기] QnA ', href: '/student/studentLounge/qna' },
+        { id: 'growthDiary', name: '[1기] 성장 일기 ', href: '/student/studentLounge/growthDiary' },
+      ],
     },
   ];
 
