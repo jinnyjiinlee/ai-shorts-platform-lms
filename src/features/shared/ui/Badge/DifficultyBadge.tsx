@@ -18,7 +18,7 @@ export interface DifficultyBadgeProps {
 }
 
 export default function DifficultyBadge({
-  difficulty,
+  difficulty = 'medium', // 기본값 추가
   size = 'md',
   variant = 'gradient',
   format = 'korean',
@@ -68,12 +68,12 @@ export default function DifficultyBadge({
     if (!config) return 'bg-gray-500 text-white'; // safety fallback
     
     if (variant === 'outline') {
-      return `border-2 bg-transparent ${config.outline}`;
+      return `border-2 bg-transparent ${config.outline || 'border-gray-500 text-gray-600'}`;
     }
     if (variant === 'solid') {
-      return `${config.solid} text-white`;
+      return `${config.solid || 'bg-gray-500'} text-white`;
     }
-    return `${config.gradient} text-white`;
+    return `${config.gradient || 'bg-gray-500'} text-white`;
   };
 
   // 텍스트 포맷
