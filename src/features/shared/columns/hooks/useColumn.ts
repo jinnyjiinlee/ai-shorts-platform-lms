@@ -14,7 +14,6 @@ export const useColumn = (userRole: 'admin' | 'student') => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState<Column | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [selectedCohort, setSelectedCohort] = useState<string | 'all'>('all');
 
   // 페이지네이션 설정
   const COLUMNS_PER_PAGE = 10;
@@ -50,12 +49,7 @@ export const useColumn = (userRole: 'admin' | 'student') => {
         ? await ColumnService.getAllForAdmin()
         : await ColumnService.getAll();
 
-      // 기수별 필터링
-      const filteredData = selectedCohort === 'all' 
-        ? data 
-        : data.filter((column) => column.cohort === selectedCohort);
-
-      setColumns(filteredData);
+      setColumns(data);
     } catch (err) {
       setError('칼럼을 불러오는데 실패했습니다.');
       console.error(err);
@@ -68,12 +62,8 @@ export const useColumn = (userRole: 'admin' | 'student') => {
   const handleCreateColumn = async (
     title: string, 
     content: string, 
-    summary?: string,
-    cohort = '1',
     status: 'draft' | 'published' = 'published',
-    isFeatured = false,
-    thumbnailUrl?: string,
-    metaDescription?: string
+    isFeatured = false
   ) => {
     if (userRole !== 'admin') return;
 
@@ -81,12 +71,8 @@ export const useColumn = (userRole: 'admin' | 'student') => {
       await ColumnService.create({
         title,
         content,
-        summary,
-        cohort,
         status,
         is_featured: isFeatured,
-        thumbnail_url: thumbnailUrl,
-        meta_description: metaDescription,
       });
       await loadColumns();
       setShowCreateModal(false);
@@ -102,12 +88,8 @@ export const useColumn = (userRole: 'admin' | 'student') => {
     updates: {
       title?: string;
       content?: string;
-      summary?: string;
-      cohort?: string;
       status?: 'draft' | 'published' | 'archived';
       is_featured?: boolean;
-      thumbnail_url?: string;
-      meta_description?: string;
     }
   ) => {
     if (userRole !== 'admin') return;
@@ -134,67 +116,20 @@ export const useColumn = (userRole: 'admin' | 'student') => {
     }
   };
 
-  // 추천 상태 토글 (관리자만)
-  const handleToggleFeatured = async (id: string) => {
-    if (userRole !== 'admin') return;
 
-    try {
-      await ColumnService.toggleFeatured(id);
-      await loadColumns();
-    } catch (err) {
-      alert('추천 상태 변경에 실패했습니다.');
-    }
-  };
-
-  // 발행 상태 변경 (관리자만)
-  const handleUpdateStatus = async (id: string, status: 'draft' | 'published' | 'archived') => {
-    if (userRole !== 'admin') return;
-
-    try {
-      await ColumnService.updateStatus(id, status);
-      await loadColumns();
-    } catch (err) {
-      alert('상태 변경에 실패했습니다.');
-    }
-  };
 
   // 칼럼 상세보기
   const handleViewColumn = (column: Column) => {
     setSelectedColumn(column);
     setShowDetailModal(true);
-    // 조회수 증가 (학생용일 때만)
-    if (userRole === 'student') {
-      ColumnService.incrementViewCount(column.id);
-    }
   };
 
-  // 좋아요 토글 (로그인 사용자만)
-  const handleToggleLike = async (columnId: string) => {
-    if (!currentUserId) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
 
-    try {
-      const isLiked = await ColumnService.toggleLike(columnId);
-      // 좋아요 상태 업데이트를 위해 다시 로드
-      await loadColumns();
-      return isLiked;
-    } catch (err) {
-      console.error('좋아요 처리 실패:', err);
-      alert('좋아요 처리에 실패했습니다.');
-    }
-  };
 
-  // 기수 변경
-  const handleCohortChange = (cohort: string | 'all') => {
-    setSelectedCohort(cohort);
-  };
-
-  // 초기 로드 및 기수 변경 시 다시 로드
+  // 초기 로드
   useEffect(() => {
     loadColumns();
-  }, [userRole, selectedCohort]);
+  }, [userRole]);
 
   return {
     // 상태
@@ -205,7 +140,6 @@ export const useColumn = (userRole: 'admin' | 'student') => {
     showDetailModal,
     selectedColumn,
     currentUserId,
-    selectedCohort,
 
     // 페이지네이션 관련
     paginatedColumns,
@@ -222,10 +156,6 @@ export const useColumn = (userRole: 'admin' | 'student') => {
     handleCreateColumn,
     handleEditColumn,
     handleDeleteColumn,
-    handleToggleFeatured,
-    handleUpdateStatus,
     handleViewColumn,
-    handleToggleLike,
-    handleCohortChange,
   };
 };

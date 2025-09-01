@@ -5,7 +5,6 @@ import { MegaphoneIcon, ChatBubbleLeftRightIcon, PlusIcon, ArrowDownTrayIcon } f
 import { Button } from '@/features/shared/ui/Button';
 import { Badge } from '@/features/shared/ui/Badge';
 // 기존 카드들은 shared 폴더로 이동됨
-import ColumnCard from '@/features/shared/columns/components/ColumnCard';
 
 interface CommunityViewProps {
   userRole: 'student' | 'admin';
@@ -122,17 +121,18 @@ export default function CommunityView({ userRole, currentUser = '김학생' }: C
             {columns.map((column, index) => (
               <div
                 key={column.id}
-                className='border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow animate-slide-up'
+                className='border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow animate-slide-up cursor-pointer'
                 style={{ animationDelay: `${index * 100}ms` }}
+                onClick={() => console.log('View column:', column.id)}
               >
-                <ColumnCard 
-                  column={column} 
-                  onView={() => console.log('View column:', column.id)}
-                  onToggleLike={async (id) => {
-                    console.log('Toggle like:', id);
-                    return true;
-                  }}
-                />
+                <h3 className='text-lg font-semibold text-slate-900 mb-2'>{column.title}</h3>
+                <p className='text-slate-600 text-sm line-clamp-2 mb-3'>
+                  {column.content.replace(/[#*`\[\]]/g, '').substring(0, 100)}...
+                </p>
+                <div className='flex items-center justify-between text-xs text-slate-500'>
+                  <span>{column.author}</span>
+                  <span>{new Date(column.created_at).toLocaleDateString('ko-KR')}</span>
+                </div>
               </div>
             ))}
           </div>
