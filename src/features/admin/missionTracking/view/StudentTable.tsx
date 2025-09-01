@@ -206,37 +206,47 @@ export default function StudentTable({
                   <div className='flex items-center justify-center space-x-2 overflow-x-auto'>
                     {weeklyData.map((week) => {
                       // 제출 정보를 model 함수로 가져오기
-                      const { hasSubmission, content, submittedAt, submissionId } = getStudentSubmissionForWeek(
+                      const { hasSubmission, content, submittedAt, submissionId, hasFeedback } = getStudentSubmissionForWeek(
                         student.studentId,
                         week.missionId,
                         studentSubmissions
                       );
 
                       return (
-                        <button
-                          key={week.missionId}
-                          onClick={() =>
-                            hasSubmission &&
-                            submissionId && onSubmissionClick({
-                              studentName: student.studentName,
-                              week: week.week,
-                              missionTitle: week.missionTitle,
-                              content: content,
-                              submittedAt: submittedAt,
-                              studentId: student.studentId,
-                              submissionId: submissionId,
-                            })
-                          }
-                          className={`w-6 h-6 rounded-lg text-xs font-medium transition-all ${
-                            hasSubmission
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer hover:scale-105'
-                              : 'bg-red-100 text-red-800'
-                          }`}
-                          disabled={!hasSubmission}
-                          title={`${week.week}주차 - ${hasSubmission ? '제출완료' : '미제출'}`}
-                        >
-                          {week.week}
-                        </button>
+                        <div key={week.missionId} className="relative">
+                          <button
+                            onClick={() =>
+                              hasSubmission &&
+                              submissionId && onSubmissionClick({
+                                studentName: student.studentName,
+                                week: week.week,
+                                missionTitle: week.missionTitle,
+                                content: content,
+                                submittedAt: submittedAt,
+                                studentId: student.studentId,
+                                submissionId: submissionId,
+                              })
+                            }
+                            className={`w-6 h-6 rounded-lg text-xs font-medium transition-all ${
+                              hasSubmission
+                                ? 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer hover:scale-105'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                            disabled={!hasSubmission}
+                            title={`${week.week}주차 - ${
+                              hasFeedback ? '피드백 완료' :
+                              hasSubmission ? '제출완료 (피드백 대기)' : 
+                              '미제출'
+                            }`}
+                          >
+                            {week.week}
+                          </button>
+                          {hasFeedback && (
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full flex items-center justify-center">
+                              <span className="text-[8px] text-white">✓</span>
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>

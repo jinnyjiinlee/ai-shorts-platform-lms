@@ -51,7 +51,8 @@ const getAllSubmissions = async (cohort: number) => {
       submitted_at,
       status,
       content,
-      mission_notice!inner(cohort)
+      mission_notice!inner(cohort),
+      mission_feedback(feedback_comment)
     `
     )
     .eq('mission_notice.cohort', cohort);
@@ -68,6 +69,8 @@ interface SubmissionData {
   submitted_at: string;
   status?: string;
   content?: string;
+  hasFeedback?: boolean;
+  mission_feedback?: Array<{ feedback_comment: string }>;
 }
 
 const removeDuplicateSubmissions = (submissions: SubmissionData[]) => {
@@ -91,6 +94,7 @@ interface SubmissionInfo {
   content: string;
   submittedAt: string;
   submissionId: string;
+  hasFeedback: boolean;
 }
 
 const buildSubmissionMap = (submissions: SubmissionData[]) => {
@@ -106,6 +110,7 @@ const buildSubmissionMap = (submissions: SubmissionData[]) => {
       content: sub.content || '',
       submittedAt: new Date(sub.submitted_at).toLocaleString('ko-KR'),
       submissionId: sub.id,
+      hasFeedback: Array.isArray(sub.mission_feedback) && sub.mission_feedback.length > 0,
     });
   });
 

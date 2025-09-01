@@ -147,7 +147,7 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
           {/* 관리자 피드백 영역 */}
           {mission.feedback && (
             <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-              <h4 className='font-medium text-blue-900 mb-2'>📝 관리자 피드백</h4>
+              <h4 className='font-medium text-blue-900 mb-2'>📝 코치 피드백</h4>
               <div className='text-blue-800 whitespace-pre-line leading-relaxed'>{mission.feedback}</div>
             </div>
           )}

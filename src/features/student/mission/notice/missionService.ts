@@ -22,10 +22,15 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
       throw new Error('미션 데이터를 불러오는 중 오류가 발생했습니다.');
     }
 
-    // 해당 학생의 제출 데이터 가져오기
+    // 해당 학생의 제출 데이터와 피드백 가져오기
     const { data: submissions, error: submissionError } = await supabase
       .from('mission_submit')
-      .select('*')
+      .select(`
+        *,
+        mission_feedback (
+          feedback_comment
+        )
+      `)
       .eq('student_id', user.id);
 
     if (submissionError) {
@@ -79,7 +84,9 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
             })
           : undefined,
         submission_type: mission.submission_type || 'file',
-        feedback: undefined,
+        feedback: Array.isArray(submission?.mission_feedback) && submission.mission_feedback.length > 0 
+          ? submission.mission_feedback[0]?.feedback_comment 
+          : undefined,
         submissionContent: submission?.content || '',
       } as Mission;
     });
