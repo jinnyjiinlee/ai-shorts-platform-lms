@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PlusIcon, PencilIcon, TrashIcon, EyeIcon, CalendarIcon, UserIcon } from '@heroicons/react/24/outline';
-import MarkdownEditor from './MarkdownEditor';
+import MarkdownEditor from '@/features/shared/ui/MarkdownEditor';
 import AdminPageHeader from '@/features/admin/ui/AdminPageHeader';
 import { Modal } from '@/features/shared/ui/Modal';
 import { Button } from '@/features/shared/ui/Button';

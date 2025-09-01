@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { MegaphoneIcon, ChatBubbleLeftRightIcon, PlusIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/features/shared/ui/Button';
 import { Badge } from '@/features/shared/ui/Badge';
-import AnnouncementCard from './AnnouncementCard';
+// AnnouncementCard는 더 이상 사용하지 않음 (shared 폴더로 이동)
 import ColumnCard from './ColumnCard';
 
 interface CommunityViewProps {
@@ -99,7 +99,10 @@ export default function CommunityView({ userRole, currentUser = '김학생' }: C
                 className='border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow animate-slide-up'
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <AnnouncementCard announcement={announcement} />
+                {/* 공지사항 카드는 별도 페이지에서 관리 */}
+                <div className="p-4 text-center text-slate-500">
+                  <p>공지사항은 별도 페이지에서 확인하세요</p>
+                </div>
               </div>
             ))}
           </div>

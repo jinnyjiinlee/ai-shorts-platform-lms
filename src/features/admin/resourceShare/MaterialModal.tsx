@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { ArrowDownTrayIcon, CloudArrowUpIcon, DocumentIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import MarkdownEditor from '../community/columns/MarkdownEditor';
+import MarkdownEditor from '@/features/shared/ui/MarkdownEditor';
 import { Button } from '@/features/shared/ui/Button';
 import { Select } from '@/features/shared/ui/Select';
 import { FormModal } from '@/features/shared/ui/Modal';

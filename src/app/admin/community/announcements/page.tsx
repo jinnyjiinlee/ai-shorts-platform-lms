@@ -1,5 +1,5 @@
-import AnnouncementManagement from '@/features/admin/community/announcement/AnnouncementManagement';
+import AnnouncementBoard from '@/features/shared/announcement/components/AnnouncementBoard';
 
 export default function AnnouncementsPage() {
-  return <AnnouncementManagement />;
+  return <AnnouncementBoard userRole="admin" />;
 }

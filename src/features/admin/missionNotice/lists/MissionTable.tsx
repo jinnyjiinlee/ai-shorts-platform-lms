@@ -1,6 +1,7 @@
 // admin - use
 
 import { ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { WeekBadge } from '@/features/shared/ui/Badge';
 import { Mission } from '@/types/domains/mission';
 
 interface MissionTableProps {
@@ -37,7 +38,13 @@ export default function MissionTable({
           className='text-left w-full hover:text-blue-600 transition-colors'
         >
           <div className='flex items-center space-x-2 mb-1'>
-            <span className='px-2 py-1 bg-slate-900 text-white rounded text-xs font-bold'>{mission.week}W</span>
+            <WeekBadge 
+              week={mission.week} 
+              size="md" 
+              variant="gradient" 
+              theme="indigo-purple" 
+              format="W"
+            />
             <h3 className='font-medium text-slate-900'>{mission.title}</h3>
           </div>
         </button>

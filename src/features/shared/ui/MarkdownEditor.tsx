@@ -6,7 +6,6 @@ import {
   ItalicIcon, 
   ListBulletIcon,
   LinkIcon,
-  PhotoIcon,
   EyeIcon,
   PencilIcon
 } from '@heroicons/react/24/outline';
@@ -60,10 +59,10 @@ export default function MarkdownEditor({ value, onChange, placeholder, className
   const markdownToHtml = (markdown: string) => {
     let html = markdown;
     
-    // 헤더
-    html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mb-4">$1</h1>');
-    html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold mb-3">$1</h2>');
-    html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-medium mb-2">$1</h3>');
+    // 헤더 - 여백 완전 제거
+    html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mb-0 mt-4 first:mt-0">$1</h1>');
+    html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold mb-0 mt-3 first:mt-0">$1</h2>');
+    html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-medium mb-0 mt-2 first:mt-0">$1</h3>');
     
     // 굵은 글씨
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>');
@@ -74,12 +73,57 @@ export default function MarkdownEditor({ value, onChange, placeholder, className
     // 링크
     html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-blue-600 hover:underline" target="_blank">$1</a>');
     
-    // 리스트
-    html = html.replace(/^\* (.*$)/gim, '<li class="ml-4">• $1</li>');
-    html = html.replace(/^(\d+)\. (.*$)/gim, '<li class="ml-4">$1. $2</li>');
+    // 헤더 다음의 빈 줄 제거 (여백 방지)
+    html = html.replace(/(<\/h[123]>)<br>/g, '$1');
     
-    // 줄바꿈
+    // 리스트 처리 - 줄바꿈 처리 전에 먼저 처리
+    const listItems = html.split('\n');
+    let processedHtml = '';
+    let inList = false;
+    let listType = '';
+    
+    for (let i = 0; i < listItems.length; i++) {
+      const line = listItems[i];
+      const bulletMatch = line.match(/^\* (.*)$/);
+      const numberMatch = line.match(/^(\d+)\. (.*)$/);
+      
+      if (bulletMatch) {
+        if (!inList || listType !== 'ul') {
+          if (inList) processedHtml += `</${listType}>`;
+          processedHtml += '<ul class="space-y-1 my-2">';
+          inList = true;
+          listType = 'ul';
+        }
+        processedHtml += `<li class="flex items-start"><span class="mr-2">•</span><span>${bulletMatch[1]}</span></li>`;
+      } else if (numberMatch) {
+        if (!inList || listType !== 'ol') {
+          if (inList) processedHtml += `</${listType}>`;
+          processedHtml += '<ol class="space-y-1 my-2">';
+          inList = true;
+          listType = 'ol';
+        }
+        processedHtml += `<li class="flex items-start"><span class="mr-2">${numberMatch[1]}.</span><span>${numberMatch[2]}</span></li>`;
+      } else {
+        if (inList) {
+          processedHtml += `</${listType}>`;
+          inList = false;
+          listType = '';
+        }
+        processedHtml += line + '\n';
+      }
+    }
+    
+    if (inList) {
+      processedHtml += `</${listType}>`;
+    }
+    
+    html = processedHtml;
+    
+    // 줄바꿈을 <br>로 변환
     html = html.replace(/\n/g, '<br>');
+    
+    // 헤더 바로 다음의 <br> 태그 제거 (여백 완전 제거)
+    html = html.replace(/(<\/h[123]>)<br>/g, '$1');
     
     return html;
   };
@@ -109,20 +153,53 @@ export default function MarkdownEditor({ value, onChange, placeholder, className
           
           <div className="w-px h-6 bg-slate-300 mx-2"></div>
           
-          {/* 헤더 */}
-          <button
-            type="button"
-            onClick={() => insertText('## ')}
-            className="px-3 py-1 bg-white border border-slate-300 rounded text-xs hover:bg-slate-50 transition-colors"
-            title="제목"
-          >
-            제목
-          </button>
+          {/* 헤더 버튼들 */}
+          <div className="flex items-center space-x-1">
+            <button
+              type="button"
+              onClick={() => insertText('# ')}
+              className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg text-xs font-medium hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+              title="대제목 (# 제목)"
+            >
+              H1
+            </button>
+            <button
+              type="button"
+              onClick={() => insertText('## ')}
+              className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-xs font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+              title="중제목 (## 제목)"
+            >
+              H2
+            </button>
+            <button
+              type="button"
+              onClick={() => insertText('### ')}
+              className="px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg text-xs font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+              title="소제목 (### 제목)"
+            >
+              H3
+            </button>
+          </div>
           
           {/* 리스트 */}
           <button
             type="button"
-            onClick={() => insertText('* ')}
+            onClick={() => {
+              const textarea = textareaRef.current;
+              if (!textarea) return;
+              
+              const start = textarea.selectionStart;
+              const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+              const currentLine = value.substring(lineStart, start);
+              
+              // 현재 줄이 비어있거나 줄의 시작이면 새 줄에 리스트 추가
+              if (currentLine.trim() === '' || start === lineStart) {
+                insertText('* ');
+              } else {
+                // 현재 줄 끝에서 엔터를 치고 리스트 추가
+                insertText('\n* ');
+              }
+            }}
             className="p-2 hover:bg-slate-200 rounded-lg transition-colors"
             title="리스트"
           >
@@ -197,7 +274,7 @@ export default function MarkdownEditor({ value, onChange, placeholder, className
       {/* 도움말 */}
       <div className="bg-slate-50 border-t border-slate-200 px-4 py-2">
         <p className="text-xs text-slate-500">
-          <strong>팁:</strong> **굵게**, *기울임*, ## 제목, * 리스트, [링크](URL) 형식으로 작성하세요. Ctrl+B(굵게), Ctrl+I(기울임) 단축키 사용 가능
+          <strong>팁:</strong> **굵게**, *기울임*, # 대제목, ## 중제목, ### 소제목, * 리스트, [링크](URL) 형식으로 작성하세요. Ctrl+B(굵게), Ctrl+I(기울임) 단축키 사용 가능
         </p>
       </div>
     </div>

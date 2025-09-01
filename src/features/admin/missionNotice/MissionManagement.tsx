@@ -8,7 +8,7 @@ import MissionTable from './lists/MissionTable';
 import { Modal } from '@/features/shared/ui/Modal';
 import { InputField } from '@/features/shared/ui/InputField';
 import { Button } from '@/features/shared/ui/Button';
-import MarkdownEditor from '../community/columns/MarkdownEditor';
+import MarkdownEditor from '@/features/shared/ui/MarkdownEditor';
 import SubmissionListModal from './modals/SubmissionListModal';
 
 // 훅 및 유틸리티 임포트
