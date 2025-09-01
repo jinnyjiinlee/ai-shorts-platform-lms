@@ -9,10 +9,9 @@ interface SubmissionListModalProps {
   show: boolean;
   mission: Mission | null;
   onClose: () => void;
-  onGradeSubmission?: (submission: MissionSubmission) => void;
 }
 
-export default function SubmissionListModal({ show, mission, onClose, onGradeSubmission }: SubmissionListModalProps) {
+export default function SubmissionListModal({ show, mission, onClose }: SubmissionListModalProps) {
   const [activeTab, setActiveTab] = useState<'mission' | 'submissions'>('mission');
 
   if (!show || !mission) return null;

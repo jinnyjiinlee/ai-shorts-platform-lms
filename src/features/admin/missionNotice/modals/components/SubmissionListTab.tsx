@@ -3,10 +3,9 @@ import { Badge } from '@/features/shared/ui/Badge';
 
 interface SubmissionListTabProps {
   mission: Mission;
-  onGradeSubmission?: (submission: MissionSubmission) => void;
 }
 
-export default function SubmissionListTab({ mission, onGradeSubmission }: SubmissionListTabProps) {
+export default function SubmissionListTab({ mission }: SubmissionListTabProps) {
   console.log('SubmissionListTab - 미션 제출 데이터:', mission.submissions);
 
   if (!mission.submissions || mission.submissions.length === 0) {
@@ -27,12 +26,9 @@ export default function SubmissionListTab({ mission, onGradeSubmission }: Submis
             <div className='flex-1'>
               <div className='flex items-center space-x-3 mb-3'>
                 <h4 className='font-medium text-slate-900'>{submission.studentName}</h4>
-                <Badge variant='info' size='sm'>제출완료</Badge>
-                {submission.grade && (
-                  <Badge variant='success' size='sm'>
-                    {submission.grade}점
-                  </Badge>
-                )}
+                <Badge variant='info' size='sm'>
+                  제출완료
+                </Badge>
               </div>
 
               <div className='space-y-3 text-sm text-slate-600 mb-3'>
@@ -58,17 +54,6 @@ export default function SubmissionListTab({ mission, onGradeSubmission }: Submis
                 </div>
               )}
             </div>
-
-            {onGradeSubmission && (
-              <div className='flex space-x-2 ml-4'>
-                <button
-                  onClick={() => onGradeSubmission(submission)}
-                  className='px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium'
-                >
-                  {submission.grade ? '재채점' : '채점하기'}
-                </button>
-              </div>
-            )}
           </div>
         </div>
       ))}
