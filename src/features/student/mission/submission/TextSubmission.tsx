@@ -78,9 +78,36 @@ export default function TextSubmission({
     };
   }, [missionId, isSubmittedProp]);
 
-  // 마감일이 지났는지 계산
-  const isOverdue = useMemo(() => {
-    return dueDate ? new Date(dueDate) < new Date() : false;
+  // 마감일이 지났는지 실시간 체크 (5초마다 업데이트)
+  const [isOverdue, setIsOverdue] = useState(dueDate ? new Date(dueDate) < new Date() : false);
+  
+  useEffect(() => {
+    const checkDeadline = () => {
+      const now = new Date();
+      const deadlineTime = dueDate ? new Date(dueDate) : null;
+      const newOverdue = deadlineTime ? deadlineTime < now : false;
+      
+      console.log('🕐 마감일 체크:', {
+        dueDate,
+        deadlineTime: deadlineTime?.toISOString(),
+        now: now.toISOString(),
+        isOverdue: newOverdue,
+        timeDiff: deadlineTime ? now.getTime() - deadlineTime.getTime() : 0
+      });
+      
+      setIsOverdue(newOverdue);
+    };
+    
+    // 즉시 한 번 체크
+    checkDeadline();
+    
+    const timer = setInterval(checkDeadline, 5000); // 5초마다 체크
+    console.log('⏰ 마감일 타이머 시작');
+    
+    return () => {
+      console.log('⏰ 마감일 타이머 종료');
+      clearInterval(timer);
+    };
   }, [dueDate]);
 
   // 재제출 가능 여부 = 이미 제출했지만 마감일은 지나지 않은 경우
@@ -91,6 +118,13 @@ export default function TextSubmission({
   // 제출 로직
   const { submitting: isSubmitting, submit: handleSubmit } = useAsyncSubmit(async () => {
     if (!missionId) throw new Error('미션 ID가 없습니다.');
+    
+    // 제출 시점에 실시간 마감일 체크 (이중 검증)
+    const realTimeOverdue = dueDate ? new Date(dueDate) < new Date() : false;
+    if (realTimeOverdue) {
+      throw new Error('마감일이 지나 제출할 수 없습니다.');
+    }
+    
     const body = form.textContent.trim();
     if (!body) throw new Error('제출할 내용을 입력해주세요.');
 
@@ -219,7 +253,7 @@ export default function TextSubmission({
             canResubmit ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'
           }`}
         >
-          {isSubmitting ? '제출 중...' : isEditing ? '수정 내용 저장' : canResubmit ? '다시 제출하기' : '제출하기'}
+          {isOverdue ? '제출 마감됨' : isSubmitting ? '제출 중...' : isEditing ? '수정 내용 저장' : canResubmit ? '다시 제출하기' : '제출하기'}
         </button>
       </div>
 

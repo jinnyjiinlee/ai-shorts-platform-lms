@@ -153,10 +153,22 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
 
   return (
     <div className="space-y-6">
-      {/* 주차 필터 */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-900">주차별 필터</h3>
+      {/* UniversalBoard에 필터를 헤더 액션으로 통합 */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+            <FolderOpenIcon className="w-6 h-6 text-orange-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">주차별 학습자료</h1>
+            <p className="text-slate-600">
+              {userRole === 'admin' ? '1기 주차별 학습자료를 업로드하고 관리하세요' : '1기 주차별 학습자료를 확인하고 다운로드하세요'}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-3">
+          {/* 주차 필터 */}
           <Select
             value={selectedWeek === 'all' ? 'all' : selectedWeek.toString()}
             onChange={(value) => setSelectedWeek(value === 'all' ? 'all' : Number(value))}
@@ -169,83 +181,147 @@ export default function WeeklyLearningMaterials({ userRole }: WeeklyLearningMate
             ]}
             className="w-40"
           />
+          
+          {/* 자료 업로드 버튼 */}
+          {userRole === 'admin' && (
+            <button
+              onClick={handleCreateMaterial}
+              className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              <span>자료 업로드</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* UniversalBoard 사용 */}
-      <UniversalBoard
-        title="주차별 학습자료"
-        description={
-          userRole === 'admin' ? '1기 주차별 학습자료를 업로드하고 관리하세요' : '1기 주차별 학습자료를 확인하고 다운로드하세요'
-        }
-        icon={<FolderOpenIcon className="w-6 h-6 text-orange-600" />}
-        iconBgColor="bg-orange-100"
-        createButtonText="자료 업로드"
-        items={boardItems}
-        userRole={userRole}
-        onCreateItem={userRole === 'admin' ? handleCreateMaterial : undefined}
-        onViewItem={(item) => {
-          const material = materials.find((m) => m.id.toString() === item.id);
-          if (material) handleViewMaterial(material);
-        }}
-        onEditItem={(item) => {
-          const material = materials.find((m) => m.id.toString() === item.id);
-          if (material && userRole === 'admin') handleEditMaterial(material);
-        }}
-        onDeleteItem={(id) => {
-          if (userRole === 'admin') {
-            deleteMaterial(Number(id));
-          }
-        }}
-        extraActions={(item) => {
-          const material = materials.find((m) => m.id.toString() === item.id);
-          if (!material) return [];
-          
-          const actions = [
-            // 다운로드 버튼
-            <button
-              key="download"
-              onClick={() => handleDownload(material)}
-              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-              title="다운로드"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </button>
-          ];
+      {/* 자료 목록 */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
+        {boardItems.length === 0 ? (
+          <div className="p-12 text-center text-slate-500">
+            <FolderOpenIcon className="w-16 h-16 mx-auto mb-4 opacity-50" />
+            <div className="space-y-2">
+              <p className="text-lg mb-2">📚 주차별 학습자료</p>
+              <p className="text-sm text-slate-400 mt-4">곧 체계적인 학습자료를 제공해드릴 예정입니다!</p>
+            </div>
+          </div>
+        ) : (
+          <div className="divide-y divide-slate-200">
+            {boardItems.map((item) => (
+              <div key={item.id} className="p-6 hover:bg-slate-50 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <h3 
+                        className="text-lg font-semibold text-slate-900 cursor-pointer hover:text-blue-600 transition-colors"
+                        onClick={() => {
+                          const material = materials.find((m) => m.id.toString() === item.id);
+                          if (material) handleViewMaterial(material);
+                        }}
+                      >
+                        {item.title}
+                      </h3>
+                      <div className="flex items-center space-x-1">
+                        {item.badges?.map((badge, index) => (
+                          <span key={index}>{badge}</span>
+                        ))}
+                        {!item.isPublished && userRole === 'admin' && (
+                          <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded-full text-xs">
+                            임시저장
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {item.content && (
+                      <p className="text-sm text-slate-600 mb-2 line-clamp-2">{item.content}</p>
+                    )}
+                    
+                    <div className="flex items-center space-x-4 text-sm text-slate-500">
+                      <span>{item.author}</span>
+                      <span>{item.createdAt}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 ml-4">
+                    {/* Extra Actions */}
+                    {(() => {
+                      const material = materials.find((m) => m.id.toString() === item.id);
+                      if (!material) return null;
+                      
+                      const actions = [
+                        // 다운로드 버튼
+                        <button
+                          key="download"
+                          onClick={() => handleDownload(material)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="다운로드"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </button>
+                      ];
 
-          // 관리자만 발행 상태 토글 버튼 추가
-          if (userRole === 'admin') {
-            actions.push(
-              <button
-                key="toggle"
-                onClick={() => togglePublished(material.id)}
-                className={`p-2 rounded-lg transition-colors ${
-                  material.isPublished
-                    ? 'text-green-600 hover:bg-green-50'
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-                title={material.isPublished ? '비공개로 변경' : '공개하기'}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d={material.isPublished
-                      ? "M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      : "M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
-                    }
-                  />
-                </svg>
-              </button>
-            );
-          }
+                      // 관리자 액션들
+                      if (userRole === 'admin') {
+                        actions.push(
+                          <button
+                            key="edit"
+                            onClick={() => handleEditMaterial(material)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="수정"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>,
+                          <button
+                            key="toggle"
+                            onClick={() => togglePublished(material.id)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              material.isPublished
+                                ? 'text-green-600 hover:bg-green-50'
+                                : 'text-gray-600 hover:bg-gray-50'
+                            }`}
+                            title={material.isPublished ? '비공개로 변경' : '공개하기'}
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d={material.isPublished
+                                  ? "M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                  : "M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                                }
+                              />
+                            </svg>
+                          </button>,
+                          <button
+                            key="delete"
+                            onClick={() => deleteMaterial(material.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="삭제"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        );
+                      }
 
-          return actions;
-        }}
-      />
+                      return actions;
+                    })()}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <MaterialModal
         show={modal.isOpen || !!modal.viewItem}

@@ -61,10 +61,12 @@ export default function DifficultyBadge({
     },
   };
 
-  const config = difficultyConfig[difficulty];
+  const config = difficultyConfig[difficulty] || difficultyConfig.medium; // fallback to medium
 
   // 배경 스타일 결정
   const getBackgroundStyle = () => {
+    if (!config) return 'bg-gray-500 text-white'; // safety fallback
+    
     if (variant === 'outline') {
       return `border-2 bg-transparent ${config.outline}`;
     }
@@ -76,6 +78,8 @@ export default function DifficultyBadge({
 
   // 텍스트 포맷
   const getDisplayText = () => {
+    if (!config) return difficulty || 'medium'; // safety fallback
+    
     if (format === 'icon') {
       return config.icon;
     }

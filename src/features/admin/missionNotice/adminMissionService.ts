@@ -108,6 +108,7 @@ export const fetchMissions = async (): Promise<Mission[]> => {
                   studentName: displayName,
                   studentId: submission.student_id,
                   submittedAt: formattedTime, // 날짜 + 시간
+                  submittedAtRaw: submission.submitted_at, // 원본 ISO 시간
                   fileName: submission.content || submission.file_name || '내용 없음',
                   fileSize: '-', // 파일 크기 제거
                   status: submission.status,
@@ -131,6 +132,7 @@ export const fetchMissions = async (): Promise<Mission[]> => {
                   studentName: '알 수 없음',
                   studentId: submission.student_id,
                   submittedAt: formattedTime,
+                  submittedAtRaw: submission.submitted_at, // 원본 ISO 시간
                   fileName: submission.content || submission.file_name || '내용 없음',
                   fileSize: '-', // 파일 크기 제거
                   status: submission.status,
@@ -212,14 +214,14 @@ export const createMission = async (formData: MissionFormData): Promise<void> =>
 
 export const updateMission = async (missionId: string, formData: MissionFormData): Promise<void> => {
   // datetime-local 값을 UTC로 변환
-  const processedFormData = { ...formData };
+  const processedFormData = { ...formData, id: missionId };
   if (formData.due_date) {
     // datetime-local 값은 로컬 시간대 기준이므로 UTC로 변환
     const localDate = new Date(formData.due_date);
     processedFormData.due_date = localDate.toISOString();
   }
 
-  const { error } = await supabase.from('mission_notice').update(processedFormData).eq('id', missionId);
+  const { error } = await supabase.from('mission_notice').upsert(processedFormData);
 
   if (error) {
     console.error('미션 수정 오류:', error);

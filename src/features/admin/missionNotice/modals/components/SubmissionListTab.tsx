@@ -26,7 +26,7 @@ export default function SubmissionListTab({ mission }: SubmissionListTabProps) {
             <div className='flex-1'>
               <div className='flex items-center space-x-3 mb-3'>
                 <h4 className='font-medium text-slate-900'>{submission.studentName}</h4>
-                <Badge variant='info' size='sm'>
+<Badge variant='info' size='sm'>
                   제출완료
                 </Badge>
               </div>
