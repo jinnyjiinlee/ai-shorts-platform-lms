@@ -79,7 +79,6 @@ export default function MissionManagement() {
         missions={filteredMissions}
         userRole="admin"
         loading={isLoading}
-        onCreateMission={handleCreateMission}
         onViewMission={handleViewSubmissions}
         onEditMission={handleEditMission}
         onDeleteMission={removeMission}

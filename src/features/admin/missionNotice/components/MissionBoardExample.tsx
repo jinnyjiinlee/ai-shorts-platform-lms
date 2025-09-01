@@ -64,7 +64,6 @@ export default function MissionBoardExample() {
       <MissionBoard
         missions={missions}
         userRole="admin"
-        onCreateMission={handleCreateMission}
         onViewMission={handleViewMission}
         onEditMission={handleEditMission}
         onDeleteMission={handleDeleteMission}
