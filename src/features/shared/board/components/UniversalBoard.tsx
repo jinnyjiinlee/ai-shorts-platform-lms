@@ -24,6 +24,10 @@ interface UniversalBoardProps {
   loading?: boolean;
   error?: string;
   
+  // 스타일링 옵션
+  iconBgColor?: string; // 아이콘 배경색 커스터마이징
+  createButtonText?: string; // 버튼 텍스트 커스터마이징
+  
   // 액션 함수들
   onCreateItem?: () => void;
   onViewItem?: (item: BoardItem) => void;
@@ -49,6 +53,8 @@ export default function UniversalBoard({
   userRole,
   loading = false,
   error,
+  iconBgColor = "bg-blue-100",
+  createButtonText = "새 글 작성",
   onCreateItem,
   onViewItem,
   onEditItem,
@@ -90,7 +96,7 @@ export default function UniversalBoard({
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+          <div className={`w-10 h-10 ${iconBgColor} rounded-lg flex items-center justify-center`}>
             {icon}
           </div>
           <div>
@@ -99,14 +105,14 @@ export default function UniversalBoard({
           </div>
         </div>
 
-        {userRole === 'admin' && onCreateItem && (
+        {((userRole === 'admin') || (userRole === 'student' && onCreateItem)) && onCreateItem && (
           <Button
             onClick={onCreateItem}
             variant="primary"
             className="flex items-center space-x-2"
           >
             <PlusIcon className="w-4 h-4" />
-            <span>새 글 작성</span>
+            <span>{createButtonText}</span>
           </Button>
         )}
       </div>

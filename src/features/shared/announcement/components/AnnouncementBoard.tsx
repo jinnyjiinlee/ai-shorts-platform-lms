@@ -72,6 +72,8 @@ export default function AnnouncementBoard({ userRole }: AnnouncementBoardProps) 
             : '중요한 공지사항을 확인하세요'
         }
         icon={<MegaphoneIcon className="w-6 h-6 text-blue-600" />}
+        iconBgColor="bg-blue-100"
+        createButtonText="새 공지 작성"
         items={boardItems}
         userRole={userRole}
         loading={loading}

@@ -73,6 +73,8 @@ export default function ColumnBoard({ userRole }: ColumnBoardProps) {
             : '전문가들의 노하우와 인사이트를 만나보세요'
         }
         icon={<DocumentTextIcon className="w-6 h-6 text-purple-600" />}
+        iconBgColor="bg-purple-100"
+        createButtonText="새 칼럼 작성"
         items={boardItems}
         userRole={userRole}
         loading={loading}

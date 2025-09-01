@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 // 컴포넌트 임포트
 import MissionHeader from './lists/MissionHeader';
-import MissionTable from './lists/MissionTable';
+import MissionBoard from './components/MissionBoard';
 import { Modal } from '@/features/shared/ui/Modal';
 import { InputField } from '@/features/shared/ui/InputField';
 import { Button } from '@/features/shared/ui/Button';
@@ -75,10 +75,12 @@ export default function MissionManagement() {
         isLoading={isLoading}
       />
 
-      <MissionTable
+      <MissionBoard
         missions={filteredMissions}
-        isLoading={isLoading}
-        onViewSubmissions={handleViewSubmissions}
+        userRole="admin"
+        loading={isLoading}
+        onCreateMission={handleCreateMission}
+        onViewMission={handleViewSubmissions}
         onEditMission={handleEditMission}
         onDeleteMission={removeMission}
       />

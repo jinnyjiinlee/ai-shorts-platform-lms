@@ -1,14 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import AdminPageHeader from '@/features/admin/ui/AdminPageHeader';
 import { useQnA } from '../hooks/useQnA';
-import { ChatBubbleLeftRightIcon, PlusIcon } from '@heroicons/react/24/outline';
-import AdminContentCard from '@/components/admin/AdminContentCard';
+import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import UniversalBoard, { BoardItem } from '@/features/shared/board/components/UniversalBoard';
 import QuestionCreateModal from './QuestionCreateModal';
 import QuestionDetailModal from './QuestionDetailModal';
-
-import { Button } from '@/features/shared/ui/Button';
 import { Badge } from '@/features/shared/ui/Badge';
 import { Pagination } from '@/features/shared/ui/Pagination';
 
@@ -56,44 +53,66 @@ export default function QnABoard({ userRole, cohort }: QnABoardProps) {
     handleViewQuestion,
   } = useQnA(userRole, cohort);
 
-  // 로딩 상태 처리
-  if (loading) {
-    return (
-      <div className='flex justify-center items-center h-64'>
-        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600' />
-      </div>
-    );
-  }
+  // Question을 BoardItem으로 변환 (필터링 적용)
+  const filteredQuestions = paginatedQuestions.filter((question) => {
+    if (selectedFilter === 'all') return true;
+    return question.status === selectedFilter;
+  });
 
-  // 에러 상태 처리
-  if (error) {
-    return <div className='text-red-500 text-center p-4'>{error}</div>;
-  }
+  const boardItems: BoardItem[] = filteredQuestions.map((question) => ({
+    id: question.id,
+    title: question.title,
+    content: question.content,
+    author: question.student_nickname || question.student_name || '작성자',
+    createdAt: formatDate(question.created_at),
+    isPublished: true, // 질문은 기본적으로 발행됨
+    badges: [
+      <Badge key='status' variant={question.status === 'open' ? 'warning' : 'success'} size='sm'>
+        {question.status === 'open' ? '미답변' : '답변완료'}
+      </Badge>,
+    ],
+  }));
 
   return (
-    <div className='space-y-6'>
-      <AdminPageHeader
-        icon={<ChatBubbleLeftRightIcon className='w-6 h-6 text-slate-600' />}
-        title='Q&A 게시판'
+    <div className="space-y-6">
+      {/* UniversalBoard 사용 */}
+      <UniversalBoard
+        title="Q&A 게시판"
         description={`${cohort}기 질문과 답변 공간`}
-        actions={
-          userRole === 'student' ? (
-            <Button onClick={() => setShowQuestionModal(true)} variant='primary'>
-              <PlusIcon className='w-4 h-4 mr-2' />
-              질문하기
-            </Button>
-          ) : null
-        }
+        icon={<ChatBubbleLeftRightIcon className="w-6 h-6 text-blue-600" />}
+        iconBgColor="bg-blue-100"
+        createButtonText="질문하기"
+        items={boardItems}
+        userRole={userRole}
+        loading={loading}
+        error={error || undefined}
+        onCreateItem={userRole === 'student' ? () => setShowQuestionModal(true) : undefined}
+        onViewItem={(item) => {
+          const question = questions.find((q) => q.id === item.id);
+          if (question) handleViewQuestion(question);
+        }}
+        onEditItem={(item) => {
+          const question = questions.find((q) => q.id === item.id);
+          if (question) handleViewQuestion(question);
+        }}
+        onDeleteItem={(id) => {
+          if (userRole === 'student') {
+            handleDeleteMyQuestion(id);
+          } else {
+            handleAdminDelete(id);
+          }
+        }}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
       />
 
-      {/* 질문 목록 */}
-      <div className='bg-white rounded-xl border border-slate-200 shadow-sm'>
-        <div className='p-6 border-b border-slate-200 flex items-center justify-between'>
-          <h2 className='text-xl font-semibold text-slate-900'>질문 목록</h2>
-
-          {/* 통계 영역 - Badge 컴포넌트 재사용 */}
-          {userRole === 'admin' && (
-            <div className='flex flex-wrap gap-2'>
+      {/* 관리자 필터 영역 */}
+      {userRole === 'admin' && (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-slate-900">필터</h3>
+            <div className="flex flex-wrap gap-2">
               <Badge
                 variant='default'
                 size='sm'
@@ -127,47 +146,19 @@ export default function QnABoard({ userRole, cohort }: QnABoardProps) {
                 답변완료 ({questions.filter((q) => q.status === 'answered').length})
               </Badge>
             </div>
-          )}
+          </div>
         </div>
+      )}
 
-        <div className='divide-y divide-slate-200'>
-          {paginatedQuestions
-            .filter((question) => {
-              if (selectedFilter === 'all') return true;
-              return question.status === selectedFilter;
-            })
-            .map((question) => (
-            <AdminContentCard
-              key={question.id}
-              title={question.title}
-              content={question.content}
-              cohort={cohort}
-              author={question.student_nickname || question.student_name || '작성자'}
-              createdAt={formatDate(question.created_at)}
-              badges={[
-                <Badge key='status' variant={question.status === 'open' ? 'warning' : 'success'} size='sm'>
-                  {question.status === 'open' ? '미답변' : '답변완료'}
-                </Badge>,
-              ]}
-              onView={() => handleViewQuestion(question)}
-              onEdit={() => handleViewQuestion(question)} // 질문 상세보기 모달로 이동
-              onDelete={
-                userRole === 'student'
-                  ? () => handleDeleteMyQuestion(question.id)
-                  : () => handleAdminDelete(question.id)
-              }
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* 페이지네이션 추가 */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        showPageInfo={true}
-      />
+      {/* 페이지네이션 - 데이터가 있을 때만 표시 */}
+      {questions.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          showPageInfo={true}
+        />
+      )}
 
       {/* 질문 작성 모달 */}
       <QuestionCreateModal
