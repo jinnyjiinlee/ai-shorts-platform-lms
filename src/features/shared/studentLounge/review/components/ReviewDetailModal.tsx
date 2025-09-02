@@ -8,11 +8,11 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Modal } from '@/features/shared/ui/Modal';
 import { Button } from '@/features/shared/ui/Button';
 import { InputField } from '@/features/shared/ui/InputField';
-import { Review, ReviewFormData, CohortOption } from '@/types/domains/review';
+import { Review, ReviewFormData } from '@/types/domains/review';
 import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
 import { useFormState } from '@/features/shared/hooks/useFormState';
 import CohortBadge from '@/features/shared/ui/Badge/CohortBadge';
@@ -24,7 +24,6 @@ interface ReviewDetailModalProps {
   onClose: () => void; // 모달 닫기 함수
   onUpdateReview?: (id: string, formData: ReviewFormData) => Promise<void>;
   // 수정 처리 함수
-  availableCohorts: CohortOption[]; // 기수 선택 옵션
 }
 
 /**
@@ -34,7 +33,6 @@ interface ReviewDetailModalProps {
  * @param userRole 현재 사용자 역할
  * @param onClose 모달 닫기 콜백
  * @param onUpdateReview 리뷰 수정 콜백
- * @param availableCohorts 기수 선택 옵션들
  */
 export default function ReviewDetailModal({
   show,
@@ -42,7 +40,6 @@ export default function ReviewDetailModal({
   userRole,
   onClose,
   onUpdateReview,
-  availableCohorts,
 }: ReviewDetailModalProps) {
   /**
    * 폼 상태 관리 훅
@@ -58,7 +55,6 @@ export default function ReviewDetailModal({
   } = useFormState({
     title: '',
     content: '',
-    cohort: '',
   });
 
   /**
@@ -72,7 +68,6 @@ export default function ReviewDetailModal({
     const formData: ReviewFormData = {
       title: editForm.title.trim(),
       content: editForm.content.trim(),
-      cohort: editForm.cohort,
     };
 
     await onUpdateReview(review.id, formData);
@@ -88,7 +83,6 @@ export default function ReviewDetailModal({
       updateForm({
         title: review.title,
         content: review.content,
-        cohort: review.cohort,
       });
     }
   }, [review, updateForm]);
@@ -131,7 +125,6 @@ export default function ReviewDetailModal({
       startEdit({
         title: review.title,
         content: review.content,
-        cohort: review.cohort,
       });
     }
   };
@@ -167,29 +160,6 @@ export default function ReviewDetailModal({
         {isEditing ? (
           <form onSubmit={handleUpdateSubmit}>
             <div className='space-y-6'>
-              {/* 기수 선택 (수정 모드) */}
-              <div>
-                <label
-                  className='block text-sm font-medium text-slate-700 
-  mb-2'
-                >
-                  기수 선택
-                </label>
-                <select
-                  value={editForm.cohort}
-                  onChange={(e) => updateForm({ cohort: e.target.value })}
-                  className='w-full px-4 py-3 border border-slate-300
-  rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent
-  transition-all'
-                  required
-                >
-                  {availableCohorts.map((cohort) => (
-                    <option key={cohort.value} value={cohort.value}>
-                      {cohort.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
 
               {/* 제목 수정 */}
               <InputField

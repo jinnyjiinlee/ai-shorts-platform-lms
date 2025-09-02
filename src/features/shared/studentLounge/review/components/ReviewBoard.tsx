@@ -159,7 +159,6 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
         onSubmit={async (formData) => {
           await handleCreateReview(formData); // 리뷰 생성
         }}
-        availableCohorts={availableCohorts} // 기수 선택 옵션
       />
 
       {/*
@@ -173,7 +172,6 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
         userRole={userRole}
         onClose={() => setShowDetailModal(false)}
         onUpdateReview={handleUpdateReview} // 수정 처리
-        availableCohorts={availableCohorts} // 수정 시 기수 변경 가능
       />
     </div>
   );
