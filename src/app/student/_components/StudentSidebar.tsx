@@ -89,6 +89,7 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
       name: '수강생 라운지',
       icon: ChatBubbleLeftRightIcon,
       subItems: [
+        { id: 'review', name: '수강생 후기', href: '/student/studentLounge/review' },
         { id: 'qna', name: '[1기] QnA ', href: '/student/studentLounge/qna' },
         { id: 'growthDiary', name: '[1기] 성장 일기 ', href: '/student/studentLounge/growthDiary' },
       ],

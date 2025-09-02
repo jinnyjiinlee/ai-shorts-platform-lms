@@ -56,6 +56,7 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
       subItems: [
         { href: '/admin/studentLounge/qna', name: '[1기] QnA' },
         { href: '/admin/studentLounge/growthDiary', name: '[1기] 성장 일기' },
+        { href: '/admin/studentLounge/review', name: '수강생 후기' },
       ],
     },
     { href: '/admin/studentManagement', name: '수강생 관리', icon: UsersIcon },

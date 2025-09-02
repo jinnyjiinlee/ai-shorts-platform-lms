@@ -76,7 +76,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        disabled={isDisabled}
+        disabled={isDisabled || undefined}
         className={cn(
           'inline-flex items-center justify-center',
           'font-medium rounded-lg',
