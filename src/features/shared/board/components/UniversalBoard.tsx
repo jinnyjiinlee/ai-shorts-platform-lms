@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/features/shared/ui/Button';
+import { Badge } from '@/features/shared/ui/Badge';
 
 export interface BoardItem {
   id: string;
@@ -13,6 +14,14 @@ export interface BoardItem {
   isPinned?: boolean;
   isPublished?: boolean;
   badges?: ReactNode[];
+}
+
+// 필터 옵션 타입 정의
+export interface FilterOption {
+  label: string;
+  value: string;
+  count?: number;
+  variant?: 'default' | 'success' | 'danger' | 'warning';
 }
 
 interface UniversalBoardProps {
@@ -27,6 +36,11 @@ interface UniversalBoardProps {
   // 스타일링 옵션
   iconBgColor?: string; // 아이콘 배경색 커스터마이징
   createButtonText?: string; // 버튼 텍스트 커스터마이징
+  
+  // 필터 관련 props
+  filterOptions?: FilterOption[];
+  selectedFilter?: string;
+  onFilterChange?: (value: string) => void;
   
   // 액션 함수들
   onCreateItem?: () => void;
@@ -55,6 +69,9 @@ export default function UniversalBoard({
   error,
   iconBgColor = "bg-blue-100",
   createButtonText = "새 글 작성",
+  filterOptions,
+  selectedFilter,
+  onFilterChange,
   onCreateItem,
   onViewItem,
   onEditItem,
@@ -105,16 +122,39 @@ export default function UniversalBoard({
           </div>
         </div>
 
-        {((userRole === 'admin') || (userRole === 'student' && onCreateItem)) && onCreateItem && (
-          <Button
-            onClick={onCreateItem}
-            variant="primary"
-            className="flex items-center space-x-2"
-          >
-            <PlusIcon className="w-4 h-4" />
-            <span>{createButtonText}</span>
-          </Button>
-        )}
+        <div className="flex items-center space-x-4">
+          {/* 필터 옵션들 */}
+          {filterOptions && onFilterChange && (
+            <div className="flex flex-wrap gap-2">
+              {filterOptions.map((filter) => (
+                <Badge
+                  key={filter.value}
+                  variant={filter.variant || 'default'}
+                  size="sm"
+                  selectable={true}
+                  selected={selectedFilter === filter.value}
+                  onClick={() => onFilterChange(filter.value)}
+                  className="transition-all hover:shadow-sm cursor-pointer"
+                >
+                  {filter.label}
+                  {filter.count !== undefined && ` (${filter.count})`}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* 생성 버튼 */}
+          {((userRole === 'admin') || (userRole === 'student' && onCreateItem)) && onCreateItem && (
+            <Button
+              onClick={onCreateItem}
+              variant="primary"
+              className="flex items-center space-x-2"
+            >
+              <PlusIcon className="w-4 h-4" />
+              <span>{createButtonText}</span>
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* 아이템 목록 */}
