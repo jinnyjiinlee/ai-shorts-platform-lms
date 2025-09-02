@@ -58,11 +58,11 @@ export const useColumn = (userRole: 'admin' | 'student') => {
     }
   };
 
-  // 칼럼 작성 (관리자만)
+  // 칼럼 작성 (관리자만) - 표준화된 boolean 패턴 사용
   const handleCreateColumn = async (
     title: string, 
     content: string, 
-    status: 'draft' | 'published' = 'published',
+    isPublished = true,
     isFeatured = false
   ) => {
     if (userRole !== 'admin') return;
@@ -71,8 +71,8 @@ export const useColumn = (userRole: 'admin' | 'student') => {
       await ColumnService.create({
         title,
         content,
-        status,
-        is_featured: isFeatured,
+        isPublished,
+        isFeatured,
       });
       await loadColumns();
       setShowCreateModal(false);
@@ -82,14 +82,14 @@ export const useColumn = (userRole: 'admin' | 'student') => {
     }
   };
 
-  // 칼럼 수정 (관리자만)
+  // 칼럼 수정 (관리자만) - 표준화된 boolean 패턴 사용
   const handleEditColumn = async (
     columnId: string,
     updates: {
       title?: string;
       content?: string;
-      status?: 'draft' | 'published' | 'archived';
-      is_featured?: boolean;
+      isPublished?: boolean;
+      isFeatured?: boolean;
     }
   ) => {
     if (userRole !== 'admin') return;

@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase/client';
 import { Column, CreateColumnDto, UpdateColumnDto } from '@/types/domains/community';
 
 export class ColumnService {
-  // DB 데이터를 Column 타입으로 변환
+  // DB 데이터를 Column 타입으로 변환 - 표준화된 boolean 패턴 사용
   private static mapDbToColumn(dbData: any): Column {
     return {
       id: dbData.id,
@@ -12,8 +12,8 @@ export class ColumnService {
       content: dbData.content,
       author: '하대표',
       author_id: dbData.admin_id,
-      status: dbData.is_published ? 'published' : 'draft',
-      is_featured: dbData.is_pinned || false,
+      isPublished: dbData.is_published || false,
+      isFeatured: dbData.is_pinned || false,
       view_count: 0,
       like_count: 0,
       created_at: dbData.created_at,
@@ -48,7 +48,7 @@ export class ColumnService {
     return data?.map(item => this.mapDbToColumn(item)) || [];
   }
 
-  // 칼럼 생성 (관리자/작가만) - 실제 테이블 구조에 맞춤
+  // 칼럼 생성 (관리자/작가만) - 표준화된 boolean 패턴 사용
   static async create(dto: CreateColumnDto) {
     const {
       data: { user },
@@ -61,8 +61,8 @@ export class ColumnService {
         title: dto.title,
         content: dto.content,
         admin_id: user.id,
-        is_published: dto.status === 'published',
-        is_pinned: dto.is_featured || false,
+        is_published: dto.isPublished || false,
+        is_pinned: dto.isFeatured || false,
       }])
       .select()
       .single();
@@ -73,7 +73,7 @@ export class ColumnService {
     return this.mapDbToColumn(data);
   }
 
-  // 칼럼 수정 (작성자/관리자만)
+  // 칼럼 수정 (작성자/관리자만) - 표준화된 boolean 패턴 사용
   static async update(id: string, dto: UpdateColumnDto) {
     // 현재 사용자 확인
     const {
@@ -83,14 +83,14 @@ export class ColumnService {
 
     const updateData: any = {};
 
-    // 실제 테이블 필드로 매핑
+    // 실제 테이블 필드로 매핑 - boolean 패턴 사용
     if (dto.title) updateData.title = dto.title;
     if (dto.content) updateData.content = dto.content;
-    if (dto.status !== undefined) {
-      updateData.is_published = dto.status === 'published';
+    if (dto.isPublished !== undefined) {
+      updateData.is_published = dto.isPublished;
     }
-    if (dto.is_featured !== undefined) {
-      updateData.is_pinned = dto.is_featured;
+    if (dto.isFeatured !== undefined) {
+      updateData.is_pinned = dto.isFeatured;
     }
 
     console.log('업데이트 데이터:', updateData, 'ID:', id, '사용자:', user.id);

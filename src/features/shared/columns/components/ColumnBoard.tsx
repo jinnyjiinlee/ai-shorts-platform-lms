@@ -49,15 +49,15 @@ export default function ColumnBoard({ userRole }: ColumnBoardProps) {
   } = useColumn(userRole);
 
 
-  // Column을 BoardItem으로 변환
+  // Column을 BoardItem으로 변환 - 표준화된 boolean 패턴 사용
   const boardItems: BoardItem[] = paginatedColumns.map((column) => ({
     id: column.id,
     title: column.title,
     content: markdownToPlainText(column.content),
     author: column.author,
     createdAt: formatDate(column.created_at),
-    isPinned: column.is_featured,
-    isPublished: column.status === 'published',
+    isPinned: column.isFeatured,
+    isPublished: column.isPublished,
     badges: [],
   }));
 
@@ -113,7 +113,7 @@ export default function ColumnBoard({ userRole }: ColumnBoardProps) {
             await handleCreateColumn(
               data.title,
               data.content,
-              data.status,
+              data.isPublished,
               data.isFeatured
             );
           }}

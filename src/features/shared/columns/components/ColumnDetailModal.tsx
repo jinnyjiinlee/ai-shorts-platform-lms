@@ -22,7 +22,7 @@ export default function ColumnDetailModal({
 }: ColumnDetailModalProps) {
   if (!column) return null;
 
-  // Column을 DetailItem으로 변환
+  // Column을 DetailItem으로 변환 - 표준화된 boolean 패턴 사용
   const detailItem: DetailItem = {
     id: column.id,
     title: column.title,
@@ -30,19 +30,19 @@ export default function ColumnDetailModal({
     author: column.author,
     createdAt: column.created_at,
     isPinned: false, // 칼럼은 고정 기능 없음
-    isPublished: column.status === 'published',
-    isFeatured: column.is_featured,
+    isPublished: column.isPublished,
+    isFeatured: column.isFeatured,
   };
 
-  // 편집 함수 래핑
+  // 편집 함수 래핑 - 표준화된 boolean 패턴 사용
   const handleEdit = async (itemId: string, formData: EditFormData) => {
     if (!onEditColumn) return;
     
     await onEditColumn(itemId, {
       title: formData.title,
       content: formData.content,
-      status: formData.isPublished ? 'published' : 'draft',
-      is_featured: formData.isFeatured,
+      isPublished: formData.isPublished,
+      isFeatured: formData.isFeatured,
     });
   };
 

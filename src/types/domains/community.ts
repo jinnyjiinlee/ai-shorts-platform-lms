@@ -19,9 +19,9 @@ export interface Column {
   author: string;
   author_id?: string;
   
-  // 상태 관리
-  status: 'draft' | 'published' | 'archived';
-  is_featured: boolean;
+  // 상태 관리 - 공지사항과 동일한 boolean 패턴으로 표준화
+  isPublished: boolean;
+  isFeatured: boolean;
   
   // 통계
   view_count: number;
@@ -39,20 +39,20 @@ export interface Column {
   };
 }
 
-// Column 생성용 DTO
+// Column 생성용 DTO - 공지사항과 동일한 boolean 패턴으로 표준화
 export interface CreateColumnDto {
   title: string;
   content: string;
-  status?: 'draft' | 'published';
-  is_featured?: boolean;
+  isPublished?: boolean;
+  isFeatured?: boolean;
 }
 
-// Column 수정용 DTO
+// Column 수정용 DTO - 공지사항과 동일한 boolean 패턴으로 표준화
 export interface UpdateColumnDto {
   title?: string;
   content?: string;
-  status?: 'draft' | 'published' | 'archived';
-  is_featured?: boolean;
+  isPublished?: boolean;
+  isFeatured?: boolean;
 }
 
 export interface Comment {
