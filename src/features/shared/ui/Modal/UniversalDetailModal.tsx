@@ -188,7 +188,6 @@ export default function UniversalDetailModal({
             placeholder={field.placeholder}
             required={field.required}
             maxLength={field.maxLength}
-            readOnly={field.readOnly}
           />
         );
         
@@ -206,7 +205,6 @@ export default function UniversalDetailModal({
               placeholder={field.placeholder}
               required={field.required}
               maxLength={field.maxLength}
-              readOnly={field.readOnly}
             />
             {field.maxLength && (
               <div className="flex justify-between text-xs text-slate-500 mt-1">
