@@ -7,7 +7,6 @@ import UniversalBoard, { BoardItem } from '@/features/shared/board/components/Un
 import QuestionCreateModal from './QuestionCreateModal';
 import QuestionDetailModal from './QuestionDetailModal';
 import { Badge } from '@/features/shared/ui/Badge';
-import { Pagination } from '@/features/shared/ui/Pagination';
 
 interface QnABoardProps {
   userRole: 'admin' | 'student';
@@ -123,17 +122,6 @@ export default function QnABoard({ userRole, cohort }: QnABoardProps) {
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
-
-
-      {/* 페이지네이션 - 데이터가 있을 때만 표시 */}
-      {questions.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          showPageInfo={true}
-        />
-      )}
 
       {/* 질문 작성 모달 */}
       <QuestionCreateModal

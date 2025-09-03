@@ -4,7 +4,6 @@
 
 import { MegaphoneIcon } from '@heroicons/react/24/outline';
 import { useAnnouncement } from '../hooks/useAnnouncement';
-import { Pagination } from '@/features/shared/ui/Pagination';
 import UniversalBoard, { BoardItem } from '@/features/shared/board/components/UniversalBoard';
 import AnnouncementCreateModal from './AnnouncementCreateModal';
 import AnnouncementDetailModal from './AnnouncementDetailModal';
@@ -92,16 +91,6 @@ export default function AnnouncementBoard({ userRole }: AnnouncementBoardProps) 
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
-
-      {/* 페이지네이션 - 데이터가 있을 때만 표시 */}
-      {announcements.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          showPageInfo={true}
-        />
-      )}
 
       {/* 공지 작성 모달 (관리자만) */}
       {userRole === 'admin' && (

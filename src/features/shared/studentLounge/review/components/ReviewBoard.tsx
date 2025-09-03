@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { useReview } from '../hooks/useReview';
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import UniversalBoard, { BoardItem, FilterOption } from '@/features/shared/board/components/UniversalBoard';
-import ReviewCreateModal from './ReviewCreateModal';
-import ReviewDetailModal from './ReviewDetailModal';
-import ReviewCardView from './ReviewCardView';
+import UniversalCreateModal from '@/features/shared/ui/Modal/UniversalCreateModal';
+import UniversalDetailModal from '@/features/shared/ui/Modal/UniversalDetailModal';
+import UniversalCardView from '@/features/shared/board/components/UniversalCardView';
 import CohortBadge from '@/features/shared/ui/Badge/CohortBadge';
+import { FormField } from '@/types/ui/universalModal';
+import { Review } from '@/types/domains/review';
 
 interface ReviewBoardProps {
   userRole: 'admin' | 'student'; // 사용자 역할
@@ -143,8 +145,22 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
         showViewToggle={true}
         viewType={viewType}
         onViewTypeChange={setViewType}
-        cardComponent={ReviewCardView}
-        cardData={displayReviews}
+        cardComponent={(props) => (
+          <UniversalCardView
+            {...props}
+            config={{
+              accentColor: 'purple',
+              gradientColors: { from: 'purple-50', to: 'pink-50' },
+            }}
+            renderBadges={(item) => [
+              <CohortBadge key="cohort" cohort={(item as Review).cohort} size="sm" className="mr-1" />
+            ]}
+          />
+        )}
+        cardData={displayReviews.map(review => ({
+          ...review,
+          author: review.student_nickname || '작성자',
+        }))}
         // 페이지네이션
         currentPage={currentPage}
         totalPages={totalPages}
@@ -164,30 +180,78 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
         }}
       />
 
-      {/*
-        리뷰 작성 모달
-        - 제목, 내용, 기수 선택 폼
-        - 성공 시 목록 자동 새로고침
-      */}
-      <ReviewCreateModal
+      {/* 리뷰 작성 모달 */}
+      <UniversalCreateModal
         show={showCreateModal}
+        title="후기 작성하기"
         onClose={() => setShowCreateModal(false)}
         onSubmit={async (formData) => {
-          await handleCreateReview(formData); // 리뷰 생성
+          await handleCreateReview({
+            title: formData.title,
+            content: formData.content,
+          });
         }}
+        fields={[
+          {
+            name: 'title',
+            type: 'text' as const,
+            label: '후기 제목',
+            required: true,
+            maxLength: 100,
+            placeholder: '후기 제목을 입력하세요',
+          },
+          {
+            name: 'content',
+            type: 'textarea' as const,
+            label: '후기 내용',
+            required: true,
+            maxLength: 2000,
+            placeholder: '후기 내용을 입력하세요...',
+            showCharacterCount: true,
+          },
+        ]}
       />
 
-      {/*
-        리뷰 상세보기/수정 모달
-        - 읽기 모드: 모든 사용자
-        - 수정 모드: 작성자 본인 또는 관리자
-      */}
-      <ReviewDetailModal
+      {/* 리뷰 상세보기/수정 모달 */}
+      <UniversalDetailModal
         show={showDetailModal}
-        review={selectedReview}
+        item={selectedReview}
         userRole={userRole}
+        title="후기 상세보기"
+        editTitle="후기 수정"
         onClose={() => setShowDetailModal(false)}
-        onUpdateReview={handleUpdateReview} // 수정 처리
+        onUpdate={async (id: string, formData: Record<string, any>) => {
+          await handleUpdateReview(id, {
+            title: formData.title,
+            content: formData.content,
+          });
+        }}
+        fields={[
+          {
+            name: 'title',
+            type: 'text' as const,
+            label: '후기 제목',
+            required: true,
+            maxLength: 100,
+          },
+          {
+            name: 'content',
+            type: 'textarea' as const,
+            label: '후기 내용',
+            required: true,
+            maxLength: 2000,
+          },
+        ]}
+        renderHeader={(item) => (
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-3">
+              <CohortBadge cohort={(item as Review).cohort} size="md" />
+              <span className="text-sm text-slate-600">
+                {(item as Review).student_nickname || '작성자'}
+              </span>
+            </div>
+          </div>
+        )}
       />
     </div>
   );

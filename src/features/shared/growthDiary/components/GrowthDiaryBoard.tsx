@@ -1,10 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useGrowthDiary } from '../hooks/useGrowthDiary';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import UniversalBoard, { BoardItem } from '@/features/shared/board/components/UniversalBoard';
-import DiaryCreateModal from './DiaryCreateModal';
-import DiaryDetailModal from './DiaryDetailModal';
+import UniversalCreateModal from '@/features/shared/ui/Modal/UniversalCreateModal';
+import UniversalDetailModal from '@/features/shared/ui/Modal/UniversalDetailModal';
+import UniversalCardView from '@/features/shared/board/components/UniversalCardView';
+import { GrowthDiary } from '@/types/domains/growthDiary';
 import { Pagination } from '@/features/shared/ui/Pagination';
 
 interface GrowthDiaryBoardProps {
@@ -13,6 +16,9 @@ interface GrowthDiaryBoardProps {
 }
 
 export default function GrowthDiaryBoard({ userRole, cohort }: GrowthDiaryBoardProps) {
+  // 뷰 전환 상태
+  const [viewType, setViewType] = useState<'board' | 'card'>('card'); // 카드뷰가 기본
+
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -74,7 +80,29 @@ export default function GrowthDiaryBoard({ userRole, cohort }: GrowthDiaryBoardP
         userRole={userRole}
         loading={loading}
         error={error || undefined}
-        onCreateItem={userRole === 'student' ? () => setShowDiaryModal(true) : undefined}
+        // 뷰 전환 기능
+        showViewToggle={true}
+        viewType={viewType}
+        onViewTypeChange={setViewType}
+        cardComponent={(props) => (
+          <UniversalCardView
+            {...props}
+            config={{
+              accentColor: 'green',
+              gradientColors: { from: 'green-50', to: 'emerald-50' },
+            }}
+            renderBadges={(item) => [
+              <div key="cohort" className="px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full">
+                <span className="text-xs font-medium text-green-700">{(item as GrowthDiary).cohort}기</span>
+              </div>
+            ]}
+          />
+        )}
+        cardData={paginatedDiaries.map(diary => ({
+          ...diary,
+          author: diary.profiles?.nickname || diary.profiles?.name || '익명',
+        }))}
+        onCreateItem={() => setShowDiaryModal(true)}
         onViewItem={(item) => {
           const diary = diaries.find((d) => d.id === item.id);
           if (diary) handleViewDiary(diary);
@@ -119,21 +147,73 @@ export default function GrowthDiaryBoard({ userRole, cohort }: GrowthDiaryBoardP
       )}
 
       {/* 일기 작성 모달 */}
-      <DiaryCreateModal
+      <UniversalCreateModal
         show={showDiaryModal}
+        title="일기 쓰기"
         onClose={() => setShowDiaryModal(false)}
-        onSubmit={async (data) => {
-          await handleCreateDiary(data.title, data.content);
+        onSubmit={async (formData) => {
+          await handleCreateDiary(formData.title, formData.content);
         }}
+        fields={[
+          {
+            name: 'title',
+            type: 'text' as const,
+            label: '일기 제목',
+            required: true,
+            maxLength: 100,
+            placeholder: '일기 제목을 입력하세요',
+          },
+          {
+            name: 'content',
+            type: 'textarea' as const,
+            label: '일기 내용',
+            required: true,
+            maxLength: 2000,
+            placeholder: '오늘의 성장과 배운 점을 작성해보세요...',
+            showCharacterCount: true,
+          },
+        ]}
       />
 
       {/* 일기 상세보기 모달 */}
-      <DiaryDetailModal
+      <UniversalDetailModal
         show={showDetailModal}
-        diary={selectedDiary}
+        item={selectedDiary}
         userRole={userRole}
+        title="성장 일기 상세보기"
+        editTitle="성장 일기 수정"
         onClose={() => setShowDetailModal(false)}
-        onEditDiary={handleEditDiary}
+        onUpdate={async (id: string, formData: Record<string, any>) => {
+          await handleEditDiary(id, formData.title, formData.content);
+        }}
+        fields={[
+          {
+            name: 'title',
+            type: 'text' as const,
+            label: '일기 제목',
+            required: true,
+            maxLength: 100,
+          },
+          {
+            name: 'content',
+            type: 'textarea' as const,
+            label: '일기 내용',
+            required: true,
+            maxLength: 2000,
+          },
+        ]}
+        renderHeader={(item) => (
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-3">
+              <div className="px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full">
+                <span className="text-xs font-medium text-green-700">{(item as GrowthDiary).cohort}기</span>
+              </div>
+              <span className="text-sm text-slate-600">
+                {(item as GrowthDiary).profiles?.nickname || (item as GrowthDiary).profiles?.name || '작성자'}
+              </span>
+            </div>
+          </div>
+        )}
       />
     </div>
   );

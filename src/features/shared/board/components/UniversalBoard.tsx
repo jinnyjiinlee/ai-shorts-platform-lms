@@ -181,7 +181,7 @@ export default function UniversalBoard({
           )}
 
           {/* 생성 버튼 */}
-          {(userRole === 'admin' || (userRole === 'student' && onCreateItem)) && onCreateItem && (
+          {onCreateItem && (
             <Button onClick={onCreateItem} variant='primary' className='flex items-center space-x-2'>
               <PlusIcon className='w-4 h-4' />
               <span>{createButtonText}</span>

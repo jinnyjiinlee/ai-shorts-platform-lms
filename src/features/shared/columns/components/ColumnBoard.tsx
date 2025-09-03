@@ -4,7 +4,6 @@
 
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
 import { useColumn } from '../hooks/useColumn';
-import { Pagination } from '@/features/shared/ui/Pagination';
 import UniversalBoard, { BoardItem } from '@/features/shared/board/components/UniversalBoard';
 import ColumnCreateModal from './ColumnCreateModal';
 import ColumnDetailModal from './ColumnDetailModal';
@@ -93,16 +92,6 @@ export default function ColumnBoard({ userRole }: ColumnBoardProps) {
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
-
-      {/* 페이지네이션 - 데이터가 있을 때만 표시 */}
-      {columns.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          showPageInfo={true}
-        />
-      )}
 
       {/* 칼럼 작성 모달 (관리자만) */}
       {userRole === 'admin' && (
