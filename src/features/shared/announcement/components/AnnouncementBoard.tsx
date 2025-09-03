@@ -77,7 +77,7 @@ export default function AnnouncementBoard({ userRole }: AnnouncementBoardProps) 
         userRole={userRole}
         loading={loading}
         error={error || undefined}
-        onCreateItem={() => setShowCreateModal(true)}
+        onCreateItem={userRole === 'admin' ? () => setShowCreateModal(true) : undefined}
         onViewItem={(item) => {
           const announcement = announcements.find((a) => a.id === item.id);
           if (announcement) handleViewAnnouncement(announcement);

@@ -46,7 +46,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
       {/* 메인 콘텐츠 영역 */}
       <div className='flex-1 flex flex-col'>
         <StudentHeader showMobileMenu={showMobileMenu} onToggleMobileMenu={() => setShowMobileMenu(!showMobileMenu)} />
-        <main className='flex-1 overflow-y-auto'>{children}</main>
+        <main className='flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-6'>{children}</main>
       </div>
     </div>
   );

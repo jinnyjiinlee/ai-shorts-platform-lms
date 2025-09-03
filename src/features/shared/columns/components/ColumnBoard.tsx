@@ -78,7 +78,7 @@ export default function ColumnBoard({ userRole }: ColumnBoardProps) {
         userRole={userRole}
         loading={loading}
         error={error || undefined}
-        onCreateItem={() => setShowCreateModal(true)}
+        onCreateItem={userRole === 'admin' ? () => setShowCreateModal(true) : undefined}
         onViewItem={(item) => {
           const column = columns.find((c) => c.id === item.id);
           if (column) handleViewColumn(column);
