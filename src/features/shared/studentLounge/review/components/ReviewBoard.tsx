@@ -6,6 +6,7 @@ import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import UniversalBoard, { BoardItem, FilterOption } from '@/features/shared/board/components/UniversalBoard';
 import ReviewCreateModal from './ReviewCreateModal';
 import ReviewDetailModal from './ReviewDetailModal';
+import ReviewCardView from './ReviewCardView';
 import CohortBadge from '@/features/shared/ui/Badge/CohortBadge';
 
 interface ReviewBoardProps {
@@ -17,12 +18,16 @@ interface ReviewBoardProps {
  * @param userRole 현재 사용자의 역할 ('admin' 또는 'student')
  */
 export default function ReviewBoard({ userRole }: ReviewBoardProps) {
+  // 뷰 전환 상태
+  const [viewType, setViewType] = useState<'board' | 'card'>('card'); // 카드뷰가 기본
+
   /**
    * useReview 훅에서 모든 리뷰 관련 로직과 데이터 가져오기
    * - 리뷰 목록, 로딩/에러 상태
    * - 모달 상태 관리
    * - CRUD 함수들
    * - 기수별 필터링 로직
+   * - 페이지네이션 로직
    */
   const {
     reviews, // 전체 리뷰 목록
@@ -32,6 +37,10 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
     selectedCohort, // 현재 선택된 기수 필터
     setSelectedCohort, // 기수 필터 변경 함수
     filteredReviews, // 필터링된 리뷰 목록
+    paginatedReviews, // 페이지네이션이 적용된 리뷰 목록
+    currentPage, // 현재 페이지
+    totalPages, // 전체 페이지 수
+    handlePageChange, // 페이지 변경 함수
     showCreateModal, // 작성 모달 상태
     setShowCreateModal, // 작성 모달 제어
     showDetailModal, // 상세 모달 상태
@@ -68,12 +77,15 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
     setSelectedCohort(value as string | 'all');
   };
 
+  // 표시할 데이터 (페이지네이션 적용된 데이터)
+  const displayReviews = paginatedReviews;
+
   /**
    * Review 데이터를 UniversalBoard에서 사용하는 BoardItem 형태로 변환
    * - 각 리뷰마다 기수 배지 추가
    * - 제목, 내용, 작성자, 작성일 매핑
    */
-  const boardItems: BoardItem[] = filteredReviews.map((review) => ({
+  const boardItems: BoardItem[] = displayReviews.map((review) => ({
     id: review.id,
     title: review.title,
     content: review.content,
@@ -112,16 +124,12 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
 
   return (
     <div className='space-y-6'>
-      {/*
-        UniversalBoard 컴포넌트 사용
-        - 기존 QnA, 미션 등과 동일한 UI 패턴
-        - 리뷰 특화 기능만 추가
-      */}
+      {/* UniversalBoard에 뷰 전환 기능 통합 */}
       <UniversalBoard
         title='수강생 후기'
         description='수강생들의 솔직한 후기와 경험담을 공유하는 공간'
         icon={<ChatBubbleLeftRightIcon className='w-6 h-6 text-purple-600' />}
-        iconBgColor='bg-purple-100' // 리뷰는 보라색 테마
+        iconBgColor='bg-purple-100'
         createButtonText='후기 작성하기'
         items={boardItems}
         userRole={userRole}
@@ -131,20 +139,28 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
         filterOptions={filterOptions}
         selectedFilter={userRole === 'admin' ? selectedCohort : undefined}
         onFilterChange={userRole === 'admin' ? handleCohortFilterChange : undefined}
+        // 뷰 전환 기능
+        showViewToggle={true}
+        viewType={viewType}
+        onViewTypeChange={setViewType}
+        cardComponent={ReviewCardView}
+        cardData={displayReviews}
+        // 페이지네이션
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
         // 액션 함수들
-        onCreateItem={() => setShowCreateModal(true)} // 작성 모달 열기
+        onCreateItem={() => setShowCreateModal(true)}
         onViewItem={(item) => {
-          // BoardItem id로 원본 Review 찾기
-          const review = reviews.find((r) => r.id === item.id);
+          const review = filteredReviews.find((r) => r.id === item.id);
           if (review) handleViewReview(review);
         }}
         onEditItem={(item) => {
-          // 수정도 상세보기 모달에서 처리
-          const review = reviews.find((r) => r.id === item.id);
+          const review = filteredReviews.find((r) => r.id === item.id);
           if (review) handleViewReview(review);
         }}
         onDeleteItem={(id) => {
-          handleDeleteReview(id); // 삭제 처리
+          handleDeleteReview(id);
         }}
       />
 

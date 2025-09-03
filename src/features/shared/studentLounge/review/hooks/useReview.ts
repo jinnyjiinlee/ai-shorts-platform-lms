@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Review, ReviewFormData, CohortOption } from '@/types/domains/review';
 import { getReviews, createReview, updateReview, deleteReview, getAvailableCohorts } from '../services/reviewService';
+import { usePagination } from '@/features/shared/ui/Pagination/usePagination';
 
 /**
  * Review 기능을 위한 커스텀 훅
@@ -21,6 +22,12 @@ interface UseReviewReturn {
   selectedCohort: string | 'all';
   setSelectedCohort: (cohort: string | 'all') => void;
   filteredReviews: Review[];
+
+  // 페이지네이션
+  paginatedReviews: Review[];
+  currentPage: number;
+  totalPages: number;
+  handlePageChange: (page: number) => void;
 
   // 모달 상태
   showCreateModal: boolean;
@@ -82,6 +89,18 @@ export function useReview(userRole: 'admin' | 'student'): UseReviewReturn {
    */
   const filteredReviews =
     selectedCohort === 'all' ? reviews : reviews.filter((review) => review.cohort === selectedCohort);
+
+  // === 페이지네이션 ===
+  const {
+    currentPage,
+    totalPages,
+    paginatedData: paginatedReviews,
+    handlePageChange,
+  } = usePagination({
+    data: filteredReviews,
+    itemsPerPage: 10,
+    initialPage: 1,
+  });
 
   /**
    * 새 리뷰 작성 핸들러
@@ -163,6 +182,12 @@ export function useReview(userRole: 'admin' | 'student'): UseReviewReturn {
     selectedCohort,
     setSelectedCohort,
     filteredReviews,
+
+    // 페이지네이션
+    paginatedReviews,
+    currentPage,
+    totalPages,
+    handlePageChange,
 
     // 모달 상태
     showCreateModal,
