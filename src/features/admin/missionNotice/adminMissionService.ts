@@ -75,73 +75,79 @@ export const fetchMissions = async (): Promise<Mission[]> => {
             return acc;
           }, []);
 
-          // 3단계: 각 제출의 학생 정보 가져오기
-          const submissionsWithStudentInfo = await Promise.all(
-            uniqueSubmissions.map(async (submission) => {
-              try {
-                const { data: profile, error: profileError } = await supabase
-                  .from('profiles')
-                  .select('name, nickname')
-                  .eq('id', submission.student_id)
-                  .single();
+          // 3단계: 이 미션의 모든 학생 ID를 한 번에 조회
+          const studentIds = uniqueSubmissions.map(sub => sub.student_id);
+          const { data: profiles, error: profileError } = await supabase
+            .from('profiles')
+            .select('id, name, nickname')
+            .in('id', studentIds);
 
-                if (profileError) {
-                  console.error(`학생 ${submission.student_id} 정보 조회 오류:`, profileError);
+          if (profileError) {
+            console.error(`미션 ${mission.id} 학생 정보 조회 오류:`, profileError);
+          }
+
+          // 프로필을 Map으로 변환해서 빠른 조회
+          const profileMap = new Map();
+          (profiles || []).forEach(profile => {
+            profileMap.set(profile.id, profile);
+          });
+
+          // 각 제출에 학생 정보 연결
+          const submissionsWithStudentInfo = uniqueSubmissions.map((submission) => {
+            try {
+              const profile = profileMap.get(submission.student_id);
+              // 학생 닉네임 표시
+              const displayName = profile?.nickname || profile?.name || '알 수 없음';
+
+              // 제출 시간을 더 상세히 표시
+              const submittedDateTime = new Date(submission.submitted_at);
+              const formattedTime = `${submittedDateTime.toLocaleDateString()} ${submittedDateTime.toLocaleTimeString(
+                'ko-KR',
+                {
+                  hour: '2-digit',
+                  minute: '2-digit',
                 }
+              )}`;
 
-                // 학생 닉네임 표시
-                const displayName = profile?.nickname || profile?.name || '알 수 없음';
+              return {
+                id: submission.id,
+                missionId: mission.id,
+                studentName: displayName,
+                studentId: submission.student_id,
+                submittedAt: formattedTime, // 날짜 + 시간
+                submittedAtRaw: submission.submitted_at, // 원본 ISO 시간
+                fileName: submission.content || submission.file_name || '내용 없음',
+                fileSize: '-', // 파일 크기 제거
+                status: submission.status,
+                grade: undefined, // TODO: 성적 테이블 연동
+                feedback: undefined, // TODO: 피드백 테이블 연동
+              };
+            } catch (error) {
+              console.error('학생 정보 처리 오류:', error);
+              const submittedDateTime = new Date(submission.submitted_at);
+              const formattedTime = `${submittedDateTime.toLocaleDateString()} ${submittedDateTime.toLocaleTimeString(
+                'ko-KR',
+                {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }
+              )}`;
 
-                // 제출 시간을 더 상세히 표시
-                const submittedDateTime = new Date(submission.submitted_at);
-                const formattedTime = `${submittedDateTime.toLocaleDateString()} ${submittedDateTime.toLocaleTimeString(
-                  'ko-KR',
-                  {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }
-                )}`;
-
-                return {
-                  id: submission.id,
-                  missionId: mission.id,
-                  studentName: displayName,
-                  studentId: submission.student_id,
-                  submittedAt: formattedTime, // 날짜 + 시간
-                  submittedAtRaw: submission.submitted_at, // 원본 ISO 시간
-                  fileName: submission.content || submission.file_name || '내용 없음',
-                  fileSize: '-', // 파일 크기 제거
-                  status: submission.status,
-                  grade: undefined, // TODO: 성적 테이블 연동
-                  feedback: undefined, // TODO: 피드백 테이블 연동
-                };
-              } catch (error) {
-                console.error('학생 정보 처리 오류:', error);
-                const submittedDateTime = new Date(submission.submitted_at);
-                const formattedTime = `${submittedDateTime.toLocaleDateString()} ${submittedDateTime.toLocaleTimeString(
-                  'ko-KR',
-                  {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }
-                )}`;
-
-                return {
-                  id: submission.id,
-                  missionId: mission.id,
-                  studentName: '알 수 없음',
-                  studentId: submission.student_id,
-                  submittedAt: formattedTime,
-                  submittedAtRaw: submission.submitted_at, // 원본 ISO 시간
-                  fileName: submission.content || submission.file_name || '내용 없음',
-                  fileSize: '-', // 파일 크기 제거
-                  status: submission.status,
-                  grade: undefined,
-                  feedback: undefined,
-                };
-              }
-            })
-          );
+              return {
+                id: submission.id,
+                missionId: mission.id,
+                studentName: '알 수 없음',
+                studentId: submission.student_id,
+                submittedAt: formattedTime,
+                submittedAtRaw: submission.submitted_at, // 원본 ISO 시간
+                fileName: submission.content || submission.file_name || '내용 없음',
+                fileSize: '-', // 파일 크기 제거
+                status: submission.status,
+                grade: undefined,
+                feedback: undefined,
+              };
+            }
+          });
 
           console.log(`미션 ${mission.title}: ${submissionsWithStudentInfo.length}개 제출 처리 완료`);
           return {

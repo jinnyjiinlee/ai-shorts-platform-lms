@@ -40,8 +40,8 @@ export default function CohortCard({ cohort, isSelected, onSelect }: CohortCardP
             </div>
           </div>
           <div className='text-left sm:text-right'>
-            <div className='text-xl sm:text-2xl font-bold text-slate-900'>{cohort.submissionRate}%</div>
-            <div className='text-xs text-slate-500'>평균 완료율</div>
+            <div className='text-xl sm:text-2xl font-bold text-slate-900'>{cohort.perfectCompletionCount}명</div>
+            <div className='text-xs text-slate-500'>100% 완료</div>
           </div>
         </div>
 
@@ -75,12 +75,12 @@ export default function CohortCard({ cohort, isSelected, onSelect }: CohortCardP
           <div className='flex items-center justify-between text-sm mb-2'>
             <div className='flex items-center space-x-2'>
               <div className='w-2 h-2 bg-indigo-500 rounded-full animate-pulse'></div>
-              <span className='font-medium text-indigo-700'>현재 진행 중</span>
+              <span className='font-medium text-indigo-700'>{cohort.currentWeek}주차 미션</span>
             </div>
-            <span className='font-bold text-indigo-800'>{cohort.currentWeek}주차</span>
+            <span className='font-bold text-indigo-800'>100% 완료</span>
           </div>
           <div className='text-xs text-indigo-600'>
-            🎯 완벽 완료 학생: <span className='font-semibold'>{cohort.perfectCompletionCount}명</span> / 
+            🎯 모든 미션 완료: <span className='font-semibold'>{cohort.perfectCompletionCount}명</span> / 
             👥 참여 학생: <span className='font-semibold'>{cohort.participatingStudents}명</span>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { XMarkIcon, EyeIcon, UserGroupIcon, ShieldCheckIcon, AcademicCapIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, EyeIcon, UserGroupIcon, ShieldCheckIcon, AcademicCapIcon, ArrowUpIcon, ArrowDownIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/features/shared/ui/Button';
 import { Badge } from '@/features/shared/ui/Badge';
@@ -426,14 +426,19 @@ export default function UserRegistrationManagement() {
     <div className='space-y-6'>
       {/* 헤더 */}
       <div className='flex items-center justify-between'>
-        <div>
-          <h1 className='text-2xl font-bold text-slate-900'>사용자 관리</h1>
-          <p className='text-slate-600 mt-1'>수강생과 관리자를 관리하고 승인할 수 있습니다</p>
+        <div className='flex items-start space-x-4'>
+          <div className='w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center'>
+            <UsersIcon className='w-6 h-6 text-blue-600' />
+          </div>
+          <div>
+            <h1 className='text-2xl font-bold text-slate-900'>사용자 관리</h1>
+            <p className='text-slate-600 mt-1'>수강생과 관리자를 관리하고 승인할 수 있습니다</p>
+          </div>
         </div>
       </div>
 
       {/* 탭 메뉴 */}
-      <div className='bg-white rounded-xl border border-slate-200 overflow-hidden'>
+      <div className='bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300'>
         <div className='border-b border-slate-200'>
           <nav className='-mb-px flex'>
             <button
@@ -451,9 +456,10 @@ export default function UserRegistrationManagement() {
               }`}
             >
               <div className='flex items-center space-x-2'>
+                <span>🎓</span>
                 <AcademicCapIcon className='w-4 h-4' />
                 <span>수강생 관리</span>
-                <span className='bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs'>
+                <span className='bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold'>
                   {users.filter((u) => u.role === 'student' || !u.role).length}
                 </span>
               </div>
@@ -473,9 +479,10 @@ export default function UserRegistrationManagement() {
               }`}
             >
               <div className='flex items-center space-x-2'>
+                <span>👑</span>
                 <ShieldCheckIcon className='w-4 h-4' />
                 <span>관리자 목록</span>
-                <span className='bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs'>
+                <span className='bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold'>
                   {users.filter((u) => u.role === 'admin').length}
                 </span>
               </div>
@@ -543,9 +550,12 @@ export default function UserRegistrationManagement() {
 
         {/* 일괄 작업 버튼 영역 */}
         {activeTab === 'students' && selectedUserIds.length > 0 && (
-          <div className='p-4 bg-blue-50 border-b border-blue-200'>
+          <div className='p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-200'>
             <div className='flex items-center justify-between'>
-              <span className='text-sm text-blue-800 font-medium'>{selectedUserIds.length}명이 선택됨</span>
+              <span className='text-sm text-blue-800 font-bold'>
+                <span className='mr-1'>✅</span>
+                {selectedUserIds.length}명이 선택됨
+              </span>
               <div className='flex space-x-2'>
                 <Button
                   onClick={() => bulkApproval()}

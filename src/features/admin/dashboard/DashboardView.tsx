@@ -7,14 +7,13 @@ import { Badge } from '@/features/shared/ui/Badge';
 import DashboardHeader from './DashboardHeader';
 import StatCard from './StatCard';
 import WeeklySubmissionChart from './WeeklySubmissionChart';
-import CohortCard from './CohortCard';
 import {
   fetchDashboardStats,
   fetchCohortData,
   DashboardStats,
   CohortDashboardData,
 } from '@/features/admin/dashboard/adminDashboardService';
-import { CohortData, OverallStats } from './types';
+import { CohortData } from './types';
 
 // CohortDashboardData를 CohortData로 변환하는 어댑터 함수
 const convertToCohortData = (dashboardData: CohortDashboardData): CohortData => {
@@ -35,6 +34,7 @@ const convertToCohortData = (dashboardData: CohortDashboardData): CohortData => 
       submissions: w.submitted,
       totalStudents: w.total,
       rate: w.rate,
+      perfectStudents: w.perfectStudents,
     })),
   };
 };
@@ -88,16 +88,6 @@ export default function DashboardView() {
   const activeCohortData = convertedCohortData.filter((c) => c.status === 'active');
   const displayCohortData = convertedCohortData.filter((c) => activeCohorts.includes(c.cohort));
   const selectedCohortData = convertedCohortData.find((c) => c.cohort === selectedCohort);
-
-  // 전체 통계 (선택된 기수들 기준)
-  const overallStats: OverallStats = {
-    totalActiveStudents: displayCohortData.reduce((sum, c) => sum + c.totalStudents, 0),
-    averageSubmissionRate: displayCohortData.length
-      ? Math.round(displayCohortData.reduce((s, c) => s + c.submissionRate, 0) / displayCohortData.length)
-      : 0,
-    totalActiveMissions: displayCohortData.reduce((sum, c) => sum + c.totalMissions, 0),
-    activeStudentsCount: displayCohortData.reduce((sum, c) => sum + c.activeStudents, 0),
-  };
 
   const toggleActiveCohort = (cohortId: string) => {
     const cohort = convertedCohortData.find((c) => c.cohort === cohortId);
@@ -165,24 +155,48 @@ export default function DashboardView() {
         onToggleActiveCohort={toggleActiveCohort}
       />
 
-      {/* Statistics Cards */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6'>
+      {/* Statistics Cards - 완벽 수강생 중심으로 재구성 */}
+      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
         <StatCard
-          title='총 수강생'
-          value={overallStats.totalActiveStudents}
-          subtitle='진행 중인 기수 기준'
-          icon={<UsersIcon className='w-5 h-5 sm:w-6 sm:h-6 text-slate-600' />}
+          title='완벽 수강생'
+          value={selectedCohortData?.perfectCompletionCount || 0}
+          subtitle='전체 기간 유지'
+          icon={<span className='text-lg sm:text-xl'>🏆</span>}
           badge={{
-            text: `${overallStats.activeStudentsCount}명 활동중`,
+            text: '최우수',
+            variant: 'success',
+          }}
+        />
+        <StatCard
+          title='이번주 완료'
+          value={
+            selectedCohortData?.weeklySubmissions?.[selectedCohortData?.weeklySubmissions.length - 1]?.submissions || 0
+          }
+          subtitle={`${selectedCohortData?.currentWeek || 0}주차`}
+          icon={<span className='text-lg sm:text-xl'>✅</span>}
+          badge={{
+            text: '진행중',
+            variant: 'info',
+          }}
+        />
+        <StatCard
+          title='지난주 완료'
+          value={
+            selectedCohortData?.weeklySubmissions?.find((w) => w.week === (selectedCohortData?.currentWeek || 1) - 1)
+              ?.submissions || 0
+          }
+          subtitle={`${(selectedCohortData?.currentWeek || 1) - 1}주차`}
+          icon={<span className='text-lg sm:text-xl'>📊</span>}
+          badge={{
+            text: '완료',
             variant: 'default',
           }}
-          onClick={() => navigateToUserManagement('all')}
         />
         <StatCard
           title='승인 대기'
           value={dashboardStats?.pendingApprovals || 0}
-          subtitle='신규 가입 승인 대기'
-          icon={<span className='text-lg sm:text-xl'>📋</span>}
+          subtitle='신규 가입'
+          icon={<span className='text-lg sm:text-xl'>⏳</span>}
           badge={{
             text: '처리 필요',
             variant: 'warning',
@@ -200,16 +214,62 @@ export default function DashboardView() {
         />
       )}
 
-      {/* Cohort Cards */}
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4'>
-        {displayCohortData.map((cohort) => (
-          <CohortCard
-            key={cohort.cohort}
-            cohort={cohort}
-            isSelected={selectedCohort === cohort.cohort}
-            onSelect={selectCohort}
-          />
-        ))}
+      {/* 완벽 수강생 추적 섹션 */}
+      <div className='bg-white rounded-2xl border border-slate-200 shadow-md p-6'>
+        <div className='flex items-center justify-between mb-6'>
+          <div className='flex items-center space-x-3'>
+            <div className='w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center'>
+              <span className='text-xl'>🏆</span>
+            </div>
+            <div>
+              <h3 className='text-lg font-bold text-slate-900'>완벽 수강생 현황</h3>
+              <p className='text-sm text-slate-600'>매주 모든 미션을 100% 완료하는 학생들</p>
+            </div>
+          </div>
+          <div className='text-right'>
+            <span className='text-2xl font-bold text-orange-600'>
+              {selectedCohortData?.perfectCompletionCount || 0}명
+            </span>
+            <p className='text-xs text-slate-500'>현재까지 유지중</p>
+          </div>
+        </div>
+
+        {/* 완벽 수강생 명단 */}
+        <div className='bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl p-4'>
+          <div className='mb-4'>
+            <h4 className='font-semibold text-orange-800 mb-2'>
+              완벽 수강생 명단 ({selectedCohortData?.perfectCompletionCount || 0}명)
+            </h4>
+            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2'>
+              {selectedCohortData && selectedCohortData.perfectStudents && selectedCohortData.perfectStudents.length > 0 ? (
+                selectedCohortData.perfectStudents.map((student) => (
+                  <div
+                    key={student.id}
+                    className='bg-white rounded-lg px-3 py-2 text-sm font-medium text-slate-700 shadow-sm border border-orange-200'
+                  >
+                    {student.nickname || student.name}
+                  </div>
+                ))
+              ) : (
+                <div className='col-span-full text-center text-slate-500 py-4'>
+                  완벽 수강생이 없습니다
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 주차별 통계 */}
+          <div className='grid grid-cols-2 gap-4 pt-4 border-t border-orange-200'>
+            <div className='text-center'>
+              <p className='text-sm text-slate-600'>현재까지 완벽 완료</p>
+              <p className='text-xl font-bold text-orange-600'>{selectedCohortData?.perfectCompletionCount || 0}명</p>
+            </div>
+            <div className='text-center'>
+              <p className='text-sm text-slate-600'>완료율</p>
+              <p className='text-xl font-bold text-orange-600'>{selectedCohortData?.perfectCompletionRate || 0}%</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

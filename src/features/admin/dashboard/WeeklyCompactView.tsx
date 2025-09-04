@@ -55,37 +55,6 @@ export default function WeeklyCompactView({ selectedCohortData }: WeeklyCompactV
           </tbody>
         </table>
       </div>
-
-      {/* 요약 통계 */}
-      <div className='mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4'>
-        <div className='text-center p-3 bg-green-50 rounded-lg'>
-          <div className='text-lg font-bold text-green-600'>
-            {selectedCohortData.weeklySubmissions.filter((w) => w.rate >= 80).length}
-          </div>
-          <div className='text-xs text-green-700'>우수 주차</div>
-        </div>
-        <div className='text-center p-3 bg-blue-50 rounded-lg'>
-          <div className='text-lg font-bold text-blue-600'>
-            {selectedCohortData.weeklySubmissions.filter((w) => w.rate >= 60 && w.rate < 80).length}
-          </div>
-          <div className='text-xs text-blue-700'>양호 주차</div>
-        </div>
-        <div className='text-center p-3 bg-orange-50 rounded-lg'>
-          <div className='text-lg font-bold text-orange-600'>
-            {selectedCohortData.weeklySubmissions.filter((w) => w.rate < 60).length}
-          </div>
-          <div className='text-xs text-orange-700'>개선 필요</div>
-        </div>
-        <div className='text-center p-3 bg-slate-50 rounded-lg'>
-          <div className='text-lg font-bold text-slate-600'>
-            {Math.round(
-              selectedCohortData.weeklySubmissions.reduce((acc, w) => acc + w.rate, 0) /
-                selectedCohortData.weeklySubmissions.length
-            )} %
-          </div>
-          <div className='text-xs text-slate-700'>평균 제출률</div>
-        </div>
-      </div>
     </div>
   );
 }

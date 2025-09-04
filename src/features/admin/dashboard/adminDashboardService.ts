@@ -6,7 +6,6 @@ import { dateUtils } from '@/lib/utils';
 
 export interface DashboardStats {
   totalActiveStudents: number;
-  averageSubmissionRate: number;
   totalActiveMissions: number;
   activeStudentsCount: number;
   pendingApprovals: number;
@@ -17,6 +16,13 @@ export interface WeeklySubmissionData {
   submitted: number;
   total: number;
   rate: number;
+  perfectStudents: PerfectStudent[]; // 해당 주차 완벽 완료 학생들
+}
+
+export interface PerfectStudent {
+  id: string;
+  name: string;
+  nickname?: string;
 }
 
 export interface CohortDashboardData {
@@ -26,6 +32,7 @@ export interface CohortDashboardData {
   submissionRate: number; // 평균 완료율
   perfectCompletionCount: number; // 모든 미션을 완료한 학생 수
   perfectCompletionRate: number; // 완벽 완료 비율
+  perfectStudents: PerfectStudent[]; // 완벽 완료 학생 명단
   participatingStudents: number; // 참여 학생 수 (하나라도 제출한 학생)
   currentWeek: number; // 현재 주차
   activeStudents: number;
@@ -62,10 +69,14 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
     // 🎯 공통 서비스 사용 및 병렬 처리
     const [students, missions] = await Promise.all([getApprovedStudents(), getMissionsWithSubmissions()]);
 
+    // 디버깅: 실제 데이터 구조 확인
+    console.log('학생 데이터 샘플:', students.slice(0, 3));
+    console.log('미션 데이터 샘플:', missions.slice(0, 3));
+
     // 🎯 계산 로직을 별도 함수로 분리
     const cohortData = calculateCohortData(students, missions);
 
-    console.log('기수별 데이터 조회 완료');
+    console.log('기수별 데이터 조회 완료:', cohortData);
     return cohortData;
   } catch (error) {
     ErrorService.handleError(error, '기수별 데이터를 불러오는 중 오류가 발생했습니다');
@@ -76,7 +87,7 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
 async function getApprovedStudents() {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, cohort')
+    .select('id, cohort, name, nickname')
     .eq('role', 'student')
     .eq('status', 'approved');
 
@@ -117,22 +128,10 @@ function calculateDashboardStats(
   const pendingApprovals = pendingStudents.length;
   const totalActiveMissions = missions.length;
 
-  // 제출률 계산 (중복 제출 제거)
-  const uniqueSubmissions = new Map();
-  submissions.forEach((sub) => {
-    const key = `${sub.mission_id}-${sub.student_id}`;
-    uniqueSubmissions.set(key, sub);
-  });
-
-  const totalExpectedSubmissions = totalActiveMissions * totalActiveStudents;
-  const actualSubmissions = uniqueSubmissions.size;
-  const averageSubmissionRate = dateUtils.calculateRate(actualSubmissions, totalExpectedSubmissions);
-
   console.log('대시보드 통계 조회 완료');
 
   return {
     totalActiveStudents,
-    averageSubmissionRate,
     totalActiveMissions,
     activeStudentsCount: totalActiveStudents,
     pendingApprovals,
@@ -145,8 +144,9 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
   // 학생 수 집계
   const studentsByCohort = new Map<string, number>();
   students.forEach((student) => {
-    const count = studentsByCohort.get(student.cohort) || 0;
-    studentsByCohort.set(student.cohort, count + 1);
+    const cohort = String(student.cohort || '1');
+    const count = studentsByCohort.get(cohort) || 0;
+    studentsByCohort.set(cohort, count + 1);
   });
 
   // 기수별 주차별 미션 개수 계산
@@ -155,7 +155,7 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
 
   // 미션 및 제출 데이터 집계
   missions.forEach((mission) => {
-    const cohort = mission.cohort || '1';
+    const cohort = String(mission.cohort || '1');
 
     if (!cohortMap.has(cohort)) {
       const totalStudents = studentsByCohort.get(cohort) || 0;
@@ -166,6 +166,7 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
         submissionRate: 0,
         perfectCompletionCount: 0,
         perfectCompletionRate: 0,
+        perfectStudents: [],
         participatingStudents: 0,
         currentWeek: 0,
         activeStudents: totalStudents,
@@ -204,16 +205,22 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
 
     weeklyMissionCount.forEach((missionCount, week) => {
       let completedStudents = 0;
+      const weeklyPerfectStudents: PerfectStudent[] = [];
 
       // 해당 기수의 모든 학생을 확인
       students.forEach((student) => {
-        if (student.cohort === cohort) {
+        if (String(student.cohort || '1') === cohort) {
           const studentSubmissions = studentWeeklySubmissions.get(student.id);
           const submissionCount = studentSubmissions?.get(week) || 0;
 
           // 해당 주차의 모든 미션을 완료했는지 확인
           if (submissionCount === missionCount) {
             completedStudents++;
+            weeklyPerfectStudents.push({
+              id: student.id,
+              name: student.name,
+              nickname: student.nickname
+            });
           }
         }
       });
@@ -223,6 +230,7 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
         submitted: completedStudents,
         total: cohortData.totalStudents,
         rate: dateUtils.calculateRate(completedStudents, cohortData.totalStudents),
+        perfectStudents: weeklyPerfectStudents,
       });
     });
   });
@@ -230,16 +238,24 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
   // 기수별 상세 통계 계산
   cohortMap.forEach((cohortData) => {
     const cohort = cohortData.cohort;
-    const cohortStudents = students.filter((s) => s.cohort === cohort);
+    const cohortStudents = students.filter((s) => String(s.cohort || '1') === cohort);
+    
+    console.log(`기수 ${cohort} 통계 계산 시작:`, {
+      totalStudents: cohortStudents.length,
+      totalMissions: cohortData.totalMissions,
+      weeklyMissionCount: cohortWeeklyMissionCount.get(cohort)?.size || 0
+    });
 
     // 개별 학생별 완료율 계산
     let totalCompletionRate = 0;
     let perfectCompletionCount = 0;
+    const perfectStudentsList: PerfectStudent[] = [];
     const participatingStudentsSet = new Set<string>();
 
     cohortStudents.forEach((student) => {
       const studentSubmissions = studentWeeklySubmissions.get(student.id);
       let studentCompletedMissions = 0;
+      const totalWeeks = cohortWeeklyMissionCount.get(cohort)?.size || 0;
 
       // 각 주차별로 확인
       cohortWeeklyMissionCount.get(cohort)?.forEach((missionCount, week) => {
@@ -252,15 +268,20 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
         }
       });
 
-      // 개별 학생 완료율
-      const studentCompletionRate =
-        cohortData.totalMissions > 0 ? (studentCompletedMissions / cohortData.totalMissions) * 100 : 0;
+      // 개별 학생 완료율 - 주차 기준으로 계산
+      const studentCompletionRate = totalWeeks > 0 ? (studentCompletedMissions / totalWeeks) * 100 : 0;
 
       totalCompletionRate += studentCompletionRate;
 
-      // 모든 미션을 완료한 학생 카운트
-      if (studentCompletionRate === 100) {
+      // 모든 주차를 완벽하게 완료한 학생 (각 주차마다 100% 완료)
+      if (studentCompletionRate === 100 && totalWeeks > 0) {
         perfectCompletionCount++;
+        perfectStudentsList.push({
+          id: student.id,
+          name: student.name,
+          nickname: student.nickname
+        });
+        console.log(`완벽 수강생 발견: ${student.nickname || student.name} (${studentCompletedMissions}/${totalWeeks} 주차 완료)`);
       }
     });
 
@@ -270,6 +291,13 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
     // 완벽 완료 관련 통계
     cohortData.perfectCompletionCount = perfectCompletionCount;
     cohortData.perfectCompletionRate = dateUtils.calculateRate(perfectCompletionCount, cohortStudents.length);
+    cohortData.perfectStudents = perfectStudentsList;
+    
+    console.log(`기수 ${cohort} 완벽 수강생 통계:`, {
+      perfectCompletionCount,
+      perfectStudents: perfectStudentsList.map(s => s.nickname || s.name),
+      totalStudents: cohortStudents.length
+    });
 
     // 참여 학생 수
     cohortData.participatingStudents = participatingStudentsSet.size;
