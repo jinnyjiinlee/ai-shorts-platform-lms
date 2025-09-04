@@ -27,6 +27,7 @@ export default function MissionRoadmap({ missions, onMissionClick, selectedWeek,
     }
   };
 
+  // 기존 디자인 시스템과 일치하는 스타일
   const getStepStyles = (status: string) => {
     switch (status) {
       case 'submitted':
@@ -68,7 +69,7 @@ export default function MissionRoadmap({ missions, onMissionClick, selectedWeek,
   };
 
   return (
-    <div className='bg-gradient-to-br from-slate-50 to-gray-50 rounded-2xl p-8 shadow-sm border border-slate-200'>
+    <div className='bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-[1.01]'>
       {/* 헤더 */}
       <div className='flex items-center justify-between mb-8'>
         <h3 className='text-2xl font-bold text-slate-900 flex items-center'>

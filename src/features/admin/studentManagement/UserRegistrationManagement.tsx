@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { XMarkIcon, EyeIcon, UserGroupIcon, ShieldCheckIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, EyeIcon, UserGroupIcon, ShieldCheckIcon, AcademicCapIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/24/outline';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/features/shared/ui/Button';
 import { Badge } from '@/features/shared/ui/Badge';
@@ -19,9 +19,71 @@ export default function UserRegistrationManagement() {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedAllUser, setSelectedAllUser] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // 정렬 상태 관리
+  const [sortBy, setSortBy] = useState<string>('created_at');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const modal = useModal<AdminUserView>();
   const usersPerPage = 10;
+
+  // 정렬 핸들러 - 페이지네이션 유지하되 필요시에만 리셋
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      // 같은 컬럼을 클릭하면 방향 토글 (페이지 유지)
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // 다른 컬럼을 클릭하면 해당 컬럼으로 오름차순 정렬 (페이지 유지)
+      setSortBy(column);
+      setSortDirection('asc');
+    }
+    
+    // 정렬 후 현재 페이지에 데이터가 없으면 1페이지로 이동
+    setTimeout(() => {
+      const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+      if (currentPage > totalPages && totalPages > 0) {
+        setCurrentPage(1);
+      }
+    }, 0);
+  };
+
+  // 정렬 함수
+  const getSortedUsers = (usersToSort: AdminUserView[]) => {
+    return [...usersToSort].sort((a, b) => {
+      let aValue: any = '';
+      let bValue: any = '';
+
+      switch (sortBy) {
+        case 'nickname':
+          aValue = a.nickname || a.name || '';
+          bValue = b.nickname || b.name || '';
+          break;
+        case 'role':
+          aValue = a.role === 'admin' ? '1' : '2'; // admin을 먼저
+          bValue = b.role === 'admin' ? '1' : '2';
+          break;
+        case 'cohort':
+          aValue = parseInt(a.cohort || '0');
+          bValue = parseInt(b.cohort || '0');
+          break;
+        case 'status':
+          const statusOrder = { approved: 1, pending: 2, rejected: 3 };
+          aValue = statusOrder[a.status as keyof typeof statusOrder] || 4;
+          bValue = statusOrder[b.status as keyof typeof statusOrder] || 4;
+          break;
+        case 'created_at':
+          aValue = new Date(a.created_at);
+          bValue = new Date(b.created_at);
+          break;
+        default:
+          return 0;
+      }
+
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  };
 
   // 사용자 데이터 로딩
   const { submitting: loadingUsers, submit: fetchUsers } = useAsyncSubmit(
@@ -119,24 +181,26 @@ export default function UserRegistrationManagement() {
     { all: 0, approved: 0, pending: 0, rejected: 0, unknown: 0 } as Record<string, number>
   );
 
-  // 페이지네이션 로직
-  const filteredUsers = users.filter((user) => {
-    // 역할별 필터
-    let roleMatch = false;
-    if (activeTab === 'students') {
-      roleMatch = user.role === 'student' || !user.role;
-    } else if (activeTab === 'admins') {
-      roleMatch = user.role === 'admin';
-    }
+  // 필터링 및 정렬 로직
+  const filteredUsers = getSortedUsers(
+    users.filter((user) => {
+      // 역할별 필터
+      let roleMatch = false;
+      if (activeTab === 'students') {
+        roleMatch = user.role === 'student' || !user.role;
+      } else if (activeTab === 'admins') {
+        roleMatch = user.role === 'admin';
+      }
 
-    // 상태별 필터
-    let statusMatch = true;
-    if (statusFilter !== 'all') {
-      statusMatch = user.status === statusFilter;
-    }
+      // 상태별 필터
+      let statusMatch = true;
+      if (statusFilter !== 'all') {
+        statusMatch = user.status === statusFilter;
+      }
 
-    return roleMatch && statusMatch;
-  });
+      return roleMatch && statusMatch;
+    })
+  );
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -313,6 +377,40 @@ export default function UserRegistrationManagement() {
     modal.closeView();
   };
 
+  // 정렬 가능한 테이블 헤더 렌더링 - 깔끔한 개선안
+  const SortableHeader = ({ column, children, className = '' }: { 
+    column: string; 
+    children: React.ReactNode; 
+    className?: string;
+  }) => {
+    const isActive = sortBy === column;
+    const isAsc = sortDirection === 'asc';
+    
+    return (
+      <th className={`px-4 py-2 text-left ${className}`}>
+        <button
+          onClick={() => handleSort(column)}
+          className={`flex items-center space-x-2 text-xs font-medium uppercase tracking-wider transition-all duration-200 hover:bg-slate-100 px-2 py-1 rounded-md group ${
+            isActive ? 'text-blue-600 bg-blue-50' : 'text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          <span>{children}</span>
+          {/* 더 명확한 화살표 아이콘 */}
+          {isActive && isAsc && (
+            <ArrowUpIcon className="w-5 h-5 text-blue-600 font-bold" />
+          )}
+          {isActive && !isAsc && (
+            <ArrowDownIcon className="w-5 h-5 text-blue-600 font-bold" />
+          )}
+          {/* 비활성 상태일 때는 호버시에만 회색 화살표 */}
+          {!isActive && (
+            <ArrowUpIcon className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-70 transition-all duration-200" />
+          )}
+        </button>
+      </th>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className='space-y-6'>
@@ -467,11 +565,11 @@ export default function UserRegistrationManagement() {
 
         {/* 사용자 목록 */}
         <div className='overflow-x-auto'>
-          <table className='w-full'>
+          <table className='w-full table-fixed'>
             <thead className='bg-slate-50'>
               <tr>
                 {activeTab === 'students' && (
-                  <th className='px-4 py-2 text-left'>
+                  <th className='px-4 py-2 text-left w-1/12'>
                     <input
                       type='checkbox'
                       checked={selectedAllUser}
@@ -480,22 +578,12 @@ export default function UserRegistrationManagement() {
                     />
                   </th>
                 )}
-                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
-                  사용자 정보
-                </th>
-                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
-                  역할
-                </th>
-                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
-                  기수
-                </th>
-                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
-                  상태
-                </th>
-                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
-                  가입일
-                </th>
-                <th className='px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
+                <SortableHeader column="nickname" className="w-1/4">사용자 정보</SortableHeader>
+                <SortableHeader column="role" className="w-1/6">역할</SortableHeader>
+                <SortableHeader column="cohort" className="w-1/6">기수</SortableHeader>
+                <SortableHeader column="status" className="w-1/6">상태</SortableHeader>
+                <SortableHeader column="created_at" className="w-1/6">가입일</SortableHeader>
+                <th className='w-1/6 px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
                   작업
                 </th>
               </tr>

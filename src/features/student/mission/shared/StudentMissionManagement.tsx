@@ -11,12 +11,12 @@ import { useStudentMissions } from './useMissions';
 import { Badge } from '@/features/shared/ui/Badge';
 import LoadingState from '../../dashboard/components/LoadingState';
 
-// 공통 카드 스타일 클래스들
+// 공통 카드 스타일 클래스들 - 기존 디자인 시스템과 통일
 const CARD_CLASSES = {
-  WHITE_CARD: 'bg-white border border-slate-200',
-  LARGE_CARD: 'rounded-2xl p-8 shadow-sm',
-  MEDIUM_CARD: 'rounded-xl p-6',
-  SMALL_CARD: 'rounded-lg p-4'
+  BASE_CARD: 'bg-white rounded-2xl border border-slate-200 hover:shadow-lg transition-all duration-300',
+  LARGE_CARD: 'p-6',
+  MEDIUM_CARD: 'p-4', 
+  SMALL_CARD: 'p-3'
 };
 
 export default function StudentMissionManagement() {
@@ -65,7 +65,7 @@ export default function StudentMissionManagement() {
 
       {/* 미션 로드맵 - 새로운 디자인 */}
       {missions.length === 0 ? (
-        <div className={`${CARD_CLASSES.WHITE_CARD} ${CARD_CLASSES.LARGE_CARD}`}>
+        <div className={`${CARD_CLASSES.BASE_CARD} ${CARD_CLASSES.LARGE_CARD} group hover:scale-[1.01]`}>
           <div className='text-center py-12'>
             <div className='text-6xl mb-4'>📋</div>
             <h3 className='text-xl font-semibold text-slate-900 mb-2'>등록된 미션이 없습니다</h3>
@@ -86,7 +86,7 @@ export default function StudentMissionManagement() {
       {selectedWeek ? (
         // 특정 주차가 선택된 경우
         missionsByWeek[selectedWeek] && (
-          <div className={`${CARD_CLASSES.WHITE_CARD} ${CARD_CLASSES.MEDIUM_CARD}`}>
+          <div className={`${CARD_CLASSES.BASE_CARD} ${CARD_CLASSES.MEDIUM_CARD} group hover:scale-[1.01]`}>
             <h2 className='text-xl font-semibold text-slate-900 mb-4'>{selectedWeek}주차 미션</h2>
             <MissionList
               missions={missionsByWeek[selectedWeek]}
@@ -100,7 +100,7 @@ export default function StudentMissionManagement() {
       ) : (
         // 전체 보기가 선택된 경우
         missions.length > 0 && (
-          <div className={`${CARD_CLASSES.WHITE_CARD} ${CARD_CLASSES.MEDIUM_CARD}`}>
+          <div className={`${CARD_CLASSES.BASE_CARD} ${CARD_CLASSES.MEDIUM_CARD} group hover:scale-[1.01]`}>
             <h2 className='text-xl font-semibold text-slate-900 mb-4'>전체 미션</h2>
             <MissionList
               missions={missions}
