@@ -11,6 +11,7 @@ export interface BoardItem {
   title: string;
   content: string;
   author: string;
+  authorId?: string; // 작성자 ID 추가
   createdAt: string;
   isPinned?: boolean;
   isPublished?: boolean;
@@ -31,6 +32,7 @@ interface UniversalBoardProps {
   icon: ReactNode;
   items: BoardItem[];
   userRole: 'admin' | 'student';
+  currentUserId?: string; // 현재 로그인한 사용자 ID 추가
   loading?: boolean;
   error?: string;
 
@@ -76,6 +78,7 @@ export default function UniversalBoard({
   icon,
   items,
   userRole,
+  currentUserId,
   loading = false,
   error,
   iconBgColor = 'bg-blue-100',
@@ -277,7 +280,8 @@ export default function UniversalBoard({
                         </button>
                       )}
 
-                      {userRole === 'admin' && onEditItem && (
+                      {/* 수정 버튼 - 관리자는 모든 글, 수강생은 본인 글만 */}
+                      {onEditItem && (userRole === 'admin' || (userRole === 'student' && currentUserId && item.authorId === currentUserId)) && (
                         <button
                           onClick={() => onEditItem(item)}
                           className='p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors'
@@ -297,7 +301,8 @@ export default function UniversalBoard({
                       {/* 추가 액션들 */}
                       {extraActions && extraActions(item).map((action, index) => <span key={index}>{action}</span>)}
 
-                      {userRole === 'admin' && onDeleteItem && (
+                      {/* 삭제 버튼 - 관리자는 모든 글, 수강생은 본인 글만 */}
+                      {onDeleteItem && (userRole === 'admin' || (userRole === 'student' && currentUserId && item.authorId === currentUserId)) && (
                         <button
                           onClick={() => onDeleteItem(item.id)}
                           className='p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors'

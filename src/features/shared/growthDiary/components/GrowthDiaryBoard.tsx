@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGrowthDiary } from '../hooks/useGrowthDiary';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import UniversalBoard, { BoardItem } from '@/features/shared/board/components/UniversalBoard';
@@ -9,6 +9,7 @@ import UniversalDetailModal from '@/features/shared/ui/Modal/UniversalDetailModa
 import UniversalCardView from '@/features/shared/board/components/UniversalCardView';
 import { GrowthDiary } from '@/types/domains/growthDiary';
 import { Pagination } from '@/features/shared/ui/Pagination';
+import { supabase } from '@/lib/supabase/client';
 
 interface GrowthDiaryBoardProps {
   userRole: 'admin' | 'student';
@@ -62,6 +63,7 @@ export default function GrowthDiaryBoard({ userRole, cohort }: GrowthDiaryBoardP
     title: diary.title,
     content: diary.content,
     author: diary.profiles?.nickname || diary.profiles?.name || '작성자',
+    authorId: diary.student_id, // 작성자 ID 추가
     createdAt: formatDate(diary.created_at),
     isPublished: true, // 일기는 기본적으로 발행됨
     badges: [],
@@ -78,6 +80,7 @@ export default function GrowthDiaryBoard({ userRole, cohort }: GrowthDiaryBoardP
         createButtonText="일기 쓰기"
         items={boardItems}
         userRole={userRole}
+        currentUserId={currentUserId || undefined}
         loading={loading}
         error={error || undefined}
         // 뷰 전환 기능
@@ -109,26 +112,13 @@ export default function GrowthDiaryBoard({ userRole, cohort }: GrowthDiaryBoardP
         }}
         onEditItem={(item) => {
           const diary = diaries.find((d) => d.id === item.id);
-          if (diary) {
-            // 본인이 작성한 일기인지 확인
-            const isMyDiary = currentUserId && diary.student_id === currentUserId;
-            if ((userRole === 'student' && isMyDiary) || userRole === 'admin') {
-              handleViewDiary(diary);
-            }
-          }
+          if (diary) handleViewDiary(diary);
         }}
         onDeleteItem={(id) => {
-          const diary = diaries.find((d) => d.id === id);
-          if (diary) {
-            // 본인이 작성한 일기인지 확인
-            const isMyDiary = currentUserId && diary.student_id === currentUserId;
-            if ((userRole === 'student' && isMyDiary) || userRole === 'admin') {
-              if (userRole === 'student') {
-                handleDeleteMyDiary(id);
-              } else {
-                handleAdminDelete(id);
-              }
-            }
+          if (userRole === 'student') {
+            handleDeleteMyDiary(id);
+          } else {
+            handleAdminDelete(id);
           }
         }}
         currentPage={currentPage}

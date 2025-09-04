@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useReview } from '../hooks/useReview';
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import UniversalBoard, { BoardItem, FilterOption } from '@/features/shared/board/components/UniversalBoard';
@@ -10,6 +10,7 @@ import UniversalCardView from '@/features/shared/board/components/UniversalCardV
 import CohortBadge from '@/features/shared/ui/Badge/CohortBadge';
 import { FormField } from '@/types/ui/universalModal';
 import { Review } from '@/types/domains/review';
+import { supabase } from '@/lib/supabase/client';
 
 interface ReviewBoardProps {
   userRole: 'admin' | 'student'; // 사용자 역할
@@ -22,6 +23,16 @@ interface ReviewBoardProps {
 export default function ReviewBoard({ userRole }: ReviewBoardProps) {
   // 뷰 전환 상태
   const [viewType, setViewType] = useState<'board' | 'card'>('card'); // 카드뷰가 기본
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // 현재 사용자 ID 가져오기
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUserId(user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
 
   /**
    * useReview 훅에서 모든 리뷰 관련 로직과 데이터 가져오기
@@ -92,6 +103,7 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
     title: review.title,
     content: review.content,
     author: review.student_nickname || '작성자', // 닉네임 또는 기본값
+    authorId: review.student_id, // 작성자 ID 추가
     createdAt: formatDate(review.created_at),
     isPublished: true, // 리뷰는 작성 즉시 공개
     badges: [
@@ -135,6 +147,7 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
         createButtonText='후기 작성하기'
         items={boardItems}
         userRole={userRole}
+        currentUserId={currentUserId || undefined}
         loading={loading}
         error={error || undefined}
         // 기수 필터링 (관리자만)
