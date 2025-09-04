@@ -1,6 +1,7 @@
 // 🎨 Student Mission UI 전용 타입들  
 // 이 파일은 Student Mission 기능에서만 사용되는 UI 컴포넌트 타입들을 관리
 
+import { ReactElement } from 'react';
 import { Mission } from '@/types/domains/mission';
 
 export interface MissionCardProps {
@@ -13,6 +14,7 @@ export interface MissionListProps {
   onMissionSelect: (mission: Mission) => void;
   getStatusColor: (status: string, isSubmitted?: boolean) => string;
   getStatusText: (status: string, isSubmitted?: boolean) => string;
+  getStatusBadge?: (status: string, isSubmitted?: boolean) => ReactElement;
 }
 
 export interface WeekSelectorProps {

@@ -8,6 +8,16 @@ import MissionCard from '../notice/MissionCard';
 import MissionList from '../notice/MissionList';
 import MissionModal from '../submission/MissionModal';
 import { useStudentMissions } from './useMissions';
+import { Badge } from '@/features/shared/ui/Badge';
+import LoadingState from '../../dashboard/components/LoadingState';
+
+// 공통 카드 스타일 클래스들
+const CARD_CLASSES = {
+  WHITE_CARD: 'bg-white border border-slate-200',
+  LARGE_CARD: 'rounded-2xl p-8 shadow-sm',
+  MEDIUM_CARD: 'rounded-xl p-6',
+  SMALL_CARD: 'rounded-lg p-4'
+};
 
 export default function StudentMissionManagement() {
   const [selectedWeek, setSelectedWeek] = useState<number | null>(1);
@@ -17,6 +27,16 @@ export default function StudentMissionManagement() {
 
   const handleSubmitMission = (_missionId: string) => {
     setSelectedMission(null);
+  };
+
+  const getStatusBadge = (status: string, isSubmitted?: boolean) => {
+    if (isSubmitted && status === 'completed') {
+      return <Badge variant="success" size="sm">완료</Badge>;
+    }
+    if (isSubmitted) {
+      return <Badge variant="default" size="sm" className="text-blue-600 bg-blue-100">제출 완료</Badge>;
+    }
+    return <Badge variant="warning" size="sm">제출 대기</Badge>;
   };
 
   const getStatusColor = (status: string, isSubmitted?: boolean) => {
@@ -32,14 +52,7 @@ export default function StudentMissionManagement() {
   };
 
   if (isLoading) {
-    return (
-      <div className='space-y-6'>
-        <div className='bg-white rounded-xl border border-slate-200 p-8 text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4'></div>
-          <p className='text-slate-600'>미션을 불러오는 중...</p>
-        </div>
-      </div>
-    );
+    return <LoadingState message="미션을 불러오는 중..." />;
   }
 
   return (
@@ -51,7 +64,7 @@ export default function StudentMissionManagement() {
       <ProgressCards stats={stats} />
 
       {/* 미션 진행 현황 - 카드 기반 재디자인 */}
-      <div className='bg-white rounded-2xl border border-slate-200 p-8 shadow-sm'>
+      <div className={`${CARD_CLASSES.WHITE_CARD} ${CARD_CLASSES.LARGE_CARD}`}>
         <div className='flex items-center justify-between mb-6'>
           <h3 className='text-2xl font-bold text-slate-900 flex items-center'>
             <span className='mr-3'>🎯</span>
@@ -81,13 +94,14 @@ export default function StudentMissionManagement() {
 
       {/* 선택된 주차의 미션 목록 */}
       {selectedWeek && missionsByWeek[selectedWeek] && (
-        <div className='bg-white rounded-xl border border-slate-200 p-6'>
+        <div className={`${CARD_CLASSES.WHITE_CARD} ${CARD_CLASSES.MEDIUM_CARD}`}>
           <h2 className='text-xl font-semibold text-slate-900 mb-4'>{selectedWeek}주차 미션</h2>
           <MissionList
             missions={missionsByWeek[selectedWeek]}
             onMissionSelect={setSelectedMission}
             getStatusColor={getStatusColor}
             getStatusText={getStatusText}
+            getStatusBadge={getStatusBadge}
           />
         </div>
       )}
