@@ -27,7 +27,8 @@ export default function TextSubmission({
   // 기본 상태들
   const [existingContent, setExistingContent] = useState<string>(existingSubmissionContent || '');
   const [isSubmittedState, setIsSubmittedState] = useState<boolean>(!!isSubmittedProp);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // 초기값을 true로 설정
+  const [initialLoading, setInitialLoading] = useState(true); // 초기 로딩 상태 추가
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
 
@@ -49,6 +50,14 @@ export default function TextSubmission({
   // 초기 로드: missionId가 있으면 DB에서 제출 여부와 내용 조회
   useEffect(() => {
     let cancelled = false;
+    
+    // props로 이미 필요한 데이터가 전달된 경우 로딩 스킵
+    if (isSubmittedProp !== undefined && existingSubmissionContent !== undefined) {
+      setInitialLoading(false);
+      setLoading(false);
+      return;
+    }
+    
     async function init() {
       setLoading(true);
       setErrorMsg(null);
@@ -69,14 +78,17 @@ export default function TextSubmission({
           setErrorMsg(e?.message ?? '초기화 중 오류가 발생했습니다.');
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setInitialLoading(false);
+        }
       }
     }
     init();
     return () => {
       cancelled = true; // cleanup
     };
-  }, [missionId, isSubmittedProp]);
+  }, [missionId, isSubmittedProp, existingSubmissionContent]);
 
   // 마감일이 지났는지 실시간 체크 (5초마다 업데이트)
   const [isOverdue, setIsOverdue] = useState(dueDate ? new Date(dueDate) < new Date() : false);
@@ -162,9 +174,25 @@ export default function TextSubmission({
     setErrorMsg(null);
   };
 
-  // 1) 초기화 중 로딩
-  if (loading) {
-    return <div className='text-sm text-slate-500'>불러오는 중…</div>;
+  // 1) 초기화 중 로딩 - 스켈레톤 UI로 개선
+  if (initialLoading) {
+    return (
+      <div className='space-y-4'>
+        <div className='bg-slate-50 border border-slate-200 rounded-lg p-4'>
+          <div className='animate-pulse space-y-3'>
+            <div className='flex items-center space-x-2'>
+              <div className='w-4 h-4 bg-slate-200 rounded'></div>
+              <div className='h-4 bg-slate-200 rounded w-24'></div>
+            </div>
+            <div className='space-y-2'>
+              <div className='h-3 bg-slate-200 rounded w-1/3'></div>
+              <div className='h-20 bg-slate-200 rounded w-full'></div>
+            </div>
+            <div className='h-8 bg-slate-200 rounded w-20'></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // 2) 이미 제출했지만 편집 모드가 아닐 때 → 제출 내용 보여주기

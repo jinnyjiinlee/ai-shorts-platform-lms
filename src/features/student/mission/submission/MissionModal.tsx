@@ -39,7 +39,9 @@ export default function MissionModal({ mission, onClose, onSubmit, refreshMissio
         <div className='p-6 border-b border-slate-200'>
           <div className='flex justify-between items-start'>
             <div>
-              <h3 className='text-xl font-semibold text-slate-900'>{mission.title}</h3>
+              <h3 className='text-xl font-semibold text-slate-900'>
+                {mission.title.includes('성장일기') ? '성장일기 수정' : mission.title}
+              </h3>
               <div className='flex items-center space-x-3 mt-2'>
                 <span className='text-sm text-slate-500'>{mission.week}주차</span>
                 <span
