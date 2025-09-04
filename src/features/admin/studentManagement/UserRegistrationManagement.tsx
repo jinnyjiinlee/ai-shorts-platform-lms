@@ -390,7 +390,7 @@ export default function UserRegistrationManagement() {
       <th className={`px-4 py-2 text-left ${className}`}>
         <button
           onClick={() => handleSort(column)}
-          className={`flex items-center space-x-2 text-xs font-medium uppercase tracking-wider transition-all duration-200 hover:bg-slate-100 px-2 py-1 rounded-md group ${
+          className={`flex items-center justify-start space-x-2 text-xs font-medium uppercase tracking-wider transition-all duration-200 hover:bg-slate-100 px-2 py-1 rounded-md group w-full ${
             isActive ? 'text-blue-600 bg-blue-50' : 'text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -549,13 +549,18 @@ export default function UserRegistrationManagement() {
               <div className='flex space-x-2'>
                 <Button
                   onClick={() => bulkApproval()}
-                  variant='primary'
+                  variant='outline'
                   size='sm'
-                  className='bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                  className='border-green-500 text-green-600 hover:bg-green-50 hover:border-green-600'
                 >
                   선택한 사용자 승인
                 </Button>
-                <Button onClick={handleBulkRejection} variant='danger' size='sm'>
+                <Button 
+                  onClick={handleBulkRejection} 
+                  variant='outline' 
+                  size='sm'
+                  className='border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600'
+                >
                   선택한 사용자 거부
                 </Button>
               </div>
@@ -583,7 +588,7 @@ export default function UserRegistrationManagement() {
                 <SortableHeader column="cohort" className="w-1/6">기수</SortableHeader>
                 <SortableHeader column="status" className="w-1/6">상태</SortableHeader>
                 <SortableHeader column="created_at" className="w-1/6">가입일</SortableHeader>
-                <th className='w-1/6 px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider'>
+                <th className='w-1/6 px-4 py-2 text-center text-xs font-medium text-slate-500 uppercase tracking-wider'>
                   작업
                 </th>
               </tr>
@@ -617,7 +622,7 @@ export default function UserRegistrationManagement() {
                     {new Date(user.created_at).toLocaleDateString('ko-KR')}
                   </td>
                   <td className='px-4 py-2'>
-                    <div className='flex items-center space-x-1'>
+                    <div className='flex items-center justify-center space-x-1'>
                       <Button
                         onClick={() => openDetailModal(user)}
                         variant='ghost'
@@ -631,16 +636,21 @@ export default function UserRegistrationManagement() {
                       {activeTab === 'students' && user.status !== 'approved' && (
                         <Button
                           onClick={() => handleStatusUpdate(user.id, 'approved')}
-                          variant='primary'
+                          variant='outline'
                           size='xs'
-                          className='bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                          className='border-green-500 text-green-600 hover:bg-green-50 hover:border-green-600'
                         >
                           승인
                         </Button>
                       )}
 
                       {activeTab === 'students' && user.status !== 'rejected' && (
-                        <Button onClick={() => handleStatusUpdate(user.id, 'rejected')} variant='danger' size='xs'>
+                        <Button 
+                          onClick={() => handleStatusUpdate(user.id, 'rejected')} 
+                          variant='outline' 
+                          size='xs'
+                          className='border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600'
+                        >
                           거부
                         </Button>
                       )}
@@ -776,8 +786,8 @@ export default function UserRegistrationManagement() {
                             closeDetailModal();
                           }
                         }}
-                        variant='primary'
-                        className='flex-1 bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                        variant='outline'
+                        className='flex-1 border-green-500 text-green-600 hover:bg-green-50 hover:border-green-600'
                       >
                         승인하기
                       </Button>
@@ -791,8 +801,8 @@ export default function UserRegistrationManagement() {
                             closeDetailModal();
                           }
                         }}
-                        variant='danger'
-                        className='flex-1'
+                        variant='outline'
+                        className='flex-1 border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600'
                       >
                         거부하기
                       </Button>
