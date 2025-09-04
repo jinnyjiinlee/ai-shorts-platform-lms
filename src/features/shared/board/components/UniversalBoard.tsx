@@ -133,8 +133,8 @@ export default function UniversalBoard({
         <div className='flex items-center space-x-3'>
           <div className={`w-10 h-10 ${iconBgColor} rounded-lg flex items-center justify-center`}>{icon}</div>
           <div>
-            <h1 className='text-2xl font-bold text-slate-900'>{title}</h1>
-            <p className='text-slate-600'>{description}</p>
+            <h1 className='text-xl sm:text-2xl font-bold text-slate-900'>{title}</h1>
+            <p className='hidden min-[480px]:block text-slate-600'>{description}</p>
           </div>
         </div>
 
