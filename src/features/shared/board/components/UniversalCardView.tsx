@@ -177,6 +177,7 @@ export default function UniversalCardView({
         const metaInfo = renderMeta ? renderMeta(item) : renderDefaultMeta(item);
         const avatar = renderAvatar ? renderAvatar(item) : renderDefaultAvatar(item);
         
+        
         return (
           <div
             key={item.id}
@@ -214,9 +215,11 @@ export default function UniversalCardView({
                   {avatar}
                 </div>
 
-                <div className={`flex items-center text-slate-400 group-hover:text-${defaultConfig.accentColor}-500 transition-colors`}>
-                  <ChatBubbleLeftRightIcon className="w-4 h-4 mr-1" />
-                  <span className="text-xs">자세히 보기</span>
+                <div className="flex items-center space-x-2">
+                  <div className={`flex items-center text-slate-400 group-hover:text-${defaultConfig.accentColor}-500 transition-colors`}>
+                    <ChatBubbleLeftRightIcon className="w-4 h-4 mr-1" />
+                    <span className="text-xs">자세히 보기</span>
+                  </div>
                 </div>
               </div>
             </div>

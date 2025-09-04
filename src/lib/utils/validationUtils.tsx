@@ -4,6 +4,7 @@ interface ValidationErrors {
   password?: string;
   confirmPassword?: string;
   email?: string;
+  name?: string;
 }
 
 export class ValidationUtils {
@@ -41,6 +42,21 @@ export class ValidationUtils {
     if (!email) return '이메일을 입력해주세요.';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) return '올바른 이메일 형식이 아닙니다.';
+    return null;
+  }
+
+  static validateName(name: string): string | null {
+    if (!name) return '실명을 입력해주세요.';
+    if (name.length < 2) return '실명은 2자 이상이어야 합니다.';
+    if (name.length > 6) return '실명은 6자 이하여야 합니다.';
+    
+    // 한글만 허용 (완성형 한글 + 자음/모음)
+    const koreanRegex = /^[\u3131-\u3163\uac00-\ud7a3]+$/;
+    if (!koreanRegex.test(name)) return '실명은 한글로만 입력해주세요.';
+    
+    // 공백 체크
+    if (name.includes(' ')) return '실명에는 공백을 포함할 수 없습니다.';
+    
     return null;
   }
 
