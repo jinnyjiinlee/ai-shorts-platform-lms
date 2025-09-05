@@ -12,17 +12,8 @@ export default function ModalHeader({ mission, onClose }: ModalHeaderProps) {
     <div className='flex justify-between items-start'>
       <div>
         <h3 className='text-xl font-semibold text-slate-900'>{mission.title}</h3>
-        <p className='text-sm text-slate-600 mt-1'>
-          {mission.week}주차 • {mission.cohort}기 • 총 {mission.submissions?.length || 0}건 제출
-        </p>
       </div>
-      <Button 
-        onClick={onClose} 
-        variant="ghost"
-        size="md"
-        isIconOnly
-        className='text-slate-400 hover:text-slate-600'
-      >
+      <Button onClick={onClose} variant='ghost' size='md' isIconOnly className='text-slate-400 hover:text-slate-600'>
         <XMarkIcon className='w-6 h-6' />
       </Button>
     </div>

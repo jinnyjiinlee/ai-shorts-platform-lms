@@ -1,9 +1,6 @@
-import { Mission, MissionSubmission } from '@/types/domains/mission';
-import { useState } from 'react';
+import { Mission } from '@/types/domains/mission';
 import ModalHeader from './components/ModalHeader';
-import TabNavigation from './components/TabNavigation';
 import MissionInfoTab from './components/MissionInfoTab';
-import SubmissionListTab from './components/SubmissionListTab';
 
 interface SubmissionListModalProps {
   show: boolean;
@@ -12,8 +9,6 @@ interface SubmissionListModalProps {
 }
 
 export default function SubmissionListModal({ show, mission, onClose }: SubmissionListModalProps) {
-  const [activeTab, setActiveTab] = useState<'mission' | 'submissions'>('mission');
-
   if (!show || !mission) return null;
 
   return (
@@ -21,12 +16,10 @@ export default function SubmissionListModal({ show, mission, onClose }: Submissi
       <div className='bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto'>
         <div className='p-6 border-b border-slate-200'>
           <ModalHeader mission={mission} onClose={onClose} />
-          <TabNavigation activeTab={activeTab} mission={mission} onTabChange={setActiveTab} />
         </div>
 
         <div className='p-6'>
-          {activeTab === 'mission' && <MissionInfoTab mission={mission} />}
-          {activeTab === 'submissions' && <SubmissionListTab mission={mission} />}
+          <MissionInfoTab mission={mission} />
         </div>
 
         <div className='p-6 border-t border-slate-200 flex justify-end'>
