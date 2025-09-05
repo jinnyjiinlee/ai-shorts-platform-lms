@@ -5,6 +5,7 @@ import { calculateStudentStats, getStudentSubmissionForWeek } from '../model/mis
 import { Pagination } from '@/features/shared/ui/Pagination';
 import { Badge } from '@/features/shared/ui/Badge';
 import UserAvatar from '@/features/shared/ui/UserAvatar/UserAvatar';
+import { statusColors } from '../../dashboard/StatCard';
 
 type FilterType = 'all' | 'not_started' | 'in_progress' | 'completed';
 
@@ -52,6 +53,19 @@ export default function StudentTable({
     if (submissionRate === 0) return 'not_started';
     if (submissionRate === 100) return 'completed';
     return 'in_progress';
+  };
+
+  // 제출률에 따른 색상 선택 헬퍼 함수
+  const getStatusStyle = (rate: number) => {
+    if (rate >= 80) return statusColors.excellent;
+    if (rate >= 60) return statusColors.good;
+    return statusColors.needsImprovement;
+  };
+
+  const getProgressColor = (rate: number) => {
+    if (rate === 100) return 'bg-blue-500'; // 제출완료 - 파랑
+    if (rate > 0) return 'bg-emerald-500'; // 제출중 - 초록
+    return 'bg-red-400'; // 미제출 - 빨강
   };
 
   // 학생 데이터와 통계 계산
@@ -124,8 +138,8 @@ export default function StudentTable({
         <div className='flex gap-2 flex-wrap'>
           {[
             { key: 'all' as FilterType, label: '전체', variant: 'default' as const },
-            { key: 'not_started' as FilterType, label: '미제출', variant: 'danger' as const },
-            { key: 'in_progress' as FilterType, label: '제출중', variant: 'warning' as const },
+            { key: 'not_started' as FilterType, label: '미제출', variant: 'warning' as const },
+            { key: 'in_progress' as FilterType, label: '제출중', variant: 'progress' as const },
             { key: 'completed' as FilterType, label: '제출완료', variant: 'success' as const },
           ].map((filter) => (
             <Badge
@@ -187,24 +201,12 @@ export default function StudentTable({
                   <div className='flex items-center justify-center'>
                     <div className='flex items-center space-x-2'>
                       <div
-                        className={`text-lg font-bold ${
-                          student.submissionRate >= 80
-                            ? 'text-green-600'
-                            : student.submissionRate >= 60
-                            ? 'text-yellow-600'
-                            : 'text-red-600'
-                        }`}
+                        className="text-lg font-bold text-slate-700"
                       >
                         {student.submissionRate}%
                       </div>
                       <div
-                        className={`w-3 h-3 rounded-full ${
-                          student.submissionRate >= 80
-                            ? 'bg-green-500'
-                            : student.submissionRate >= 60
-                            ? 'bg-yellow-500'
-                            : 'bg-red-500'
-                        }`}
+                        className={`w-3 h-3 rounded-full ${getProgressColor(student.submissionRate)}`}
                       ></div>
                     </div>
                   </div>
@@ -236,8 +238,8 @@ export default function StudentTable({
                             }
                             className={`w-6 h-6 rounded-lg text-xs font-medium transition-all ${
                               hasSubmission
-                                ? 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer hover:scale-105'
-                                : 'bg-red-100 text-red-800'
+                                ? 'bg-blue-100 text-blue-700 border border-blue-200 hover:bg-blue-200 cursor-pointer hover:scale-105'
+                                : 'bg-slate-100 text-slate-500 border border-slate-200'
                             }`}
                             disabled={!hasSubmission}
                             title={`${week.week}주차 - ${
@@ -249,7 +251,7 @@ export default function StudentTable({
                             {week.week}
                           </button>
                           {hasFeedback && (
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full flex items-center justify-center">
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
                               <span className="text-[8px] text-white">✓</span>
                             </div>
                           )}

@@ -115,33 +115,8 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
             <div>
               <label className='text-sm font-medium text-slate-700 mb-2 block'>제출 내용</label>
               <div className='bg-slate-50 rounded-lg p-4 border max-h-96 overflow-y-auto'>
-                <div className='text-slate-800 leading-relaxed break-words'>
-                  {selectedSubmission.content.split('\n').map((line, index) => {
-                    // URL 감지 및 링크로 변환
-                    const urlRegex = /(https?:\/\/[^\s]+)/g;
-                    const parts = line.split(urlRegex);
-
-                    return (
-                      <div key={index} className='mb-2'>
-                        {parts.map((part, partIndex) => {
-                          if (urlRegex.test(part)) {
-                            return (
-                              <a
-                                key={partIndex}
-                                href={part}
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                className='text-blue-600 hover:text-blue-800 underline break-all block my-1'
-                              >
-                                {part}
-                              </a>
-                            );
-                          }
-                          return <span key={partIndex}>{part}</span>;
-                        })}
-                      </div>
-                    );
-                  })}
+                <div className='text-slate-800 leading-relaxed break-words whitespace-pre-wrap'>
+                  {selectedSubmission.content}
                 </div>
               </div>
             </div>
@@ -150,8 +125,8 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
             <div>
               <label className='text-sm font-medium text-slate-700 mb-2 block'>피드백</label>
               {showSuccess && (
-                <div className='mb-3 p-3 bg-green-50 border border-green-200 rounded-lg'>
-                  <div className='flex items-center text-green-800 text-sm'>
+                <div className='mb-3 p-3 bg-slate-100 border border-slate-200 rounded-lg'>
+                  <div className='flex items-center text-slate-700 text-sm'>
                     <span className='mr-2'>✅</span>
                     피드백이 성공적으로 저장되었습니다!
                   </div>
@@ -187,14 +162,14 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
                     <button
                       onClick={updateExistingFeedback}
                       disabled={currentAction !== 'idle'}
-                      className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-500'
+                      className='px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-500'
                     >
                       수정
                     </button>
                     <button
                       onClick={handleDeleteFeedback}
                       disabled={currentAction !== 'idle'}
-                      className='px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 disabled:bg-slate-200 disabled:text-slate-500'
+                      className='px-4 py-2 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 disabled:bg-slate-200 disabled:text-slate-500'
                     >
                       삭제
                     </button>
@@ -203,7 +178,7 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
                   <button
                     onClick={saveFeedback}
                     disabled={currentAction !== 'idle'}
-                    className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-500'
+                    className='px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 disabled:bg-slate-200 disabled:text-slate-500'
                   >
                     저장
                   </button>

@@ -5,12 +5,7 @@ import { useRouter } from 'next/navigation';
 import DashboardHeader from './DashboardHeader';
 import StatCard from './StatCard';
 import WeeklySubmissionChart from './WeeklySubmissionChart';
-import {
-  TrophyIcon,
-  CheckCircleIcon,
-  ChartBarIcon,
-  ClockIcon,
-} from '@heroicons/react/24/outline';
+import { TrophyIcon, CheckCircleIcon, QuestionMarkCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 import {
   fetchDashboardStats,
   fetchCohortData,
@@ -19,6 +14,7 @@ import {
   getApprovedStudents,
   getPendingStudents,
   getMissionsWithSubmissions,
+  getUnansweredQuestions,
   calculateDashboardStats,
   calculateCohortData,
 } from '@/features/admin/dashboard/adminDashboardService';
@@ -65,6 +61,10 @@ export default function DashboardView() {
     router.push(`/admin/studentManagement?status=${status}&tab=${tab}`);
   };
 
+  const navigateToQnA = () => {
+    router.push('/admin/studentLounge/qna');
+  };
+
   // 데이터 불러오기
   useEffect(() => {
     const loadData = async () => {
@@ -76,13 +76,14 @@ export default function DashboardView() {
         const startTime = performance.now();
         console.log('🚀 대시보드 로딩 시작...');
 
-        const [students, pendingStudents, missions] = await Promise.all([
+        const [students, pendingStudents, missions, unansweredQuestions] = await Promise.all([
           getApprovedStudents(),
           getPendingStudents(),
           getMissionsWithSubmissions(),
+          getUnansweredQuestions(),
         ]);
 
-        const stats = calculateDashboardStats(students, pendingStudents, [], []);
+        const stats = calculateDashboardStats(students, pendingStudents, [], unansweredQuestions);
         const cohorts = calculateCohortData(students, missions);
 
         // 성능 측정 완료
@@ -192,11 +193,7 @@ export default function DashboardView() {
           title='완벽 수강생'
           value={selectedCohortData?.perfectCompletionCount || 0}
           icon={<TrophyIcon className='w-6 h-6 text-white' />}
-          theme='amber'
-          badge={{
-            text: '최우수',
-            variant: 'success',
-          }}
+          theme='violet'
         />
         <StatCard
           title='이번주 미션 완료'
@@ -205,33 +202,35 @@ export default function DashboardView() {
           }
           icon={<CheckCircleIcon className='w-6 h-6 text-white' />}
           theme='emerald'
-          badge={{
-            text: '진행중',
-            variant: 'info',
-          }}
         />
         <StatCard
-          title='지난주 미션 완료'
-          value={
-            selectedCohortData?.weeklySubmissions?.find((w) => w.week === (selectedCohortData?.currentWeek || 1) - 1)
-              ?.submissions || 0
+          title='미답변 질문'
+          value={dashboardStats?.unansweredQuestions || 0}
+          icon={<QuestionMarkCircleIcon className='w-6 h-6 text-white' />}
+          theme='amber'
+          badge={
+            (dashboardStats?.unansweredQuestions || 0) > 0
+              ? {
+                  text: '답변 필요',
+                  variant: 'warning',
+                }
+              : undefined
           }
-          icon={<ChartBarIcon className='w-6 h-6 text-white' />}
-          theme='violet'
-          badge={{
-            text: '완료',
-            variant: 'default',
-          }}
+          onClick={() => navigateToQnA()}
         />
         <StatCard
           title='승인 대기'
           value={dashboardStats?.pendingApprovals || 0}
           icon={<ClockIcon className='w-6 h-6 text-white' />}
           theme='rose'
-          badge={{
-            text: '처리 필요',
-            variant: 'warning',
-          }}
+          badge={
+            (dashboardStats?.pendingApprovals || 0) > 0
+              ? {
+                  text: '대기중',
+                  variant: 'default',
+                }
+              : undefined
+          }
           onClick={() => navigateToUserManagement('pending')}
         />
       </div>
@@ -246,69 +245,72 @@ export default function DashboardView() {
       )}
 
       {/* 완벽 수강생 추적 섹션 */}
-      <div className='bg-white rounded-2xl border-2 border-slate-300 shadow-md p-6'>
-        <div className='flex items-center justify-between mb-6'>
-          <div className='flex items-center space-x-3'>
-            <div className='w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-lg flex items-center justify-center'>
-              <TrophyIcon className='w-6 h-6 text-white' />
+      <div className='bg-white rounded-xl border border-slate-200'>
+        <div className='px-6 py-5 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-slate-100'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center space-x-4'>
+              <div className='w-12 h-12 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl flex items-center justify-center shadow-lg'>
+                <TrophyIcon className='w-6 h-6 text-white' />
+              </div>
+              <div>
+                <div className='flex items-center space-x-3'>
+                  <h3 className='text-xl font-bold text-slate-900'>완벽 수강생</h3>
+                </div>
+                <p className='text-sm text-slate-600 mt-1'>100% 완료 유지 시 환불 보장 대상자</p>
+              </div>
             </div>
-            <div>
-              <h3 className='text-lg font-bold text-slate-900 flex items-center space-x-2'>
-                <span>완벽 수강생 현황</span>
-                <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-700'>
-                  BEST
-                </span>
-              </h3>
-              <p className='text-sm text-slate-600'>매주 모든 미션을 100% 완료하는 학생들</p>
+            <div className='text-right'>
+              <div className='flex items-baseline space-x-2'>
+                <div className='text-3xl font-bold text-slate-900'>
+                  {selectedCohortData?.perfectCompletionCount || 0}
+                </div>
+                <div className='text-lg text-slate-600'>명</div>
+              </div>
+              <div className='flex items-center space-x-2 mt-1'>
+                <div className='text-sm font-medium text-blue-600'>
+                  {selectedCohortData?.perfectCompletionRate || 0}%
+                </div>
+                <div className='text-xs text-slate-500'>전체 대비</div>
+              </div>
             </div>
-          </div>
-          <div className='text-right bg-slate-50 rounded-xl p-4 border border-slate-200'>
-            <span className='text-2xl font-bold text-slate-700'>
-              {selectedCohortData?.perfectCompletionCount || 0}명
-            </span>
-            <p className='text-xs text-slate-500'>현재까지 유지중</p>
           </div>
         </div>
 
         {/* 완벽 수강생 명단 */}
-        <div className='bg-slate-50 rounded-xl p-4 border border-slate-200'>
-          <div className='mb-4'>
-            <h4 className='font-semibold text-slate-800 mb-2 flex items-center space-x-2'>
-              <span>완벽 수강생 명단</span>
-              <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-200 text-slate-600'>
-                {selectedCohortData?.perfectCompletionCount || 0}명
-              </span>
-            </h4>
-            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2'>
-              {selectedCohortData &&
-              selectedCohortData.perfectStudents &&
-              selectedCohortData.perfectStudents.length > 0 ? (
-                selectedCohortData.perfectStudents.map((student) => (
-                  <div
-                    key={student.id}
-                    className='bg-white rounded-lg px-3 py-2 text-sm font-medium text-slate-700 shadow-sm border-2 border-slate-300 hover:border-slate-400 transition-colors'
-                  >
-                    {student.nickname}
+        {selectedCohortData && selectedCohortData.perfectStudents && selectedCohortData.perfectStudents.length > 0 ? (
+          <div className='p-6'>
+            <div className='mb-4'>
+              <div className='flex items-center space-x-2'>
+                <h4 className='text-sm font-semibold text-slate-700'>환불 보장 대상자</h4>
+                <div className='h-px bg-slate-200 flex-1'></div>
+                <span className='text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium'>
+                  {selectedCohortData.perfectStudents.length}명
+                </span>
+              </div>
+            </div>
+            <div className='grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3'>
+              {selectedCohortData.perfectStudents.map((student) => (
+                <div
+                  key={student.id}
+                  className='group relative bg-white rounded-xl px-4 py-3 text-sm font-medium text-slate-700 text-center border border-green-200 hover:border-green-300 hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md'
+                >
+                  <div className='absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity'>
+                    <span className='text-xs text-white font-bold'>✓</span>
                   </div>
-                ))
-              ) : (
-                <div className='col-span-full text-center text-slate-500 py-4'>완벽 수강생이 없습니다</div>
-              )}
+                  <div className='truncate'>{student.nickname}</div>
+                </div>
+              ))}
             </div>
           </div>
-
-          {/* 주차별 통계 */}
-          <div className='grid grid-cols-2 gap-4 pt-4 border-t border-slate-200'>
-            <div className='text-center bg-white rounded-lg p-3 border border-slate-200'>
-              <p className='text-sm text-slate-600'>현재까지 완벽 완료</p>
-              <p className='text-xl font-bold text-slate-700'>{selectedCohortData?.perfectCompletionCount || 0}명</p>
+        ) : (
+          <div className='p-8 text-center'>
+            <div className='w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+              <TrophyIcon className='w-8 h-8 text-slate-400' />
             </div>
-            <div className='text-center bg-white rounded-lg p-3 border border-slate-200'>
-              <p className='text-sm text-slate-600'>완료율</p>
-              <p className='text-xl font-bold text-slate-700'>{selectedCohortData?.perfectCompletionRate || 0}%</p>
-            </div>
+            <div className='text-sm text-slate-500 font-medium'>완벽 수강생이 없습니다</div>
+            <div className='text-xs text-slate-400 mt-1'>모든 미션을 완료한 학생이 표시됩니다</div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

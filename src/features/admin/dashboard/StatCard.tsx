@@ -32,6 +32,20 @@ const cardThemes = {
   },
 } as const;
 
+// 🎨 상태별 차분하고 고급스러운 색상 시스템 (재사용용)
+export const statusColors = {
+  excellent: 'bg-slate-100 text-slate-800',           // 80%+ (우수) - 차분한 슬레이트
+  good: 'bg-blue-100 text-blue-800',                 // 60%+ (양호) - 절제된 블루
+  needsImprovement: 'bg-slate-200 text-slate-600',   // 60%- (독려필요) - 부드러운 슬레이트
+} as const;
+
+// 프로그레스바용 색상
+export const progressColors = {
+  excellent: 'bg-slate-700',        // 80%+ 
+  good: 'bg-blue-600',             // 60%+
+  needsImprovement: 'bg-slate-500', // 60%-
+} as const;
+
 interface StatCardProps {
   title: string;
   value: number | string;

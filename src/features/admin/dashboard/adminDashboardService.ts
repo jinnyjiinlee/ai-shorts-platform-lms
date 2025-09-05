@@ -8,6 +8,7 @@ export interface DashboardStats {
   totalActiveMissions: number;
   activeStudentsCount: number;
   pendingApprovals: number;
+  unansweredQuestions: number;
 }
 
 export interface WeeklySubmissionData {
@@ -102,22 +103,34 @@ export async function getMissionsWithSubmissions() {
   return data || [];
 }
 
+export async function getUnansweredQuestions() {
+  const { data, error } = await supabase
+    .from('qna_questions')
+    .select('id')
+    .eq('status', 'open');
+
+  if (error) ErrorService.handleError(error, '미답변 질문 조회 실패');
+  return data || [];
+}
+
 // 🎯 계산 로직 분리 (기존 로직 유지)
 export function calculateDashboardStats(
   students: any[],
   pendingStudents: any[],
   missions: any[],
-  submissions: any[]
+  unansweredQuestions: any[]
 ): DashboardStats {
   const totalActiveStudents = students.length;
   const pendingApprovals = pendingStudents.length;
   const totalActiveMissions = missions.length;
+  const unansweredQuestionsCount = unansweredQuestions.length;
 
   return {
     totalActiveStudents,
     totalActiveMissions,
     activeStudentsCount: totalActiveStudents,
     pendingApprovals,
+    unansweredQuestions: unansweredQuestionsCount,
   };
 }
 

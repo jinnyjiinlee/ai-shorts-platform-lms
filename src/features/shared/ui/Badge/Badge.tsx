@@ -4,7 +4,7 @@ import React from 'react';
 
 export interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'progress';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   selectable?: boolean; // 선택 가능한 배지
@@ -23,10 +23,11 @@ export default function Badge({
 }: BadgeProps) {
   const variantStyles = {
     default: 'bg-slate-100 text-slate-800',
-    success: 'bg-slate-100 text-slate-700',
-    warning: 'bg-yellow-100 text-yellow-800',
+    success: 'bg-blue-100 text-blue-700',
+    warning: 'bg-red-100 text-red-700',
     danger: 'bg-red-100 text-red-800',
-    info: 'bg-slate-200 text-slate-700',
+    info: 'bg-blue-100 text-blue-700',
+    progress: 'bg-emerald-50 text-emerald-700',
   };
 
   const sizeStyles = {
