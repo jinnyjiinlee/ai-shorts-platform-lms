@@ -70,6 +70,7 @@ export default function QnABoard({ userRole, cohort }: QnABoardProps) {
     content: question.content,
     author: question.student_nickname || question.student_name || '작성자',
     authorId: question.student_id, // 작성자 ID 추가
+    avatarUrl: question.student_avatar_url, // 작성자 아바타 URL 추가
     createdAt: formatDate(question.created_at),
     isPublished: true, // 질문은 기본적으로 발행됨
     badges: [

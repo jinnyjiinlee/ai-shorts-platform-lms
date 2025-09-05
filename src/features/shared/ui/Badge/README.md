@@ -1,4 +1,4 @@
-# 배지 컴포넌트들 (Badge Components)
+<!-- # 배지 컴포넌트들 (Badge Components)
 
 재사용 가능한 배지 컴포넌트 모음입니다. 미션, 과제, 학습자료 등에서 일관성 있는 UI를 제공합니다.
 
@@ -152,4 +152,4 @@ function MissionTable({ missions }) {
   className="text-xs sm:text-sm md:text-base"
   size="sm"
 />
-```
+``` -->

@@ -104,6 +104,7 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
     content: review.content,
     author: review.student_nickname || '작성자', // 닉네임 또는 기본값
     authorId: review.student_id, // 작성자 ID 추가
+    avatarUrl: review.student_avatar_url, // 작성자 아바타 URL 추가
     createdAt: formatDate(review.created_at),
     isPublished: true, // 리뷰는 작성 즉시 공개
     badges: [
@@ -173,6 +174,8 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
         cardData={displayReviews.map(review => ({
           ...review,
           author: review.student_nickname || '작성자',
+          authorId: review.student_id,
+          avatarUrl: review.student_avatar_url,
         }))}
         // 페이지네이션
         currentPage={currentPage}

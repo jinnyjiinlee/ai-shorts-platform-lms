@@ -16,7 +16,8 @@ export async function getReviews(): Promise<Review[]> {
       `
         *,
         profiles:student_id (
-          nickname
+          nickname,
+          avatar_url
         )
       `
     )
@@ -30,6 +31,7 @@ export async function getReviews(): Promise<Review[]> {
   return (data || []).map((item) => ({
     ...item,
     student_nickname: item.profiles?.nickname || null,
+    student_avatar_url: item.profiles?.avatar_url || null,
     // 모든 수강생 후기는 기본적으로 발행됨
     isPublished: true,
     // is_pinned 컬럼 사용 (관리자가 중요한 후기를 고정)
@@ -83,7 +85,8 @@ export async function createReview(formData: ReviewFormData): Promise<Review> {
       `
         *,
         profiles:student_id (
-          nickname
+          nickname,
+          avatar_url
         )
       `
     )
@@ -119,7 +122,8 @@ export async function getAllReviewsForAdmin(): Promise<Review[]> {
       `
         *,
         profiles:student_id (
-          nickname
+          nickname,
+          avatar_url
         )
       `
     )
@@ -162,7 +166,8 @@ export async function updateReview(id: string, formData: ReviewFormData): Promis
       `
         *,
         profiles:student_id (
-          nickname
+          nickname,
+          avatar_url
         )
       `
     )

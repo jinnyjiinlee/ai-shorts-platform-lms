@@ -7,6 +7,7 @@ export interface Review {
   created_at: string;
   updated_at: string;
   student_nickname?: string;
+  student_avatar_url?: string; // 학생 아바타 URL 추가
   // 리뷰는 기본적으로 모두 발행됨 (수강생이 작성하면 바로 보임)
   isPublished: boolean;
   isPinned: boolean; // 관리자만 중요한 후기를 고정 가능

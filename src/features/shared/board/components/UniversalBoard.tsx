@@ -5,6 +5,7 @@ import { PlusIcon, Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/ou
 import { Button } from '@/features/shared/ui/Button';
 import { Badge } from '@/features/shared/ui/Badge';
 import Pagination from '@/features/shared/ui/Pagination/Pagination';
+import UserAvatar from '@/features/shared/ui/UserAvatar/UserAvatar';
 
 export interface BoardItem {
   id: string;
@@ -12,6 +13,7 @@ export interface BoardItem {
   content: string;
   author: string;
   authorId?: string; // 작성자 ID 추가
+  avatarUrl?: string; // 작성자 아바타 URL 추가
   createdAt: string;
   isPinned?: boolean;
   isPublished?: boolean;
@@ -256,7 +258,17 @@ export default function UniversalBoard({
                       <p className='text-slate-600 mb-3 line-clamp-2'>{item.content}</p>
 
                       <div className='flex items-center space-x-6 text-sm text-slate-500'>
-                        <span>👤 {item.author}</span>
+                        <div className="flex items-center space-x-2">
+                          <UserAvatar 
+                            user={{
+                              id: item.authorId || '',
+                              nickname: item.author,
+                              avatarUrl: item.avatarUrl
+                            }}
+                            size="md"
+                          />
+                          <span>{item.author}</span>
+                        </div>
                         <span>📅 {item.createdAt}</span>
                       </div>
                     </div>
@@ -281,43 +293,47 @@ export default function UniversalBoard({
                       )}
 
                       {/* 수정 버튼 - 관리자는 모든 글, 수강생은 본인 글만 */}
-                      {onEditItem && (userRole === 'admin' || (userRole === 'student' && currentUserId && item.authorId === currentUserId)) && (
-                        <button
-                          onClick={() => onEditItem(item)}
-                          className='p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors'
-                          title='수정'
-                        >
-                          <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
-                            />
-                          </svg>
-                        </button>
-                      )}
+                      {onEditItem &&
+                        (userRole === 'admin' ||
+                          (userRole === 'student' && currentUserId && item.authorId === currentUserId)) && (
+                          <button
+                            onClick={() => onEditItem(item)}
+                            className='p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors'
+                            title='수정'
+                          >
+                            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                              <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+                              />
+                            </svg>
+                          </button>
+                        )}
 
                       {/* 추가 액션들 */}
                       {extraActions && extraActions(item).map((action, index) => <span key={index}>{action}</span>)}
 
                       {/* 삭제 버튼 - 관리자는 모든 글, 수강생은 본인 글만 */}
-                      {onDeleteItem && (userRole === 'admin' || (userRole === 'student' && currentUserId && item.authorId === currentUserId)) && (
-                        <button
-                          onClick={() => onDeleteItem(item.id)}
-                          className='p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors'
-                          title='삭제'
-                        >
-                          <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
-                            />
-                          </svg>
-                        </button>
-                      )}
+                      {onDeleteItem &&
+                        (userRole === 'admin' ||
+                          (userRole === 'student' && currentUserId && item.authorId === currentUserId)) && (
+                          <button
+                            onClick={() => onDeleteItem(item.id)}
+                            className='p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors'
+                            title='삭제'
+                          >
+                            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                              <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth={2}
+                                d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
+                              />
+                            </svg>
+                          </button>
+                        )}
                     </div>
                   </div>
                 </div>

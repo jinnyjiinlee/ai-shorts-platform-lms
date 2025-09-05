@@ -20,10 +20,10 @@ export const fetchQuestions = async (): Promise<Question[]> => {
       .select(
         `
       *,
-      profiles!student_id (name, nickname, cohort),
+      profiles!student_id (name, nickname, cohort, avatar_url),
       qna_answers (
         *,
-        profiles!admin_id (name, nickname)
+        profiles!admin_id (name, nickname, avatar_url)
       )
     `
       )
@@ -48,11 +48,13 @@ export const fetchQuestions = async (): Promise<Question[]> => {
       ...item,
       student_name: item.profiles?.name,
       student_nickname: item.profiles?.nickname,
+      student_avatar_url: item.profiles?.avatar_url,
       cohort: item.profiles?.cohort,
       answer: item.qna_answers?.[0]
         ? {
             ...item.qna_answers[0],
             admin_name: item.qna_answers[0].profiles?.name,
+            admin_avatar_url: item.qna_answers[0].profiles?.avatar_url,
           }
         : undefined,
     }));

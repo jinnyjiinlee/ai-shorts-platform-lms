@@ -11,6 +11,7 @@
 import React from 'react';
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import UserAvatar from '@/features/shared/ui/UserAvatar/UserAvatar';
 
 // 기본 카드 아이템 인터페이스
 export interface UniversalCardItem {
@@ -20,6 +21,7 @@ export interface UniversalCardItem {
   created_at: string;
   author?: string;
   authorId?: string;
+  avatarUrl?: string; // 아바타 URL 추가
   isPinned?: boolean;
   [key: string]: any; // 추가 필드들
 }
@@ -148,15 +150,17 @@ export default function UniversalCardView({
     if (!defaultConfig.showAuthor) return null;
     
     const author = item.author || '익명';
-    const initial = author.charAt(0);
     
     return (
       <>
-        <div className={`w-8 h-8 bg-gradient-to-br from-${defaultConfig.accentColor}-500 to-${defaultConfig.accentColor === 'blue' ? 'indigo' : defaultConfig.accentColor}-600 rounded-full flex items-center justify-center`}>
-          <span className="text-white text-xs font-medium">
-            {initial}
-          </span>
-        </div>
+        <UserAvatar 
+          user={{
+            id: item.authorId || '',
+            nickname: author,
+            avatarUrl: item.avatarUrl
+          }}
+          size="md"
+        />
         <span className="text-sm font-medium text-slate-700">
           {author}
         </span>
