@@ -116,7 +116,6 @@ export default function DashboardView() {
   // 기수별 필터링 및 데이터 변환
   const convertedCohortData = useMemo(() => cohortData.map(convertToCohortData), [cohortData]);
   const activeCohortData = convertedCohortData.filter((c) => c.status === 'active');
-  const displayCohortData = convertedCohortData.filter((c) => activeCohorts.includes(c.cohort));
   const selectedCohortData = convertedCohortData.find((c) => c.cohort === selectedCohort);
 
   const toggleActiveCohort = (cohortId: string) => {

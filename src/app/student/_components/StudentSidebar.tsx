@@ -39,16 +39,6 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', name: '대시보드', href: '/student', icon: HomeIcon },
-    { id: 'missions', name: '나의 미션', href: '/student/mission', icon: ClipboardDocumentListIcon },
-    {
-      id: 'resourceShare',
-      name: '학습 자료',
-      icon: ChatBubbleLeftRightIcon,
-      subItems: [
-        { id: 'weeklyResource', name: '주차별 학습자료 ', href: '/student/resourceShare/weeklyResource' },
-        { id: 'aiContentsStudio', name: 'AI 콘텐츠 스튜디오', href: '/student/resourceShare/aiContentsStudio' },
-      ],
-    },
     {
       id: 'community',
       name: '커뮤니티',
@@ -58,6 +48,7 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
         { id: 'columns', name: '칼럼', href: '/student/community/columns' },
       ],
     },
+    { id: 'missions', name: '나의 미션', href: '/student/mission', icon: ClipboardDocumentListIcon },
     {
       id: 'studentLounge',
       name: '수강생 라운지',
@@ -66,6 +57,15 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
         { id: 'review', name: '수강생 후기', href: '/student/studentLounge/review' },
         { id: 'qna', name: '[1기] QnA ', href: '/student/studentLounge/qna' },
         { id: 'growthDiary', name: '[1기] 성장 일기 ', href: '/student/studentLounge/growthDiary' },
+      ],
+    },
+    {
+      id: 'resourceShare',
+      name: '학습 자료',
+      icon: ChatBubbleLeftRightIcon,
+      subItems: [
+        // { id: 'weeklyResource', name: '주차별 학습자료 ', href: '/student/resourceShare/weeklyResource' },
+        { id: 'aiContentsStudio', name: 'AI 콘텐츠 스튜디오', href: '/student/resourceShare/aiContentsStudio' },
       ],
     },
   ];

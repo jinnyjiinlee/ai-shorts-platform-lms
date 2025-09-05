@@ -23,9 +23,7 @@ export default function WeeklySubmissionChart({
     <div className='bg-white rounded-xl border border-slate-200'>
       <div className='p-4 border-b border-slate-200'>
         <div className='flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0'>
-          <h2 className='text-base sm:text-lg font-semibold text-slate-900'>
-            {selectedCohortData.name} 주차별 제출률
-          </h2>
+          <h2 className='text-base sm:text-lg font-semibold text-slate-900'>{selectedCohortData.name} 주차별 제출률</h2>
 
           {/* 보기 모드 토글 */}
           <div className='flex items-center space-x-1 bg-slate-100 rounded-lg p-1'>
