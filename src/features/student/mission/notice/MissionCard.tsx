@@ -7,32 +7,32 @@ import { MissionCardProps } from '../types';
 export default function MissionCard({ mission, onClick }: MissionCardProps) {
   // 마감일이 지났는지 확인
   const isOverdue = mission.due_date ? new Date(mission.due_date) < new Date() : false;
-  
+
   // 상태 결정: 제출완료 > 마감 > 진행중
   const getStatusInfo = () => {
     if (mission.isSubmitted) {
-      return { 
-        text: '완료', 
+      return {
+        text: '완료',
         color: 'bg-green-100 text-green-800 border border-green-200',
-        icon: <SparklesIcon className='w-3 h-3' />
+        icon: <SparklesIcon className='w-3 h-3' />,
       };
     } else if (isOverdue) {
-      return { 
-        text: '마감', 
+      return {
+        text: '마감',
         color: 'bg-red-100 text-red-800 border border-red-200',
-        icon: <LockClosedIcon className='w-3 h-3' />
+        icon: <LockClosedIcon className='w-3 h-3' />,
       };
     } else {
-      return { 
-        text: '진행중', 
+      return {
+        text: '진행중',
         color: 'bg-blue-100 text-blue-800 border border-blue-200',
-        icon: <BoltIcon className='w-3 h-3' />
+        icon: <BoltIcon className='w-3 h-3' />,
       };
     }
   };
 
   const statusInfo = getStatusInfo();
-  
+
   return (
     <div className='group'>
       <div
@@ -74,11 +74,7 @@ export default function MissionCard({ mission, onClick }: MissionCardProps) {
               {mission.title}
             </h4>
             <div className='flex items-center space-x-2'>
-              <Badge 
-                variant={mission.isSubmitted ? 'success' : isOverdue ? 'danger' : 'info'}
-                size='sm'
-                icon={statusInfo.icon}
-              >
+              <Badge variant={mission.isSubmitted ? 'success' : isOverdue ? 'danger' : 'info'} size='sm'>
                 {statusInfo.text}
               </Badge>
             </div>
