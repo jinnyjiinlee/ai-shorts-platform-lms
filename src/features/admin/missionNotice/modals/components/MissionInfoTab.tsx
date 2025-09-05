@@ -27,10 +27,6 @@ export default function MissionInfoTab({ mission }: MissionInfoTabProps) {
             <span className='font-medium text-slate-700'>생성일:</span>
             <p className='mt-1'>{new Date(mission.created_at).toLocaleDateString()}</p>
           </div>
-          <div>
-            <span className='font-medium text-slate-700'>제출 현황:</span>
-            <p className='mt-1 font-medium text-blue-600'>{mission.submissions?.length || 0}건 제출</p>
-          </div>
         </div>
       </div>
 
