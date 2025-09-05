@@ -74,7 +74,6 @@ export default function ProgressCards({ stats }: ProgressCardsProps) {
           <p className='text-sm text-slate-600 mt-2 flex items-center space-x-1'>
             {completedMissions === totalMissions ? (
               <>
-                <TrophyIcon className='w-4 h-4 text-yellow-500' />
                 <span>모든 미션 완료!</span>
               </>
             ) : (
