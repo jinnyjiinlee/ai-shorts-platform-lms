@@ -32,7 +32,7 @@ export default function AdminPageHeader({
   
   return (
     <div className={isGradient 
-      ? "relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-2xl p-8 text-white"
+      ? "relative overflow-hidden bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 rounded-2xl p-8 text-white"
       : "bg-white rounded-xl border border-slate-200 p-6"
     }>
       {isGradient && (
@@ -48,7 +48,7 @@ export default function AdminPageHeader({
           <div className="flex items-center space-x-4">
             <div className={isGradient 
               ? "w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm"
-              : "w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center"
+              : "w-12 h-12 bg-slate-200 rounded-xl flex items-center justify-center"
             }>
               {typeof icon === 'string' ? <span className="text-3xl">{icon}</span> : icon}
             </div>
@@ -60,7 +60,7 @@ export default function AdminPageHeader({
                 {title}
               </h1>
               <p className={isGradient 
-                ? "text-blue-100 text-lg" 
+                ? "text-slate-100 text-lg" 
                 : "text-slate-600 text-sm"
               }>
                 {description}
@@ -71,7 +71,7 @@ export default function AdminPageHeader({
           <div className="flex items-center space-x-4">
             {availableCohorts && onCohortChange && (
               <div className="flex items-center space-x-3">
-                {isGradient && <label className="text-blue-100 font-medium">기수 선택</label>}
+                {isGradient && <label className="text-slate-100 font-medium">기수 선택</label>}
                 <Select
                   value={selectedCohort || 'all'}
                   onChange={(value) => onCohortChange(value)}
@@ -84,7 +84,7 @@ export default function AdminPageHeader({
                   ]}
                   className={isGradient 
                     ? "px-4 py-2 bg-white/20 border border-white/30 rounded-xl text-white backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/30 transition-all duration-200"
-                    : "px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    : "px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                   }
                 />
               </div>
@@ -92,7 +92,7 @@ export default function AdminPageHeader({
             
             {availableWeeks && onWeekChange && (
               <div className="flex items-center space-x-3">
-                <label className="text-blue-100 font-medium">주차 선택</label>
+                <label className="text-slate-100 font-medium">주차 선택</label>
                 <Select
                   value={selectedWeek?.toString() || ''}
                   onChange={(value) => onWeekChange(value ? Number(value) : null)}

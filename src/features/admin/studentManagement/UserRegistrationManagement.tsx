@@ -2,7 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { XMarkIcon, EyeIcon, UserGroupIcon, ShieldCheckIcon, AcademicCapIcon, ArrowUpIcon, ArrowDownIcon, UsersIcon } from '@heroicons/react/24/outline';
+import {
+  XMarkIcon,
+  EyeIcon,
+  UserGroupIcon,
+  ShieldCheckIcon,
+  AcademicCapIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  UsersIcon,
+} from '@heroicons/react/24/outline';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/features/shared/ui/Button';
 import { Badge } from '@/features/shared/ui/Badge';
@@ -19,7 +28,7 @@ export default function UserRegistrationManagement() {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [selectedAllUser, setSelectedAllUser] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   // 정렬 상태 관리
   const [sortBy, setSortBy] = useState<string>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -37,7 +46,7 @@ export default function UserRegistrationManagement() {
       setSortBy(column);
       setSortDirection('asc');
     }
-    
+
     // 정렬 후 현재 페이지에 데이터가 없으면 1페이지로 이동
     setTimeout(() => {
       const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
@@ -142,7 +151,7 @@ export default function UserRegistrationManagement() {
     // URL 파라미터에서 status와 tab 읽기
     const statusParam = searchParams.get('status');
     const tabParam = searchParams.get('tab') as 'students' | 'admins';
-    
+
     if (statusParam) {
       setStatusFilter(statusParam);
     }
@@ -362,9 +371,7 @@ export default function UserRegistrationManagement() {
         className='w-full justify-between cursor-pointer hover:opacity-80 transition-all'
       >
         <span>{label}</span>
-        <span className='ml-2 text-gray-500 text-xs'>
-          {count}
-        </span>
+        <span className='ml-2 text-gray-500 text-xs'>{count}</span>
       </Badge>
     </div>
   );
@@ -378,14 +385,18 @@ export default function UserRegistrationManagement() {
   };
 
   // 정렬 가능한 테이블 헤더 렌더링 - 깔끔한 개선안
-  const SortableHeader = ({ column, children, className = '' }: { 
-    column: string; 
-    children: React.ReactNode; 
+  const SortableHeader = ({
+    column,
+    children,
+    className = '',
+  }: {
+    column: string;
+    children: React.ReactNode;
     className?: string;
   }) => {
     const isActive = sortBy === column;
     const isAsc = sortDirection === 'asc';
-    
+
     return (
       <th className={`px-4 py-2 text-left ${className}`}>
         <button
@@ -396,15 +407,11 @@ export default function UserRegistrationManagement() {
         >
           <span>{children}</span>
           {/* 더 명확한 화살표 아이콘 */}
-          {isActive && isAsc && (
-            <ArrowUpIcon className="w-5 h-5 text-blue-600 font-bold" />
-          )}
-          {isActive && !isAsc && (
-            <ArrowDownIcon className="w-5 h-5 text-blue-600 font-bold" />
-          )}
+          {isActive && isAsc && <ArrowUpIcon className='w-5 h-5 text-blue-600 font-bold' />}
+          {isActive && !isAsc && <ArrowDownIcon className='w-5 h-5 text-blue-600 font-bold' />}
           {/* 비활성 상태일 때는 호버시에만 회색 화살표 */}
           {!isActive && (
-            <ArrowUpIcon className="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-70 transition-all duration-200" />
+            <ArrowUpIcon className='w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-70 transition-all duration-200' />
           )}
         </button>
       </th>
@@ -456,7 +463,6 @@ export default function UserRegistrationManagement() {
               }`}
             >
               <div className='flex items-center space-x-2'>
-                <span>🎓</span>
                 <AcademicCapIcon className='w-4 h-4' />
                 <span>수강생 관리</span>
                 <span className='bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold'>
@@ -479,7 +485,6 @@ export default function UserRegistrationManagement() {
               }`}
             >
               <div className='flex items-center space-x-2'>
-                <span>👑</span>
                 <ShieldCheckIcon className='w-4 h-4' />
                 <span>관리자 목록</span>
                 <span className='bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold'>
@@ -565,9 +570,9 @@ export default function UserRegistrationManagement() {
                 >
                   선택한 사용자 승인
                 </Button>
-                <Button 
-                  onClick={handleBulkRejection} 
-                  variant='outline' 
+                <Button
+                  onClick={handleBulkRejection}
+                  variant='outline'
                   size='sm'
                   className='border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600'
                 >
@@ -593,11 +598,21 @@ export default function UserRegistrationManagement() {
                     />
                   </th>
                 )}
-                <SortableHeader column="nickname" className="w-1/4">사용자 정보</SortableHeader>
-                <SortableHeader column="role" className="w-1/6">역할</SortableHeader>
-                <SortableHeader column="cohort" className="w-1/6">기수</SortableHeader>
-                <SortableHeader column="status" className="w-1/6">상태</SortableHeader>
-                <SortableHeader column="created_at" className="w-1/6">가입일</SortableHeader>
+                <SortableHeader column='nickname' className='w-1/4'>
+                  사용자 정보
+                </SortableHeader>
+                <SortableHeader column='role' className='w-1/6'>
+                  역할
+                </SortableHeader>
+                <SortableHeader column='cohort' className='w-1/6'>
+                  기수
+                </SortableHeader>
+                <SortableHeader column='status' className='w-1/6'>
+                  상태
+                </SortableHeader>
+                <SortableHeader column='created_at' className='w-1/6'>
+                  가입일
+                </SortableHeader>
                 <th className='w-1/6 px-4 py-2 text-center text-xs font-medium text-slate-500 uppercase tracking-wider'>
                   작업
                 </th>
@@ -655,9 +670,9 @@ export default function UserRegistrationManagement() {
                       )}
 
                       {activeTab === 'students' && user.status !== 'rejected' && (
-                        <Button 
-                          onClick={() => handleStatusUpdate(user.id, 'rejected')} 
-                          variant='outline' 
+                        <Button
+                          onClick={() => handleStatusUpdate(user.id, 'rejected')}
+                          variant='outline'
                           size='xs'
                           className='border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600'
                         >

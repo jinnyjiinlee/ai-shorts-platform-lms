@@ -42,7 +42,7 @@ export default function MissionTable({
               week={mission.week} 
               size="md" 
               variant="gradient" 
-              theme="indigo-purple" 
+              theme="slate" 
               format="W"
             />
             <h3 className='font-medium text-slate-900'>{mission.title}</h3>

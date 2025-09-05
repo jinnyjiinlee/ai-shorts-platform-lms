@@ -10,7 +10,7 @@ export interface WeekBadgeProps {
   /** 배지 스타일 */
   variant?: 'gradient' | 'solid' | 'outline';
   /** 배지 색상 테마 */
-  theme?: 'indigo-purple' | 'blue-cyan' | 'emerald-teal' | 'orange-red';
+  theme?: 'indigo-purple' | 'blue-cyan' | 'emerald-teal' | 'orange-red' | 'slate';
   /** 텍스트 형식 */
   format?: 'W' | '주차' | 'week';
   /** 클릭 이벤트 */
@@ -25,7 +25,7 @@ export default function WeekBadge({
   week,
   size = 'md',
   variant = 'gradient',
-  theme = 'indigo-purple',
+  theme = 'slate',
   format = 'W',
   onClick,
   className = '',
@@ -59,6 +59,11 @@ export default function WeekBadge({
       gradient: 'bg-gradient-to-r from-orange-500 to-red-600',
       solid: 'bg-orange-600',
       outline: 'border-orange-500 text-orange-600',
+    },
+    'slate': {
+      gradient: 'bg-gradient-to-r from-slate-500 to-slate-600',
+      solid: 'bg-slate-600',
+      outline: 'border-slate-500 text-slate-600',
     },
   };
 

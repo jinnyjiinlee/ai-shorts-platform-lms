@@ -42,7 +42,7 @@ export default function MissionBoard({
         week={mission.week}
         size="md"
         variant="gradient"
-        theme="indigo-purple"
+        theme="slate"
         format="W"
       />,
     ].filter(Boolean)

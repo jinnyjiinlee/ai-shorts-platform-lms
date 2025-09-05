@@ -250,18 +250,23 @@ export default function DashboardView() {
       )}
 
       {/* 완벽 수강생 추적 섹션 */}
-      <div className='bg-white rounded-2xl border border-slate-200 shadow-md p-6'>
+      <div className='bg-white rounded-2xl border-2 border-slate-300 shadow-md p-6'>
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center space-x-3'>
-            <div className='w-10 h-10 bg-gradient-to-br from-slate-500 to-slate-600 rounded-lg flex items-center justify-center'>
+            <div className='w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-lg flex items-center justify-center'>
               <TrophyIcon className='w-6 h-6 text-white' />
             </div>
             <div>
-              <h3 className='text-lg font-bold text-slate-900'>완벽 수강생 현황</h3>
+              <h3 className='text-lg font-bold text-slate-900 flex items-center space-x-2'>
+                <span>완벽 수강생 현황</span>
+                <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-700'>
+                  BEST
+                </span>
+              </h3>
               <p className='text-sm text-slate-600'>매주 모든 미션을 100% 완료하는 학생들</p>
             </div>
           </div>
-          <div className='text-right'>
+          <div className='text-right bg-slate-50 rounded-xl p-4 border border-slate-200'>
             <span className='text-2xl font-bold text-slate-700'>
               {selectedCohortData?.perfectCompletionCount || 0}명
             </span>
@@ -270,10 +275,13 @@ export default function DashboardView() {
         </div>
 
         {/* 완벽 수강생 명단 */}
-        <div className='bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl p-4'>
+        <div className='bg-slate-50 rounded-xl p-4 border border-slate-200'>
           <div className='mb-4'>
-            <h4 className='font-semibold text-slate-800 mb-2'>
-              완벽 수강생 명단 ({selectedCohortData?.perfectCompletionCount || 0}명)
+            <h4 className='font-semibold text-slate-800 mb-2 flex items-center space-x-2'>
+              <span>완벽 수강생 명단</span>
+              <span className='inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-200 text-slate-600'>
+                {selectedCohortData?.perfectCompletionCount || 0}명
+              </span>
             </h4>
             <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2'>
               {selectedCohortData &&
@@ -282,7 +290,7 @@ export default function DashboardView() {
                 selectedCohortData.perfectStudents.map((student) => (
                   <div
                     key={student.id}
-                    className='bg-white rounded-lg px-3 py-2 text-sm font-medium text-slate-700 shadow-sm border border-slate-200'
+                    className='bg-white rounded-lg px-3 py-2 text-sm font-medium text-slate-700 shadow-sm border-2 border-slate-300 hover:border-slate-400 transition-colors'
                   >
                     {student.nickname || student.name}
                   </div>
@@ -295,11 +303,11 @@ export default function DashboardView() {
 
           {/* 주차별 통계 */}
           <div className='grid grid-cols-2 gap-4 pt-4 border-t border-slate-200'>
-            <div className='text-center'>
+            <div className='text-center bg-white rounded-lg p-3 border border-slate-200'>
               <p className='text-sm text-slate-600'>현재까지 완벽 완료</p>
               <p className='text-xl font-bold text-slate-700'>{selectedCohortData?.perfectCompletionCount || 0}명</p>
             </div>
-            <div className='text-center'>
+            <div className='text-center bg-white rounded-lg p-3 border border-slate-200'>
               <p className='text-sm text-slate-600'>완료율</p>
               <p className='text-xl font-bold text-slate-700'>{selectedCohortData?.perfectCompletionRate || 0}%</p>
             </div>
