@@ -1,7 +1,7 @@
 // 사용
 
 import { supabase } from '@/lib/supabase/client';
-import { AuthService, DatabaseService, ErrorService } from '@/lib/service';
+import { AuthService, ErrorService } from '@/lib/service';
 import { dateUtils } from '@/lib/utils';
 
 export interface StudentDashboardStats {
@@ -55,9 +55,10 @@ export const fetchStudentDashboardData = async (): Promise<StudentDashboardStats
 async function getMissionsByCohort(cohort: string) {
   const { data, error } = await supabase
     .from('mission_notice')
-    .select('id, title, due_date, week')
+    .select('id, title, due_date, week, created_at')
     .eq('cohort', cohort)
-    .order('week', { ascending: true });
+    .order('week', { ascending: true })
+    .order('created_at', { ascending: true });
 
   if (error) ErrorService.handleError(error, '미션 데이터 조회 실패');
   return data || [];

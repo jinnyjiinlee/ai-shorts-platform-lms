@@ -42,9 +42,9 @@ export default function StudentHeader({ showMobileMenu, onToggleMobileMenu }: St
         )}
       </button>
 
-      {/* 페이지 타이틀 */}
-      <div className='flex-1 px-4'>
-        <h2 className='text-base font-medium text-gray-900'>수강생 사이트</h2>
+
+      <div className='flex-1 px-5'>
+        {/* <h2 className='text-base font-medium text-gray-900'>수강생 사이트</h2> */}
       </div>
 
       {/* 우측 메뉴 */}

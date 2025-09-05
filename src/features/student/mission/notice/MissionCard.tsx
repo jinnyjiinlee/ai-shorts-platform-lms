@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircleIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, EyeIcon, SparklesIcon, LockClosedIcon, BoltIcon } from '@heroicons/react/24/outline';
 import { Badge } from '@/features/shared/ui/Badge';
 import { MissionCardProps } from '../types';
 
@@ -11,11 +11,23 @@ export default function MissionCard({ mission, onClick }: MissionCardProps) {
   // 상태 결정: 제출완료 > 마감 > 진행중
   const getStatusInfo = () => {
     if (mission.isSubmitted) {
-      return { text: '✨ 완료', color: 'bg-green-100 text-green-800 border border-green-200' };
+      return { 
+        text: '완료', 
+        color: 'bg-green-100 text-green-800 border border-green-200',
+        icon: <SparklesIcon className='w-3 h-3' />
+      };
     } else if (isOverdue) {
-      return { text: '🔒 마감', color: 'bg-red-100 text-red-800 border border-red-200' };
+      return { 
+        text: '마감', 
+        color: 'bg-red-100 text-red-800 border border-red-200',
+        icon: <LockClosedIcon className='w-3 h-3' />
+      };
     } else {
-      return { text: '⚡ 진행중', color: 'bg-blue-100 text-blue-800 border border-blue-200' };
+      return { 
+        text: '진행중', 
+        color: 'bg-blue-100 text-blue-800 border border-blue-200',
+        icon: <BoltIcon className='w-3 h-3' />
+      };
     }
   };
 
@@ -50,7 +62,7 @@ export default function MissionCard({ mission, onClick }: MissionCardProps) {
           </div>
           {mission.isSubmitted && (
             <div className='absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center'>
-              <span className='text-xs'>✨</span>
+              <SparklesIcon className='w-3 h-3 text-white' />
             </div>
           )}
         </div>
@@ -65,6 +77,7 @@ export default function MissionCard({ mission, onClick }: MissionCardProps) {
               <Badge 
                 variant={mission.isSubmitted ? 'success' : isOverdue ? 'danger' : 'info'}
                 size='sm'
+                icon={statusInfo.icon}
               >
                 {statusInfo.text}
               </Badge>
@@ -102,7 +115,12 @@ export default function MissionCard({ mission, onClick }: MissionCardProps) {
 
           <div className='flex items-center justify-between mt-2 text-xs text-slate-500'>
             <span>마감일: {mission.dueDateFormatted}</span>
-            {mission.submittedAt && <span className='text-green-600'>✅ {mission.submittedAt} 제출</span>}
+            {mission.submittedAt && (
+              <span className='text-green-600 flex items-center space-x-1'>
+                <CheckCircleIcon className='w-3 h-3' />
+                <span>{mission.submittedAt} 제출</span>
+              </span>
+            )}
           </div>
         </div>
       </div>

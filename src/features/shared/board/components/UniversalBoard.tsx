@@ -269,7 +269,7 @@ export default function UniversalBoard({
                           />
                           <span>{item.author}</span>
                         </div>
-                        <span>📅 {item.createdAt}</span>
+                        <span>{item.createdAt}</span>
                       </div>
                     </div>
 

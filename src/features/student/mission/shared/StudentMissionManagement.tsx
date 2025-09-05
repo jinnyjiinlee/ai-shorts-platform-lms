@@ -13,10 +13,10 @@ import LoadingState from '../../dashboard/components/LoadingState';
 
 // 공통 카드 스타일 클래스들 - 기존 디자인 시스템과 통일
 const CARD_CLASSES = {
-  BASE_CARD: 'bg-white rounded-2xl border border-slate-200 hover:shadow-lg transition-all duration-300',
+  BASE_CARD: 'bg-white rounded-2xl border border-slate-200 ',
   LARGE_CARD: 'p-6',
-  MEDIUM_CARD: 'p-4', 
-  SMALL_CARD: 'p-3'
+  MEDIUM_CARD: 'p-4',
+  SMALL_CARD: 'p-3',
 };
 
 export default function StudentMissionManagement() {
@@ -31,12 +31,24 @@ export default function StudentMissionManagement() {
 
   const getStatusBadge = (status: string, isSubmitted?: boolean) => {
     if (isSubmitted && status === 'completed') {
-      return <Badge variant="success" size="sm">완료</Badge>;
+      return (
+        <Badge variant='success' size='sm'>
+          완료
+        </Badge>
+      );
     }
     if (isSubmitted) {
-      return <Badge variant="default" size="sm" className="text-blue-600 bg-blue-100">제출 완료</Badge>;
+      return (
+        <Badge variant='default' size='sm' className='text-blue-600 bg-blue-100'>
+          제출 완료
+        </Badge>
+      );
     }
-    return <Badge variant="warning" size="sm">제출 대기</Badge>;
+    return (
+      <Badge variant='warning' size='sm'>
+        제출 대기
+      </Badge>
+    );
   };
 
   const getStatusColor = (status: string, isSubmitted?: boolean) => {
@@ -52,7 +64,7 @@ export default function StudentMissionManagement() {
   };
 
   if (isLoading) {
-    return <LoadingState message="미션을 불러오는 중..." />;
+    return <LoadingState message='미션을 불러오는 중...' />;
   }
 
   return (
@@ -65,7 +77,7 @@ export default function StudentMissionManagement() {
 
       {/* 미션 로드맵 - 새로운 디자인 */}
       {missions.length === 0 ? (
-        <div className={`${CARD_CLASSES.BASE_CARD} ${CARD_CLASSES.LARGE_CARD} group hover:scale-[1.01]`}>
+        <div className={`${CARD_CLASSES.BASE_CARD} ${CARD_CLASSES.LARGE_CARD} `}>
           <div className='text-center py-12'>
             <div className='text-6xl mb-4'>📋</div>
             <h3 className='text-xl font-semibold text-slate-900 mb-2'>등록된 미션이 없습니다</h3>
@@ -74,8 +86,8 @@ export default function StudentMissionManagement() {
           </div>
         </div>
       ) : (
-        <MissionRoadmap 
-          missions={missions} 
+        <MissionRoadmap
+          missions={missions}
           onMissionClick={setSelectedMission}
           selectedWeek={selectedWeek}
           onWeekChange={setSelectedWeek}
@@ -83,35 +95,33 @@ export default function StudentMissionManagement() {
       )}
 
       {/* 선택된 주차의 미션 목록 또는 전체 미션 목록 */}
-      {selectedWeek ? (
-        // 특정 주차가 선택된 경우
-        missionsByWeek[selectedWeek] && (
-          <div className={`${CARD_CLASSES.BASE_CARD} ${CARD_CLASSES.MEDIUM_CARD} group hover:scale-[1.01]`}>
-            <h2 className='text-xl font-semibold text-slate-900 mb-4'>{selectedWeek}주차 미션</h2>
-            <MissionList
-              missions={missionsByWeek[selectedWeek]}
-              onMissionSelect={setSelectedMission}
-              getStatusColor={getStatusColor}
-              getStatusText={getStatusText}
-              getStatusBadge={getStatusBadge}
-            />
-          </div>
-        )
-      ) : (
-        // 전체 보기가 선택된 경우
-        missions.length > 0 && (
-          <div className={`${CARD_CLASSES.BASE_CARD} ${CARD_CLASSES.MEDIUM_CARD} group hover:scale-[1.01]`}>
-            <h2 className='text-xl font-semibold text-slate-900 mb-4'>전체 미션</h2>
-            <MissionList
-              missions={missions}
-              onMissionSelect={setSelectedMission}
-              getStatusColor={getStatusColor}
-              getStatusText={getStatusText}
-              getStatusBadge={getStatusBadge}
-            />
-          </div>
-        )
-      )}
+      {selectedWeek
+        ? // 특정 주차가 선택된 경우
+          missionsByWeek[selectedWeek] && (
+            <div className={`${CARD_CLASSES.BASE_CARD} ${CARD_CLASSES.MEDIUM_CARD} `}>
+              <h2 className='text-xl font-semibold text-slate-900 mb-4'>{selectedWeek}주차 미션</h2>
+              <MissionList
+                missions={missionsByWeek[selectedWeek]}
+                onMissionSelect={setSelectedMission}
+                getStatusColor={getStatusColor}
+                getStatusText={getStatusText}
+                getStatusBadge={getStatusBadge}
+              />
+            </div>
+          )
+        : // 전체 보기가 선택된 경우
+          missions.length > 0 && (
+            <div className={`${CARD_CLASSES.BASE_CARD} ${CARD_CLASSES.MEDIUM_CARD} `}>
+              <h2 className='text-xl font-semibold text-slate-900 mb-4'>전체 미션</h2>
+              <MissionList
+                missions={missions}
+                onMissionSelect={setSelectedMission}
+                getStatusColor={getStatusColor}
+                getStatusText={getStatusText}
+                getStatusBadge={getStatusBadge}
+              />
+            </div>
+          )}
 
       {/* 미션 상세/제출 모달 */}
       <MissionModal

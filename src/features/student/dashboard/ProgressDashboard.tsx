@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AcademicCapIcon, ChartBarIcon, TrophyIcon } from '@heroicons/react/24/outline';
+import { ChartBarIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { fetchStudentDashboardData } from '@/features/student/dashboard/studentDashboardService';
 import WeeklyProgress from './WeeklyProgress';
 import LoadingState from './components/LoadingState';
@@ -30,6 +30,9 @@ export default function ProgressDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 현재 주차 계산
+  const currentWeek = stats.weeklyProgress.length > 0 ? Math.max(...stats.weeklyProgress.map((w) => w.week)) : 1;
+
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
@@ -41,8 +44,8 @@ export default function ProgressDashboard() {
           totalMissions: data.totalMissions,
           completionRate: data.completionRate,
           streak: data.recentSubmissions.length >= 3 ? 3 : data.recentSubmissions.length,
-          rank: Math.floor(Math.random() * 10) + 1, // TODO: 실제 랭킹 시스템 구현
-          totalStudents: 25, // TODO: 전체 학생 수 계산
+          rank: Math.floor(Math.random() * 10) + 1,
+          totalStudents: 25,
           weeklyProgress: data.weeklyProgress,
         });
       } catch (err) {
@@ -60,172 +63,152 @@ export default function ProgressDashboard() {
   if (error) return <ErrorState error={error} />;
 
   return (
-    <div className='h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'>
-      <div className='h-full max-w-7xl mx-auto p-4'>
-        {/* 헤더 */}
-        <div className='text-center mb-4'>
-          <h1 className='text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>
-            나의 학습 현황
-          </h1>
-          <p className='text-slate-600 text-sm'>꾸준히 성장하는 나의 모습을 확인해보세요</p>
+    <div className='min-h-screen '>
+      <div className='w-full max-w-7xl mx-auto px-6 py-6'>
+        {/* 메인 헤더 - 세련되게 */}
+        <div className='mb-12'>
+          <h1 className='text-3xl font-bold text-slate-900 mb-3'>학습 대시보드</h1>
+          <p className='text-base text-slate-500'>오늘까지 {stats.completedMissions}개의 미션을 완료했습니다</p>
         </div>
 
-        {/* 메인 컨텐츠 */}
-        <div className='h-[calc(100%-5rem)] space-y-4'>
-          {/* 상단: 이번 주 목표 - 가로로 길게 */}
-          <div className='relative overflow-hidden bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 rounded-3xl shadow-2xl p-6 mb-4'>
-            <div className='absolute inset-0 bg-gradient-to-br from-white/10 to-transparent'></div>
-            <div className='absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl'></div>
-            <div className='absolute bottom-0 left-0 w-40 h-40 bg-blue-400/10 rounded-full blur-3xl'></div>
+        {/* 상단 핵심 지표 카드들 */}
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
+          {/* 진행률 카드 */}
+          <div className='bg-white rounded-xl p-6 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow min-h-[120px] flex flex-col justify-between'>
+            <div className='flex items-center justify-between mb-4'>
+              <div className='w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center'>
+                <ChartBarIcon className='w-5 h-5 text-blue-600' />
+              </div>
+              <span className='text-xs font-medium text-slate-400'>진행률</span>
+            </div>
+            <div className='text-2xl font-bold text-slate-900 mb-3'>{stats.completionRate}%</div>
+            <div className='w-full bg-slate-100 rounded-full h-2 mt-auto'>
+              <div
+                className='bg-blue-800 h-2 rounded-full transition-all duration-700'
+                style={{ width: `${stats.completionRate}%` }}
+              />
+            </div>
+          </div>
 
-            <div className='relative flex items-center justify-between'>
-              <div className='flex items-center space-x-4'>
-                <div className='w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg'>
-                  <TrophyIcon className='w-8 h-8 text-white' />
-                </div>
+          {/* 완료 미션 카드 */}
+          <div className='bg-white rounded-xl p-6 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow min-h-[120px] flex flex-col justify-between'>
+            <div className='flex items-center justify-between mb-4'>
+              <div className='w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center'>
+                <svg className='w-5 h-5 text-emerald-700' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                  />
+                </svg>
+              </div>
+              <span className='text-xs font-medium text-slate-400'>완료</span>
+            </div>
+            <div className='text-2xl font-bold text-slate-900 mt-auto'>{stats.completedMissions}</div>
+            <p className='text-xs font-normal text-slate-500'>미션 완료</p>
+          </div>
+
+          {/* 남은 미션 카드 */}
+          <div className='bg-white rounded-xl p-6 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow min-h-[120px] flex flex-col justify-between'>
+            <div className='flex items-center justify-between mb-4'>
+              <div className='w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center'>
+                <svg className='w-5 h-5 text-slate-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+                  />
+                </svg>
+              </div>
+              <span className='text-xs font-medium text-slate-400'>진행중</span>
+            </div>
+            <div className='text-2xl font-bold text-slate-900 mt-auto'>{stats.totalMissions - stats.completedMissions}</div>
+            <p className='text-xs font-normal text-slate-500'>남은 미션</p>
+          </div>
+
+          {/* D-Day 카드 */}
+          <div className='bg-white rounded-xl p-6 border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow min-h-[120px] flex flex-col justify-between'>
+            <div className='flex items-center justify-between mb-4'>
+              <div className='w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center'>
+                <ClockIcon className='w-5 h-5 text-amber-700' />
+              </div>
+              <span className='text-xs font-medium text-slate-400'>마감</span>
+            </div>
+            <div className='text-2xl font-bold text-slate-900 mt-auto'>D-3</div>
+            <p className='text-xs font-normal text-slate-500'>이번주 마감</p>
+          </div>
+        </div>
+
+        {/* 메인 컨텐츠 영역 */}
+        <div className='grid grid-cols-1 lg:grid-cols-13 gap-8'>
+          {/* 왼쪽: 전체 진행 상황 */}
+          <div className='lg:col-span-8'>
+            <div className='bg-white rounded-xl border border-slate-200/50 shadow-sm p-8 h-full flex flex-col'>
+              <div className='flex items-center justify-between mb-8'>
                 <div>
-                  <h2 className='text-2xl font-bold text-white mb-1'>이번 주 목표</h2>
-                  <p className='text-blue-100'>매주 성장하는 나를 만들어가요!</p>
+                  <h2 className='text-xl font-semibold text-slate-900'>전체 학습 진행도</h2>
+                  <p className='text-sm font-normal text-slate-700 mt-2'>목표 달성률 {stats.completionRate}%</p>
+                </div>
+                <div className='text-right'>
+                  <div className='text-sm font-medium text-slate-500'>총 미션</div>
+                  <div className='text-2xl font-bold text-slate-900'>
+                    {stats.completedMissions}/{stats.totalMissions}
+                  </div>
                 </div>
               </div>
 
-              <div className='flex-1 max-w-md mx-8'>
-                <div className='flex items-center justify-between mb-2 text-white'>
-                  <span className='text-sm font-medium'>미션 진행도</span>
-                  <span className='text-lg font-bold'>
-                    {stats.completedMissions}/{stats.totalMissions}
-                  </span>
-                </div>
-                <div className='w-full bg-white/20 backdrop-blur-sm rounded-full h-3 overflow-hidden'>
+              {/* 대형 진행률 바 */}
+              <div className='bg-slate-100 rounded-2xl p-6'>
+                <div className='w-full bg-white rounded-xl h-8 overflow-hidden shadow-inner'>
                   <div
-                    className='h-full bg-gradient-to-r from-white to-blue-200 rounded-full transition-all duration-1000 ease-out relative overflow-hidden'
+                    className='bg-blue-800 h-8 rounded-xl transition-all duration-1000 ease-out flex items-center justify-end pr-3'
                     style={{
                       width: `${stats.totalMissions > 0 ? (stats.completedMissions / stats.totalMissions) * 100 : 0}%`,
                     }}
                   >
-                    <div className='absolute inset-0 bg-white/30 animate-pulse'></div>
+                    {stats.completionRate > 10 && (
+                      <span className='text-sm text-white font-semibold'>{stats.completionRate}%</span>
+                    )}
                   </div>
                 </div>
-                <p className='text-xs text-blue-100 mt-2'>{stats.completionRate}% 달성</p>
-              </div>
-
-              <div className='text-center'>
-                {stats.completedMissions === stats.totalMissions ? (
-                  <div className='bg-white/20 backdrop-blur-sm rounded-2xl p-4'>
-                    <div className='text-3xl mb-2'>🎉</div>
-                    <p className='text-white font-bold'>목표 달성!</p>
-                    <p className='text-blue-100 text-xs'>훌륭해요!</p>
-                  </div>
-                ) : (
-                  <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-4'>
-                    <div className='text-3xl mb-2'>💪</div>
-                    <p className='text-white font-bold text-lg'>
-                      {stats.totalMissions - stats.completedMissions}개 남음
-                    </p>
-                    <p className='text-blue-100 text-xs'>조금만 더 화이팅!</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* 중단: 통계 카드들 (2개만) */}
-          <div className='grid grid-cols-2 gap-4 mb-4'>
-            {/* 완료한 미션 - 더 예쁘게 */}
-            <div className='group relative overflow-hidden bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1'>
-              <div className='absolute inset-0 bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5'></div>
-              <div className='absolute -top-24 -right-24 w-48 h-48 bg-blue-400/10 rounded-full blur-3xl'></div>
-
-              <div className='relative p-6'>
-                <div className='flex items-start justify-between mb-4'>
-                  <div className='flex items-center space-x-3'>
-                    <div className='w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform'>
-                      <AcademicCapIcon className='w-7 h-7 text-white' />
-                    </div>
-                    <div>
-                      <h3 className='font-bold text-slate-900 text-lg'>완료한 미션</h3>
-                      <p className='text-slate-500 text-sm'>성취한 목표들</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='flex items-end justify-between'>
+                <div className='flex justify-between mt-6'>
                   <div>
-                    <div className='text-4xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>
-                      {stats.completedMissions}
-                    </div>
-                    <div className='text-sm text-slate-500 mt-1'>총 {stats.totalMissions}개 중</div>
+                    <p className='text-base font-medium text-slate-700'></p>
                   </div>
-                  <div className='flex items-center space-x-1'>
-                    {[...Array(Math.min(5, stats.completedMissions))].map((_, i) => (
-                      <div
-                        key={i}
-                        className='w-2 h-8 bg-gradient-to-t from-blue-500 to-indigo-500 rounded-full'
-                        style={{ height: `${(i + 1) * 20}%`, opacity: 0.6 + i * 0.1 }}
-                      />
-                    ))}
+                  <div className='text-right'>
+                    <p className='text-base font-medium text-slate-700'>목표</p>
+                    <p className='text-xs font-normal text-slate-500'>{stats.totalMissions}개 완료</p>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* 완료율 - 더 예쁘게 */}
-            <div className='group relative overflow-hidden bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1'>
-              <div className='absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-green-500/5 to-teal-500/5'></div>
-              <div className='absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-400/10 rounded-full blur-3xl'></div>
-
-              <div className='relative p-6'>
-                <div className='flex items-start justify-between mb-4'>
-                  <div className='flex items-center space-x-3'>
-                    <div className='w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform'>
-                      <ChartBarIcon className='w-7 h-7 text-white' />
+              {/* 주차별 진도 */}
+              <div className='mt-8 flex-1'>
+                <h3 className='text-lg font-medium text-slate-900 mb-4'>주차별 진행 현황</h3>
+                <div className='grid grid-cols-10 gap-2'>
+                  {Array.from({ length: 17 }, (_, i) => i + 1).map((week) => (
+                    <div
+                      key={week}
+                      className={`text-center py-2 px-3 rounded-lg text-sm font-semibold ${
+                        week <= currentWeek
+                          ? week === currentWeek
+                            ? 'bg-blue-800 text-white'
+                            : 'bg-blue-50 text-blue-800'
+                          : 'bg-slate-50 text-slate-400'
+                      }`}
+                    >
+                      {week}주
                     </div>
-                    <div>
-                      <h3 className='font-bold text-slate-900 text-lg'>완료율</h3>
-                      <p className='text-slate-500 text-sm'>달성 비율</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='flex items-end justify-between'>
-                  <div>
-                    <div className='text-4xl font-black bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent'>
-                      {stats.completionRate}%
-                    </div>
-                    <div className='text-sm text-slate-500 mt-1'>목표 달성률</div>
-                  </div>
-                  <div className='relative w-20 h-20'>
-                    <svg className='w-20 h-20 transform -rotate-90'>
-                      <circle cx='40' cy='40' r='36' stroke='#e5e7eb' strokeWidth='8' fill='none' />
-                      <circle
-                        cx='40'
-                        cy='40'
-                        r='36'
-                        stroke='url(#gradient)'
-                        strokeWidth='8'
-                        fill='none'
-                        strokeDasharray={`${2 * Math.PI * 36}`}
-                        strokeDashoffset={`${2 * Math.PI * 36 * (1 - stats.completionRate / 100)}`}
-                        className='transition-all duration-1000 ease-out'
-                      />
-                      <defs>
-                        <linearGradient id='gradient' x1='0%' y1='0%' x2='100%' y2='100%'>
-                          <stop offset='0%' stopColor='#10b981' />
-                          <stop offset='100%' stopColor='#059669' />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    <div className='absolute inset-0 flex items-center justify-center'>
-                      <span className='text-xs font-bold text-slate-700'>{stats.completionRate}%</span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 하단: 주차별 진행 현황 */}
-          <div className='flex-1'>
+          {/* 오른쪽: 이번주 미션 */}
+          <div className='lg:col-span-5'>
             <WeeklyProgress weeklyProgress={stats.weeklyProgress} />
           </div>
         </div>

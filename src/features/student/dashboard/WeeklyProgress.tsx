@@ -1,116 +1,159 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { CheckIcon, ClockIcon, CalendarIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 interface WeekProgressProps {
-  weeklyProgress: { 
-    week: number; 
-    title: string; 
-    completed: boolean; 
-    dueDate?: string; 
+  weeklyProgress: {
+    week: number;
+    title: string;
+    completed: boolean;
+    dueDate?: string;
   }[];
 }
 
 export default function WeeklyProgress({ weeklyProgress }: WeekProgressProps) {
   const router = useRouter();
-  
-  const completedCount = weeklyProgress.filter(week => week.completed).length;
-  const totalCount = weeklyProgress.length;
+
+  // 현재 주차 계산 (가장 높은 주차를 현재 주차로 가정)
+  const currentWeek = weeklyProgress.length > 0 ? Math.max(...weeklyProgress.map((w) => w.week)) : 1;
+
+  // 현재 주차 미션만 필터링하고 제목 순으로 정렬
+  const currentWeekMissions = weeklyProgress
+    .filter((week) => week.week === currentWeek)
+    .sort((a, b) => a.title.localeCompare(b.title));
+
+  const completedCount = currentWeekMissions.filter((week) => week.completed).length;
+  const totalCount = currentWeekMissions.length;
   const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-  
+
   const handleClick = () => {
     router.push('/student/mission');
   };
 
   return (
-    <div 
+    <div
       onClick={handleClick}
-      className="h-full bg-white/80 backdrop-blur-sm rounded-3xl border border-white/20 shadow-lg overflow-hidden flex flex-col cursor-pointer hover:shadow-xl transition-all duration-300 group"
+      className='relative bg-white rounded-xl border border-slate-200/50 shadow-sm hover:shadow-md overflow-hidden cursor-pointer transition-all duration-300 group h-full flex flex-col'
     >
+
       {/* 헤더 */}
-      <div className="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 px-6 py-4 border-b border-slate-200/50">
-        <div className="flex items-center justify-between">
+      <div className='relative px-6 py-4 border-b border-slate-100/50'>
+        <div className='flex items-center justify-between'>
           <div>
-            <h3 className="text-lg font-bold text-slate-900">주차별 미션</h3>
-            <p className="text-sm text-slate-600 mt-1">
-              {completedCount}/{totalCount} 완료 ({completionRate}%)
-            </p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-2 text-xs">
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                <span className="text-green-700">완료</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                <span className="text-blue-700">진행중</span>
+            <div className='flex items-center space-x-3 mb-2'>
+              <div>
+                <h3 className='text-xl font-semibold text-slate-900'>이번주 미션</h3>
+                <p className='text-sm font-normal text-slate-500'>{currentWeek}주차</p>
               </div>
             </div>
-            <ChevronRightIcon className="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition-colors" />
+            <div className='flex items-center space-x-4'>
+              <div className='text-center'>
+                <div className='text-2xl font-bold text-slate-900'>{completedCount}</div>
+                <div className='text-xs font-medium text-slate-500'>완료</div>
+              </div>
+              <div className='text-center'>
+                <div className='text-2xl font-bold text-slate-900'>{totalCount - completedCount}</div>
+                <div className='text-xs font-medium text-slate-500'>남은 미션</div>
+              </div>
+              <div className='text-center'>
+                <div className='text-2xl font-bold text-slate-900'>{completionRate}%</div>
+                <div className='text-xs font-medium text-slate-500'>진행률</div>
+              </div>
+            </div>
           </div>
+          <ChevronRightIcon className='w-6 h-6 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-1 transition-all duration-200' />
         </div>
       </div>
 
-      {/* 진행률 바 */}
-      <div className="px-6 py-4 bg-slate-50/50">
-        <div className="w-full bg-slate-200 rounded-full h-3">
-          <div 
-            className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-500 ease-out relative overflow-hidden"
+      {/* 진행률 바 - 세련된 디자인 */}
+      <div className='relative px-6 py-3 bg-slate-50/30'>
+        <div className='w-full bg-slate-200/60 rounded-full h-2 overflow-hidden'>
+          <div
+            className='bg-slate-600 h-2 rounded-full transition-all duration-1000 ease-out'
             style={{ width: `${completionRate}%` }}
           >
-            <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
           </div>
         </div>
       </div>
 
-      {/* 요약 정보 및 CTA */}
-      <div className="flex-1 p-6 flex flex-col items-center justify-center text-center">
-        {weeklyProgress.length > 0 ? (
-          <>
-            <div className="mb-4">
-              <div className="text-5xl mb-3">📚</div>
-              <h4 className="text-xl font-bold text-slate-900 mb-2">
-                {totalCount - completedCount}개의 미션이 남았어요!
-              </h4>
-              <p className="text-sm text-slate-600">
-                클릭하여 전체 미션을 확인하고 제출해보세요
-              </p>
-            </div>
-            
-            {/* 최근 미션 미리보기 (선택사항) */}
-            <div className="w-full max-w-sm bg-slate-50 rounded-xl p-3 mb-4">
-              <p className="text-xs text-slate-500 mb-2">최근 미션</p>
-              <div className="space-y-1">
-                {weeklyProgress.slice(0, 2).map((week, index) => (
-                  <div key={`preview-${week.week}-${index}`} className="flex items-center justify-between text-xs">
-                    <span className="text-slate-700">{week.week}주차: {week.title}</span>
-                    {week.completed ? (
-                      <CheckIcon className="w-3 h-3 text-green-500" />
-                    ) : (
-                      <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                    )}
+      {/* 미션 목록 - 그리드 형태로 */}
+      <div className='relative px-6 py-4 flex-1 flex flex-col'>
+        {currentWeekMissions.length > 0 ? (
+          <div className='flex flex-col h-full'>
+            {/* 미션 그리드 */}
+            <div className='grid grid-cols-2 gap-3 flex-1 content-start'>
+              {currentWeekMissions.slice(0, 6).map((week, index) => (
+                <div
+                  key={`preview-${week.week}-${index}`}
+                  className={`relative p-3 rounded-lg border transition-all duration-200 min-h-[80px] flex flex-col justify-between ${
+                    week.completed
+                      ? 'bg-blue-50/40 border-blue-200/60 shadow-sm'
+                      : 'bg-orange-50/30 border-orange-200/50 hover:border-orange-300/70'
+                  }`}
+                >
+                  {/* 완료 표시 */}
+                  {week.completed && (
+                    <div className='absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center shadow-sm'>
+                      <svg className='w-2.5 h-2.5 text-white' fill='currentColor' viewBox='0 0 20 20'>
+                        <path
+                          fillRule='evenodd'
+                          d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z'
+                          clipRule='evenodd'
+                        />
+                      </svg>
+                    </div>
+                  )}
+
+                  {/* 상태 표시 */}
+                  <div className='flex items-center space-x-2 mb-2'>
+                    <div className={`w-2 h-2 rounded-full ${week.completed ? 'bg-blue-500' : 'bg-orange-500'}`}></div>
+                    <span className={`text-xs font-semibold ${week.completed ? 'text-blue-700' : 'text-orange-600'}`}>
+                      {week.completed ? '제출 완료' : '미제출'}
+                    </span>
                   </div>
-                ))}
-              </div>
+
+                  {/* 미션 제목 */}
+                  <p
+                    className={`text-sm font-medium leading-tight ${
+                      week.completed ? 'text-blue-800' : 'text-orange-700'
+                    }`}
+                  >
+                    {week.title.length > 20 ? `${week.title.substring(0, 20)}...` : week.title}
+                  </p>
+                </div>
+              ))}
             </div>
-            
-            <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-indigo-700 transition-all group-hover:scale-105 shadow-lg">
-              나의 미션 보기
-              <ChevronRightIcon className="inline w-4 h-4 ml-1" />
-            </button>
-          </>
+
+            {/* 더 보기 */}
+            {currentWeekMissions.length > 6 && (
+              <div className='flex items-end justify-center mt-auto pt-4'>
+                <div className='inline-flex items-center space-x-2 px-4 py-2 bg-slate-50 rounded-lg text-xs text-slate-600'>
+                  <span>+{currentWeekMissions.length - 6}개 미션 더</span>
+                  <ChevronRightIcon className='w-3 h-3' />
+                </div>
+              </div>
+            )}
+          </div>
         ) : (
-          <div>
-            <ClockIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 text-sm mb-4">아직 등록된 미션이 없습니다.</p>
-            <button className="px-6 py-3 bg-slate-200 text-slate-600 rounded-xl font-medium">
-              미션 페이지로 이동
-              <ChevronRightIcon className="inline w-4 h-4 ml-1" />
-            </button>
+          <div className='flex flex-col items-center justify-center h-full'>
+            <div className='w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+              <ClockIcon className='w-6 h-6 text-slate-400' />
+            </div>
+            <p className='text-slate-500 text-sm'>{currentWeek}주차 미션이 아직 등록되지 않았습니다.</p>
           </div>
         )}
+      </div>
+
+      {/* 하단 액션 영역 */}
+      <div className='relative px-6 py-3 bg-slate-50/20 border-t border-slate-100/50'>
+        <div className='flex items-center justify-between text-xs text-slate-500'>
+          <span className='font-medium'>미션 관리</span>
+          <span className='flex items-center space-x-1'>
+            <span className='text-xs font-medium text-slate-500'>자세히 보기</span>
+            <ChevronRightIcon className='w-3 h-3' />
+          </span>
+        </div>
       </div>
     </div>
   );

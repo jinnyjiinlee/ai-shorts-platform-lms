@@ -91,7 +91,14 @@ export const fetchStudentMissions = async (studentCohort: number): Promise<Missi
       } as Mission;
     });
 
-    return missionList.sort((a, b) => b.week - a.week);
+    return missionList.sort((a, b) => {
+      // 1차: 주차별 정렬 (최신 주차부터)
+      if (a.week !== b.week) {
+        return b.week - a.week;
+      }
+      // 2차: 같은 주차 내에서는 생성일순 정렬 (오래된 것부터)
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    });
   } catch (error) {
     console.error('학생 미션 데이터 가져오기 오류:', error);
     if (error instanceof Error) {

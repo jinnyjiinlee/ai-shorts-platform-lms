@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronLeftIcon, ChevronRightIcon, PlayIcon } from '@heroicons/react/24/outline';
 import { Mission } from './types';
 import Badge from '@/features/shared/ui/Badge/Badge';
 
@@ -14,10 +13,16 @@ interface MissionRoadmapProps {
 
 export default function MissionRoadmap({ missions, onMissionClick, selectedWeek, onWeekChange }: MissionRoadmapProps) {
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
-  const [showAllMissions, setShowAllMissions] = useState<boolean>(false);
 
-  // 미션을 주차별로 정렬
-  const sortedMissions = [...missions].sort((a, b) => a.week - b.week);
+  // 미션을 주차별로 정렬하고, 각 주차 내에서는 생성일순으로 정렬
+  const sortedMissions = [...missions].sort((a, b) => {
+    // 1차: 주차별 정렬
+    if (a.week !== b.week) {
+      return a.week - b.week;
+    }
+    // 2차: 같은 주차 내에서는 생성일순 정렬 (오래된 것부터)
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+  });
 
   const getStepStatus = (mission: Mission) => {
     if (mission.isSubmitted) {
@@ -57,9 +62,6 @@ export default function MissionRoadmap({ missions, onMissionClick, selectedWeek,
   // 표시할 미션 결정 (선택된 미션이 있으면 선택된 미션, 없으면 현재 진행 중인 미션)
   const currentMission = selectedMission || sortedMissions.find((m) => !m.isSubmitted) || sortedMissions[0];
 
-  // 표시할 미션 수 결정
-  const displayedMissions = showAllMissions ? sortedMissions : sortedMissions.slice(0, 7);
-
   const handleMissionSelect = (mission: Mission) => {
     // 미션을 선택하면 해당 주차로 전환
     if (onWeekChange) {
@@ -69,13 +71,10 @@ export default function MissionRoadmap({ missions, onMissionClick, selectedWeek,
   };
 
   return (
-    <div className='bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-lg transition-all duration-300 hover:scale-[1.01]'>
+    <div className='bg-white rounded-2xl p-6 shadow-sm border border-slate-200 '>
       {/* 헤더 */}
       <div className='flex items-center justify-between mb-8'>
-        <h3 className='text-2xl font-bold text-slate-900 flex items-center'>
-          <span className='mr-3'>🎯</span>
-          미션 로드맵
-        </h3>
+        <h3 className='text-2xl font-bold text-slate-900 flex items-center'>미션 로드맵</h3>
         <div className='flex items-center space-x-4'>
           {/* 범례 */}
           <div className='flex items-center space-x-2 text-sm text-slate-600'>
@@ -175,7 +174,7 @@ export default function MissionRoadmap({ missions, onMissionClick, selectedWeek,
           <div className='flex gap-3'>
             <button
               onClick={() => onMissionClick(currentMission)}
-              className={`flex-1 py-3 px-4 rounded-xl font-medium text-white hover:shadow-md transition-all duration-200 ${
+              className={`flex-1 py-3 px-4 rounded-xl font-medium text-white  ${
                 getStepStatus(currentMission) === 'submitted'
                   ? 'bg-blue-500 hover:bg-blue-600'
                   : 'bg-slate-600 hover:bg-slate-700'
@@ -199,7 +198,11 @@ export default function MissionRoadmap({ missions, onMissionClick, selectedWeek,
       {/* 미션이 선택되지 않았을 때 안내 메시지 */}
       {!selectedMission && !sortedMissions.find((m) => !m.isSubmitted) && sortedMissions.length > 0 && (
         <div className='text-center py-8 text-slate-500'>
-          <div className='mb-2'>👆</div>
+          <div className='w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+            <svg className='w-6 h-6 text-slate-400' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 11l5-5m0 0l5 5m-5-5v12' />
+            </svg>
+          </div>
           <p className='text-sm'>위의 동그라미를 클릭해서 미션 정보를 확인해보세요</p>
         </div>
       )}

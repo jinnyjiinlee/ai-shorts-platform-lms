@@ -6,7 +6,9 @@ import { useRouter, usePathname } from 'next/navigation';
 import {
   HomeIcon,
   ClipboardDocumentListIcon,
-  ChatBubbleLeftRightIcon,
+  SpeakerWaveIcon,
+  UsersIcon,
+  BookOpenIcon,
   ChevronDownIcon,
   PlayIcon,
   UserCircleIcon,
@@ -42,7 +44,7 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
     {
       id: 'community',
       name: '커뮤니티',
-      icon: ChatBubbleLeftRightIcon,
+      icon: SpeakerWaveIcon,
       subItems: [
         { id: 'announcements', name: '공지사항', href: '/student/community/announcements' },
         { id: 'columns', name: '칼럼', href: '/student/community/columns' },
@@ -52,7 +54,7 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
     {
       id: 'studentLounge',
       name: '수강생 라운지',
-      icon: ChatBubbleLeftRightIcon,
+      icon: UsersIcon,
       subItems: [
         { id: 'review', name: '수강생 후기', href: '/student/studentLounge/review' },
         { id: 'qna', name: '[1기] QnA ', href: '/student/studentLounge/qna' },
@@ -62,7 +64,7 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
     {
       id: 'resourceShare',
       name: '학습 자료',
-      icon: ChatBubbleLeftRightIcon,
+      icon: BookOpenIcon,
       subItems: [
         // { id: 'weeklyResource', name: '주차별 학습자료 ', href: '/student/resourceShare/weeklyResource' },
         { id: 'aiContentsStudio', name: 'AI 콘텐츠 스튜디오', href: '/student/resourceShare/aiContentsStudio' },
@@ -105,23 +107,23 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
       <li key={item.id}>
         <button
           onClick={() => handleMenuClick(item)}
-          className={`group w-full text-left px-4 py-3 rounded-xl flex items-center justify-between transition-all duration-200 ${
+          className={`group w-full text-left px-4 py-3 rounded-lg flex items-center justify-between transition-all duration-200 ${
             isActive
-              ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md'
-              : 'hover:bg-slate-50 text-slate-700 hover:text-slate-900 hover:shadow-sm'
+              ? 'bg-slate-800 text-white shadow-sm'
+              : 'hover:bg-slate-100 text-slate-600 hover:text-slate-800'
           }`}
         >
           <div className='flex items-center space-x-3'>
             {Icon && (
               <Icon
                 className={`w-5 h-5 transition-colors ${
-                  isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-700'
+                  isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'
                 }`}
               />
             )}
             <span
               className={`font-medium transition-colors ${
-                isActive ? 'text-white' : 'text-slate-700 group-hover:text-slate-900'
+                isActive ? 'text-white' : 'text-slate-600 group-hover:text-slate-800'
               }`}
             >
               {item.name}
@@ -130,7 +132,7 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
           {item.subItems && (
             <ChevronDownIcon
               className={`w-4 h-4 transition-all duration-200 ${isExpanded ? 'rotate-180' : ''} ${
-                isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'
+                isActive ? 'text-white' : 'text-slate-300 group-hover:text-slate-500'
               }`}
             />
           )}
@@ -145,13 +147,13 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
                   onClick={() => handleSubMenuClick(subItem.href)}
                   className={`group w-full text-left px-3 py-2 rounded-lg flex items-center space-x-3 transition-all duration-200 ${
                     pathname.startsWith(subItem.href)
-                      ? 'bg-blue-50 text-blue-700 border-l-2 border-blue-500'
-                      : 'hover:bg-slate-50 text-slate-600 hover:text-slate-800'
+                      ? 'bg-slate-100 text-slate-800 border-l-2 border-slate-400'
+                      : 'hover:bg-slate-50 text-slate-500 hover:text-slate-700'
                   }`}
                 >
                   <div
                     className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                      pathname.startsWith(subItem.href) ? 'bg-blue-500' : 'bg-slate-300 group-hover:bg-slate-400'
+                      pathname.startsWith(subItem.href) ? 'bg-slate-400' : 'bg-slate-300 group-hover:bg-slate-400'
                     }`}
                   ></div>
                   <span className='text-sm font-medium'>{subItem.name}</span>
@@ -165,35 +167,35 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
   };
 
   return (
-    <aside className={`bg-white/95 backdrop-blur-sm border-r border-slate-200/60 flex flex-col shadow-xl ${className}`}>
+    <aside className={`bg-white/98 backdrop-blur-sm border-r border-slate-200/50 flex flex-col shadow-lg ${className}`}>
       {/* 로고 */}
-      <div className='px-6 py-6 border-b border-slate-200/60'>
+      <div className='px-6 py-3 border-b border-slate-200/40'>
         <div className='flex items-center space-x-4'>
           <div className='relative'>
-            <div className='w-10 h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg'>
-              <PlayIcon className='w-6 h-6 text-white' />
+            <div className='w-10 h-10 bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg flex items-center justify-center shadow-md'>
+              <PlayIcon className='w-5 h-5 text-white' />
             </div>
-            <div className='absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white'></div>
+            <div className='absolute -top-1 -right-1 w-3 h-3 bg-slate-400 rounded-full border-2 border-white'></div>
           </div>
           <div>
-            <h1 className='text-lg font-bold text-slate-900 tracking-tight'>숏폼 수익화 부스트</h1>
-            <p className='text-sm text-slate-500 font-medium'>하대표 Academy</p>
+            <h1 className='text-lg font-semibold text-slate-800 tracking-tight'>숏폼 수익화 부스트</h1>
+            <p className='text-sm text-slate-500 font-medium'>수강생 포털</p>
           </div>
         </div>
       </div>
 
       {/* 네비게이션 */}
       <nav className='flex-1 px-4 py-6'>
-        <ul className='space-y-2'>{menuItems.map(renderMenuItem)}</ul>
+        <ul className='space-y-1'>{menuItems.map(renderMenuItem)}</ul>
       </nav>
 
       {/* 유저 프로필 섹션 */}
-      <div className='px-4 py-4 border-t border-slate-200/60'>
+      <div className='px-4 py-4 border-t border-slate-200/40'>
         <a
           href='/student/profile'
-          className='flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer group'
+          className='flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer group'
         >
-          <div className='w-8 h-8 bg-gradient-to-br from-slate-300 to-slate-400 rounded-lg flex items-center justify-center overflow-hidden'>
+          <div className='w-8 h-8 bg-gradient-to-br from-slate-400 to-slate-500 rounded-lg flex items-center justify-center overflow-hidden'>
             {userProfile.avatarUrl ? (
               <img src={userProfile.avatarUrl} alt='Profile' className='w-full h-full object-cover' />
             ) : (
@@ -201,10 +203,10 @@ export default function StudentSidebar({ className = '' }: StudentSidebarProps) 
             )}
           </div>
           <div className='flex-1 min-w-0'>
-            <p className='text-sm font-medium text-slate-900 truncate'>{userProfile.name}</p>
+            <p className='text-sm font-medium text-slate-700 truncate'>{userProfile.name}</p>
             <p className='text-xs text-slate-500'>1기 수강생</p>
           </div>
-          <Cog6ToothIcon className='w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors' />
+          <Cog6ToothIcon className='w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors' />
         </a>
       </div>
     </aside>
