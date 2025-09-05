@@ -283,7 +283,7 @@ export default function DashboardView() {
               <div className='flex items-center space-x-2'>
                 <h4 className='text-sm font-semibold text-slate-700'>환불 보장 대상자</h4>
                 <div className='h-px bg-slate-200 flex-1'></div>
-                <span className='text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium'>
+                <span className='text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full font-medium'>
                   {selectedCohortData.perfectStudents.length}명
                 </span>
               </div>
@@ -292,9 +292,9 @@ export default function DashboardView() {
               {selectedCohortData.perfectStudents.map((student) => (
                 <div
                   key={student.id}
-                  className='group relative bg-white rounded-xl px-4 py-3 text-sm font-medium text-slate-700 text-center border border-green-200 hover:border-green-300 hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md'
+                  className='group relative bg-white rounded-xl px-4 py-3 text-sm font-medium text-slate-700 text-center border border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md'
                 >
-                  <div className='absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity'>
+                  <div className='absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity'>
                     <span className='text-xs text-white font-bold'>✓</span>
                   </div>
                   <div className='truncate'>{student.nickname}</div>

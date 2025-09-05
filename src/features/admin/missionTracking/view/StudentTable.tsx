@@ -201,7 +201,7 @@ export default function StudentTable({
                   <div className='flex items-center justify-center'>
                     <div className='flex items-center space-x-2'>
                       <div
-                        className="text-lg font-bold text-slate-700"
+                        className="text-md font-bold text-slate-500"
                       >
                         {student.submissionRate}%
                       </div>

@@ -41,7 +41,7 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
         mission_submit_id: selectedSubmission.submissionId,
         feedback_comment: feedbackComment,
       });
-      
+
       // 성공 피드백 표시
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000); // 3초 후 사라짐
@@ -61,7 +61,7 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
       await updateFeedback(feedbacks[0].id, {
         feedback_comment: feedbackComment,
       });
-      
+
       // 성공 피드백 표시
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000); // 3초 후 사라짐
@@ -72,7 +72,7 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
 
   const handleDeleteFeedback = useCallback(async () => {
     if (feedbacks.length === 0) return;
-    
+
     if (window.confirm('정말로 이 피드백을 삭제하시겠습니까?')) {
       try {
         setCurrentAction('deleting');
@@ -136,16 +136,18 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
                 <div className='mb-3 p-2 bg-slate-50 rounded-lg border'>
                   <div className='flex justify-between items-center text-xs text-slate-600'>
                     <span>👤 작성자: {feedbacks[0].admin_nickname || '알 수 없음'}</span>
-                    <span>📅 {feedbacks[0].created_at 
-                      ? new Date(feedbacks[0].created_at).toLocaleString('ko-KR', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })
-                      : '날짜 정보 없음'
-                    }</span>
+                    <span>
+                      📅{' '}
+                      {feedbacks[0].created_at
+                        ? new Date(feedbacks[0].created_at).toLocaleString('ko-KR', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })
+                        : '날짜 정보 없음'}
+                    </span>
                   </div>
                 </div>
               )}
@@ -187,10 +189,9 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
             </div>
           </div>
         ) : (
-          <div className='text-center py-12 text-slate-500'>
-            <div className='text-4xl mb-4'>👆</div>
+          <div className='text-center py-50 text-slate-500'>
             <p className='text-base mb-2'>제출 내용을 확인하려면</p>
-            <p className='text-sm'>왼쪽 테이블의 ✅ 셀을 클릭하세요</p>
+            <p className='text-sm'>왼쪽 테이블의 셀을 클릭하세요</p>
           </div>
         )}
       </div>
