@@ -20,10 +20,10 @@ export const fetchQuestions = async (): Promise<Question[]> => {
       .select(
         `
       *,
-      profiles!student_id (name, nickname, cohort, avatar_url),
+      profiles!student_id (nickname, avatar_url),
       qna_answers (
         *,
-        profiles!admin_id (name, nickname, avatar_url)
+        profiles!admin_id (nickname)
       )
     `
       )
@@ -40,21 +40,15 @@ export const fetchQuestions = async (): Promise<Question[]> => {
       throw new Error(error.message || '질문 목록을 불러오는 중 오류가 발생했습니다.');
     }
 
-    console.log('조회된 데이터:', data);
-
     // 데이터 형식을 컴포넌트에서 사용하기 쉽게 변환
     // student, admin 정보를 flat하게 펼침
     return (data || []).map((item: any) => ({
       ...item,
-      student_name: item.profiles?.name,
       student_nickname: item.profiles?.nickname,
       student_avatar_url: item.profiles?.avatar_url,
-      cohort: item.profiles?.cohort,
       answer: item.qna_answers?.[0]
         ? {
             ...item.qna_answers[0],
-            admin_name: item.qna_answers[0].profiles?.name,
-            admin_avatar_url: item.qna_answers[0].profiles?.avatar_url,
           }
         : undefined,
     }));
@@ -133,15 +127,18 @@ export const updateQuestion = async (questionId: string, title: string, content:
 
     const { data, error } = await supabase
       .from('qna_questions')
-      .upsert({
-        id: questionId,
-        student_id: user.id,
-        title,
-        content,
-        updated_at: new Date().toISOString(), // 수정 시간 갱신
-      }, {
-        onConflict: 'id'
-      })
+      .upsert(
+        {
+          id: questionId,
+          student_id: user.id,
+          title,
+          content,
+          updated_at: new Date().toISOString(), // 수정 시간 갱신
+        },
+        {
+          onConflict: 'id',
+        }
+      )
       .select()
       .single();
 
@@ -234,16 +231,17 @@ export const createAnswer = async (questionId: string, content: string): Promise
     }
 
     // 2. 질문 상태를 'answered'로 업데이트
-    const { error: updateError } = await supabase
-      .from('qna_questions')
-      .upsert({
+    const { error: updateError } = await supabase.from('qna_questions').upsert(
+      {
         id: questionId,
         status: 'answered',
         updated_at: new Date().toISOString(),
-      }, {
+      },
+      {
         onConflict: 'id',
-        ignoreDuplicates: false
-      });
+        ignoreDuplicates: false,
+      }
+    );
 
     if (updateError) {
       // 상태 업데이트 실패해도 답변은 이미 작성됨
@@ -278,14 +276,17 @@ export const updateAnswer = async (answerId: string, content: string): Promise<A
 
     const { data, error } = await supabase
       .from('qna_answers')
-      .upsert({
-        id: answerId,
-        admin_id: user.id,
-        content,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'id'
-      })
+      .upsert(
+        {
+          id: answerId,
+          admin_id: user.id,
+          content,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'id',
+        }
+      )
       .select()
       .single();
 
@@ -300,7 +301,6 @@ export const updateAnswer = async (answerId: string, content: string): Promise<A
     throw error;
   }
 };
-
 
 /**
  * 특정 기수의 질문만 조회 (관리자용)

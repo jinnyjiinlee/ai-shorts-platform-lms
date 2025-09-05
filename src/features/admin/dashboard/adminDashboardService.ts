@@ -1,7 +1,5 @@
-//사용
-
 import { supabase } from '@/lib/supabase/client';
-import { AuthService, DatabaseService, ErrorService } from '@/lib/service';
+import { DatabaseService, ErrorService } from '@/lib/service';
 import { dateUtils } from '@/lib/utils';
 
 export interface DashboardStats {
@@ -21,7 +19,6 @@ export interface WeeklySubmissionData {
 
 export interface PerfectStudent {
   id: string;
-  name: string;
   nickname?: string;
 }
 
@@ -43,8 +40,6 @@ export interface CohortDashboardData {
 // 대시보드 통계 가져오기
 export const fetchDashboardStats = async (): Promise<DashboardStats> => {
   try {
-    console.log('대시보드 통계 조회 시작...');
-
     // 🎯 공통 서비스 사용으로 중복 제거 및 병렬 처리
     const [students, pendingStudents, missions, submissions] = await Promise.all([
       getApprovedStudents(),
@@ -64,19 +59,12 @@ export const fetchDashboardStats = async (): Promise<DashboardStats> => {
 // 기수별 상세 데이터 가져오기
 export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
   try {
-    console.log('기수별 데이터 조회 시작...');
-
     // 🎯 공통 서비스 사용 및 병렬 처리
     const [students, missions] = await Promise.all([getApprovedStudents(), getMissionsWithSubmissions()]);
-
-    // 디버깅: 실제 데이터 구조 확인
-    console.log('학생 데이터 샘플:', students.slice(0, 3));
-    console.log('미션 데이터 샘플:', missions.slice(0, 3));
 
     // 🎯 계산 로직을 별도 함수로 분리
     const cohortData = calculateCohortData(students, missions);
 
-    console.log('기수별 데이터 조회 완료:', cohortData);
     return cohortData;
   } catch (error) {
     ErrorService.handleError(error, '기수별 데이터를 불러오는 중 오류가 발생했습니다');
@@ -84,10 +72,11 @@ export const fetchCohortData = async (): Promise<CohortDashboardData[]> => {
 };
 
 // 🎯 공통 데이터 조회 함수들 (중복 제거)
-async function getApprovedStudents() {
+export async function getApprovedStudents() {
   const { data, error } = await supabase
+  
     .from('profiles')
-    .select('id, cohort, name, nickname')
+    .select('id, cohort, nickname')
     .eq('role', 'student')
     .eq('status', 'approved');
 
@@ -95,20 +84,19 @@ async function getApprovedStudents() {
   return data || [];
 }
 
-async function getPendingStudents() {
+export async function getPendingStudents() {
   const { data, error } = await supabase.from('profiles').select('id').eq('role', 'student').eq('status', 'pending');
 
   if (error) ErrorService.handleError(error, '승인 대기 학생 조회 실패');
   return data || [];
 }
 
-async function getMissionsWithSubmissions() {
+export async function getMissionsWithSubmissions() {
   const { data, error } = await supabase.from('mission_notice').select(`
       id, 
       cohort, 
       week,
       mission_submit (
-        id,
         student_id
       )
     `);
@@ -118,7 +106,7 @@ async function getMissionsWithSubmissions() {
 }
 
 // 🎯 계산 로직 분리 (기존 로직 유지)
-function calculateDashboardStats(
+export function calculateDashboardStats(
   students: any[],
   pendingStudents: any[],
   missions: any[],
@@ -128,8 +116,6 @@ function calculateDashboardStats(
   const pendingApprovals = pendingStudents.length;
   const totalActiveMissions = missions.length;
 
-  console.log('대시보드 통계 조회 완료');
-
   return {
     totalActiveStudents,
     totalActiveMissions,
@@ -138,7 +124,7 @@ function calculateDashboardStats(
   };
 }
 
-function calculateCohortData(students: any[], missions: any[]): CohortDashboardData[] {
+export function calculateCohortData(students: any[], missions: any[]): CohortDashboardData[] {
   const cohortMap = new Map<string, CohortDashboardData>();
 
   // 학생 수 집계
@@ -218,8 +204,7 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
             completedStudents++;
             weeklyPerfectStudents.push({
               id: student.id,
-              name: student.name,
-              nickname: student.nickname
+              nickname: student.nickname,
             });
           }
         }
@@ -239,12 +224,6 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
   cohortMap.forEach((cohortData) => {
     const cohort = cohortData.cohort;
     const cohortStudents = students.filter((s) => String(s.cohort || '1') === cohort);
-    
-    console.log(`기수 ${cohort} 통계 계산 시작:`, {
-      totalStudents: cohortStudents.length,
-      totalMissions: cohortData.totalMissions,
-      weeklyMissionCount: cohortWeeklyMissionCount.get(cohort)?.size || 0
-    });
 
     // 개별 학생별 완료율 계산
     let totalCompletionRate = 0;
@@ -278,10 +257,8 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
         perfectCompletionCount++;
         perfectStudentsList.push({
           id: student.id,
-          name: student.name,
-          nickname: student.nickname
+          nickname: student.nickname,
         });
-        console.log(`완벽 수강생 발견: ${student.nickname || student.name} (${studentCompletedMissions}/${totalWeeks} 주차 완료)`);
       }
     });
 
@@ -292,12 +269,6 @@ function calculateCohortData(students: any[], missions: any[]): CohortDashboardD
     cohortData.perfectCompletionCount = perfectCompletionCount;
     cohortData.perfectCompletionRate = dateUtils.calculateRate(perfectCompletionCount, cohortStudents.length);
     cohortData.perfectStudents = perfectStudentsList;
-    
-    console.log(`기수 ${cohort} 완벽 수강생 통계:`, {
-      perfectCompletionCount,
-      perfectStudents: perfectStudentsList.map(s => s.nickname || s.name),
-      totalStudents: cohortStudents.length
-    });
 
     // 참여 학생 수
     cohortData.participatingStudents = participatingStudentsSet.size;

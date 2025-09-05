@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { UsersIcon } from '@heroicons/react/24/outline';
-import { Badge } from '@/features/shared/ui/Badge';
 import DashboardHeader from './DashboardHeader';
 import StatCard from './StatCard';
 import WeeklySubmissionChart from './WeeklySubmissionChart';
@@ -12,8 +10,14 @@ import {
   fetchCohortData,
   DashboardStats,
   CohortDashboardData,
+  getApprovedStudents,
+  getPendingStudents,
+  getMissionsWithSubmissions,
+  calculateDashboardStats,
+  calculateCohortData,
 } from '@/features/admin/dashboard/adminDashboardService';
 import { CohortData } from './types';
+import { useMemo } from 'react';
 
 // CohortDashboardData를 CohortData로 변환하는 어댑터 함수
 const convertToCohortData = (dashboardData: CohortDashboardData): CohortData => {
@@ -62,7 +66,28 @@ export default function DashboardView() {
         setIsLoading(true);
         setError(null);
 
-        const [stats, cohorts] = await Promise.all([fetchDashboardStats(), fetchCohortData()]);
+        // 성능 측정 시작
+        const startTime = performance.now();
+        console.log('🚀 대시보드 로딩 시작...');
+
+        const [students, pendingStudents, missions] = await Promise.all([
+          getApprovedStudents(),
+          getPendingStudents(),
+          getMissionsWithSubmissions(),
+        ]);
+
+        const stats = calculateDashboardStats(students, pendingStudents, [], []);
+        const cohorts = calculateCohortData(students, missions);
+
+        // 성능 측정 완료
+        const endTime = performance.now();
+        const loadTime = Math.round(endTime - startTime);
+        console.log(`✅ 대시보드 로딩 완료: ${loadTime}ms (${(loadTime / 1000).toFixed(2)}초)`);
+
+        // 상세 통계
+        console.log(
+          `📊 통계: 학생 ${stats.totalActiveStudents}명, 미션 ${stats.totalActiveMissions}개, 기수 ${cohorts.length}개`
+        );
 
         setDashboardStats(stats);
         setCohortData(cohorts);
@@ -84,7 +109,7 @@ export default function DashboardView() {
   }, []);
 
   // 기수별 필터링 및 데이터 변환
-  const convertedCohortData = cohortData.map(convertToCohortData);
+  const convertedCohortData = useMemo(() => cohortData.map(convertToCohortData), [cohortData]);
   const activeCohortData = convertedCohortData.filter((c) => c.status === 'active');
   const displayCohortData = convertedCohortData.filter((c) => activeCohorts.includes(c.cohort));
   const selectedCohortData = convertedCohortData.find((c) => c.cohort === selectedCohort);
@@ -241,7 +266,9 @@ export default function DashboardView() {
               완벽 수강생 명단 ({selectedCohortData?.perfectCompletionCount || 0}명)
             </h4>
             <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2'>
-              {selectedCohortData && selectedCohortData.perfectStudents && selectedCohortData.perfectStudents.length > 0 ? (
+              {selectedCohortData &&
+              selectedCohortData.perfectStudents &&
+              selectedCohortData.perfectStudents.length > 0 ? (
                 selectedCohortData.perfectStudents.map((student) => (
                   <div
                     key={student.id}
@@ -251,9 +278,7 @@ export default function DashboardView() {
                   </div>
                 ))
               ) : (
-                <div className='col-span-full text-center text-slate-500 py-4'>
-                  완벽 수강생이 없습니다
-                </div>
+                <div className='col-span-full text-center text-slate-500 py-4'>완벽 수강생이 없습니다</div>
               )}
             </div>
           </div>
