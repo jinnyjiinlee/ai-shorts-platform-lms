@@ -199,7 +199,7 @@ export default function DashboardView() {
           }}
         />
         <StatCard
-          title='이번주 완료'
+          title='이번주 미션 완료'
           value={
             selectedCohortData?.weeklySubmissions?.[selectedCohortData?.weeklySubmissions.length - 1]?.submissions || 0
           }
@@ -211,7 +211,7 @@ export default function DashboardView() {
           }}
         />
         <StatCard
-          title='지난주 완료'
+          title='지난주 미션 완료'
           value={
             selectedCohortData?.weeklySubmissions?.find((w) => w.week === (selectedCohortData?.currentWeek || 1) - 1)
               ?.submissions || 0
