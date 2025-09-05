@@ -31,7 +31,7 @@ export default function MissionBoard({
       id: mission.id,
       title: mission.title,
       content: mission.description || mission.content,
-      author: '관리자',
+      author: mission.authorNickname || '관리자',
       createdAt: new Date(mission.created_at).toLocaleDateString('ko-KR'),
       isPinned: false, // 미션에는 고정 기능이 없으므로 false
       isPublished: true, // 모든 미션은 생성되면 바로 공개됨

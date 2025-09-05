@@ -13,7 +13,7 @@ export const fetchMissions = async (): Promise<Mission[]> => {
   try {
     console.log('미션 데이터 조회 시작...');
 
-    // 미션 기본 정보만 조회
+    // 1. 미션 기본 정보 조회
     const { data: missions, error: missionError } = await supabase
       .from('mission_notice')
       .select('*')
@@ -24,10 +24,39 @@ export const fetchMissions = async (): Promise<Mission[]> => {
       throw new Error(`미션 데이터를 불러오는 중 오류가 발생했습니다: ${missionError.message}`);
     }
 
-    console.log('미션 데이터 조회 완료:', missions?.length || 0, '개');
+    if (!missions || missions.length === 0) {
+      return [];
+    }
+
+    console.log('미션 데이터 조회 완료:', missions.length, '개');
+
+    // 2. 작성자 UUID들 추출
+    const authorIds = [...new Set(missions.map(mission => mission.created_by).filter(Boolean))];
     
-    // 제출 정보 없이 미션 기본 정보만 반환
-    return missions || [];
+    // 3. 작성자들의 닉네임 조회
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, nickname')
+      .in('id', authorIds);
+
+    if (profileError) {
+      console.error('작성자 정보 조회 오류:', profileError);
+      // 프로필 조회 실패해도 미션은 반환 (닉네임만 '관리자'로 표시)
+    }
+
+    // 4. UUID to nickname 매핑 객체 생성
+    const nicknameMap = new Map();
+    (profiles || []).forEach(profile => {
+      nicknameMap.set(profile.id, profile.nickname);
+    });
+
+    // 5. 미션에 닉네임 추가
+    const mappedMissions = missions.map(mission => ({
+      ...mission,
+      authorNickname: nicknameMap.get(mission.created_by) || '관리자'
+    }));
+    
+    return mappedMissions;
   } catch (error) {
     console.error('미션 데이터 가져오기 오류:', error);
     if (error instanceof Error) {

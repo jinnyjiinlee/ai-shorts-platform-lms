@@ -27,6 +27,7 @@ export interface Mission {
   submissionContent?: string;
   feedback?: string;
   submission_type?: 'file' | 'text';
+  authorNickname?: string;
 }
 
 export interface MissionSubmission {
