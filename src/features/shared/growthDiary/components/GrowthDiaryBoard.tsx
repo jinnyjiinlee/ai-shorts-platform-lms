@@ -77,7 +77,7 @@ export default function GrowthDiaryBoard({ userRole, cohort }: GrowthDiaryBoardP
         description={`${cohort}기 수강생들의 성장 일기`}
         icon={<PencilSquareIcon className="w-6 h-6 text-green-600" />}
         iconBgColor="bg-green-100"
-        createButtonText="일기 쓰기"
+        createButtonText="일기 직성"
         items={boardItems}
         userRole={userRole}
         currentUserId={currentUserId || undefined}

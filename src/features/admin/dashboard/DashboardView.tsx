@@ -6,6 +6,12 @@ import DashboardHeader from './DashboardHeader';
 import StatCard from './StatCard';
 import WeeklySubmissionChart from './WeeklySubmissionChart';
 import {
+  TrophyIcon,
+  CheckCircleIcon,
+  ChartBarIcon,
+  ClockIcon,
+} from '@heroicons/react/24/outline';
+import {
   fetchDashboardStats,
   fetchCohortData,
   DashboardStats,
@@ -186,7 +192,8 @@ export default function DashboardView() {
           title='완벽 수강생'
           value={selectedCohortData?.perfectCompletionCount || 0}
           subtitle='전체 기간 유지'
-          icon={<span className='text-lg sm:text-xl'>🏆</span>}
+          icon={<TrophyIcon className='w-6 h-6 text-white' />}
+          theme='amber'
           badge={{
             text: '최우수',
             variant: 'success',
@@ -198,7 +205,8 @@ export default function DashboardView() {
             selectedCohortData?.weeklySubmissions?.[selectedCohortData?.weeklySubmissions.length - 1]?.submissions || 0
           }
           subtitle={`${selectedCohortData?.currentWeek || 0}주차`}
-          icon={<span className='text-lg sm:text-xl'>✅</span>}
+          icon={<CheckCircleIcon className='w-6 h-6 text-white' />}
+          theme='emerald'
           badge={{
             text: '진행중',
             variant: 'info',
@@ -211,7 +219,8 @@ export default function DashboardView() {
               ?.submissions || 0
           }
           subtitle={`${(selectedCohortData?.currentWeek || 1) - 1}주차`}
-          icon={<span className='text-lg sm:text-xl'>📊</span>}
+          icon={<ChartBarIcon className='w-6 h-6 text-white' />}
+          theme='violet'
           badge={{
             text: '완료',
             variant: 'default',
@@ -221,7 +230,8 @@ export default function DashboardView() {
           title='승인 대기'
           value={dashboardStats?.pendingApprovals || 0}
           subtitle='신규 가입'
-          icon={<span className='text-lg sm:text-xl'>⏳</span>}
+          icon={<ClockIcon className='w-6 h-6 text-white' />}
+          theme='rose'
           badge={{
             text: '처리 필요',
             variant: 'warning',
@@ -244,7 +254,7 @@ export default function DashboardView() {
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center space-x-3'>
             <div className='w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center'>
-              <span className='text-xl'>🏆</span>
+              <TrophyIcon className='w-6 h-6 text-white' />
             </div>
             <div>
               <h3 className='text-lg font-bold text-slate-900'>완벽 수강생 현황</h3>

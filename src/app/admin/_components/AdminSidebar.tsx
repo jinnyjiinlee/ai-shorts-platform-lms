@@ -47,8 +47,15 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
         { href: '/admin/community/columns', name: '하대표 칼럼' },
       ],
     },
-    { href: '/admin/missionNotice', name: '미션 공지', icon: ClipboardDocumentListIcon },
-    { href: '/admin/missionTracking', name: '미션 달성', icon: ChartBarIcon },
+    {
+      href: '/admin/mission',
+      name: '미션',
+      icon: ClipboardDocumentListIcon,
+      subItems: [
+        { href: '/admin/missionNotice', name: '공지' },
+        { href: '/admin/missionTracking', name: '달성' },
+      ],
+    },
     {
       href: '/admin/studentLounge',
       name: '수강생 라운지',
@@ -65,11 +72,10 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
       name: '학습 자료',
       icon: AcademicCapIcon,
       subItems: [
-        { href: '/admin/resourceShare/weeklyResource', name: '주차별 학습자료' },
+        // { href: '/admin/resourceShare/weeklyResource', name: '주차별 학습자료' },
         { href: '/admin/resourceShare/aiContentsStudio', name: 'AI 콘텐츠 스튜디오' },
       ],
     },
-    { href: '/admin/settings', name: '설정', icon: Cog6ToothIcon },
   ];
 
   return (
@@ -79,9 +85,7 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
         <div className='flex items-center justify-between p-4 lg:hidden'>
           <div className='flex items-center space-x-3'>
             <div className='w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center'>
-              <svg className='w-4 h-4 text-white' fill='currentColor' viewBox='0 0 24 24'>
-                <path d='M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z' />
-              </svg>
+              <AcademicCapIcon className='w-4 h-4 text-white' />
             </div>
             <h1 className='font-bold text-sm text-slate-700'>하대표의 숏폼 수익화 부스트</h1>
           </div>
@@ -98,9 +102,7 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
       <div className='hidden lg:block p-6 border-b border-slate-200/50'>
         <div className='flex items-center space-x-3'>
           <div className='w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg'>
-            <svg className='w-6 h-6 text-white' fill='currentColor' viewBox='0 0 24 24'>
-              <path d='M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z' />
-            </svg>
+            <AcademicCapIcon className='w-6 h-6 text-white' />
           </div>
           <div>
             <h1 className='font-bold text-lg bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent'>

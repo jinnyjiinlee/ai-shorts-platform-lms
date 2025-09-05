@@ -3,11 +3,41 @@
 import { Badge } from '@/features/shared/ui/Badge';
 import { Button } from '@/features/shared/ui/Button';
 
+// 🎨 세련된 테마 색상 시스템 (눈에 편한 톤다운 버전)
+const cardThemes = {
+  blue: {
+    gradient: 'from-slate-600 to-slate-700',
+    shadow: 'shadow-slate-500/15',
+    hoverShadow: 'group-hover:shadow-slate-500/25'
+  },
+  emerald: {
+    gradient: 'from-emerald-600 to-emerald-700', 
+    shadow: 'shadow-emerald-500/15',
+    hoverShadow: 'group-hover:shadow-emerald-500/25'
+  },
+  violet: {
+    gradient: 'from-indigo-600 to-indigo-700',
+    shadow: 'shadow-indigo-500/15', 
+    hoverShadow: 'group-hover:shadow-indigo-500/25'
+  },
+  amber: {
+    gradient: 'from-amber-600 to-amber-700',
+    shadow: 'shadow-amber-500/15',
+    hoverShadow: 'group-hover:shadow-amber-500/25'
+  },
+  rose: {
+    gradient: 'from-slate-500 to-slate-600',
+    shadow: 'shadow-slate-400/15',
+    hoverShadow: 'group-hover:shadow-slate-400/25'
+  }
+} as const;
+
 interface StatCardProps {
   title: string;
   value: number | string;
   subtitle?: string;
   icon: React.ReactNode;
+  theme?: keyof typeof cardThemes; // 🎨 테마 속성 추가
   badge?: {
     text: string;
     variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
@@ -15,7 +45,10 @@ interface StatCardProps {
   onClick?: () => void;
 }
 
-export default function StatCard({ title, value, subtitle, icon, badge, onClick }: StatCardProps) {
+export default function StatCard({ title, value, subtitle, icon, theme = 'blue', badge, onClick }: StatCardProps) {
+  // 🎨 선택된 테마 가져오기
+  const selectedTheme = cardThemes[theme];
+
   return (
     <Button
       variant='ghost'
@@ -23,8 +56,8 @@ export default function StatCard({ title, value, subtitle, icon, badge, onClick 
       className='group w-full justify-start h-auto p-4 bg-gradient-to-r from-slate-50/50 to-white hover:from-slate-100/50 hover:to-slate-50 border border-slate-100 hover:border-slate-200 rounded-2xl transition-all duration-300 hover:shadow-md hover:shadow-slate-200/20'
     >
       <div className='flex items-center gap-4 w-full'>
-        {/* 왼쪽: 아이콘 - 더 세련되게 */}
-        <div className='w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-all duration-300'>
+        {/* 🎨 동적 테마가 적용된 아이콘 */}
+        <div className={`w-12 h-12 bg-gradient-to-br ${selectedTheme.gradient} rounded-xl flex items-center justify-center text-white shadow-lg ${selectedTheme.shadow} group-hover:shadow-xl ${selectedTheme.hoverShadow} transition-all duration-300`}>
           {icon}
         </div>
 

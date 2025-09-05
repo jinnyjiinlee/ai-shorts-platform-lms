@@ -145,7 +145,7 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
         description='수강생들의 솔직한 후기와 경험담을 공유하는 공간'
         icon={<ChatBubbleLeftRightIcon className='w-6 h-6 text-purple-600' />}
         iconBgColor='bg-purple-100'
-        createButtonText='후기 작성하기'
+        createButtonText='후기 작성'
         items={boardItems}
         userRole={userRole}
         currentUserId={currentUserId || undefined}
@@ -199,7 +199,7 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
       {/* 리뷰 작성 모달 */}
       <UniversalCreateModal
         show={showCreateModal}
-        title="후기 작성하기"
+        title="후기 작성"
         onClose={() => setShowCreateModal(false)}
         onSubmit={async (formData) => {
           await handleCreateReview({
