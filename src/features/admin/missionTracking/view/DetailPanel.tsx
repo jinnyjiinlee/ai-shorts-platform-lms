@@ -86,7 +86,7 @@ export default function DetailPanel({ selectedSubmission }: SubmissionDetailPane
 
   return (
     <div className='w-96'>
-      <div className='p-6 border-b border-slate-200'>
+      <div className='p-8 border-b border-slate-200'>
         <h3 className='text-lg font-semibold text-slate-900'>제출 내용 상세</h3>
       </div>
 

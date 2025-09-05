@@ -14,6 +14,7 @@ export interface WeeklyData {
 export interface StudentSubmissionDetail {
   studentId: string;
   studentName: string;
+  avatarUrl?: string | null;
   submissionStatus: 'submitted' | 'not_submitted';
   submittedAt?: string;
   submissionContent?: string;

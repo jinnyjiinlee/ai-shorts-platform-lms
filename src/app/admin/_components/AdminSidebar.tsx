@@ -84,7 +84,7 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
       {isOpen && onClose && (
         <div className='flex items-center justify-between p-4 lg:hidden'>
           <div className='flex items-center space-x-3'>
-            <div className='w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center'>
+            <div className='w-8 h-8 bg-gradient-to-r from-slate-500 to-slate-600 rounded-lg flex items-center justify-center'>
               <AcademicCapIcon className='w-4 h-4 text-white' />
             </div>
             <h1 className='font-bold text-sm text-slate-700'>하대표의 숏폼 수익화 부스트</h1>
@@ -99,9 +99,9 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
       )}
 
       {/* 데스크톱 헤더 */}
-      <div className='hidden lg:block p-6 border-b border-slate-200/50'>
+      <div className='hidden lg:block p-4 border-b border-slate-200/50'>
         <div className='flex items-center space-x-3'>
-          <div className='w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg'>
+          <div className='w-12 h-12 bg-gradient-to-r from-slate-500 to-slate-600 rounded-2xl flex items-center justify-center shadow-lg'>
             <AcademicCapIcon className='w-6 h-6 text-white' />
           </div>
           <div>
@@ -129,15 +129,15 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
               }}
               className={`group w-full text-left px-4 py-3 flex items-center space-x-3 rounded-xl transition-all duration-200 ${
                 isActiveRoute(href, subItems)
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
+                  ? 'bg-slate-100 text-slate-800 shadow-sm'
                   : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-800'
               }`}
             >
               <div
                 className={`p-1 rounded-lg ${
                   isActiveRoute(href, subItems)
-                    ? 'bg-white/20 text-white'
-                    : 'bg-slate-200/50 text-slate-500 group-hover:bg-emerald-500 group-hover:text-white'
+                    ? 'bg-slate-600 text-white'
+                    : 'bg-slate-200/50 text-slate-500 group-hover:bg-slate-500 group-hover:text-white'
                 } transition-all duration-200`}
               >
                 <Icon className='w-4 h-4' />
@@ -160,8 +160,8 @@ export default function AdminSidebar({ className, isOpen, onClose }: AdminSideba
                     onClick={onClose}
                     className={`w-full text-left px-4 py-2 text-sm rounded-lg transition-all duration-200 flex items-center space-x-2 ${
                       pathname.startsWith(sub.href)
-                        ? 'text-white bg-slate-800'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                        ? 'text-slate-700 bg-slate-200'
+                        : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
                     }`}
                   >
                     <div className='w-1.5 h-1.5 bg-slate-600 rounded-full'></div>

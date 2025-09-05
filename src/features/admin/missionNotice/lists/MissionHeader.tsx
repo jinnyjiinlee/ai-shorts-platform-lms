@@ -61,10 +61,10 @@ export default function MissionHeader({
         {/* 새 미션 추가 버튼 */}
         <button
           onClick={onCreateMission}
-          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center space-x-2 bg-slate-600 text-white px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors"
         >
           <PlusIcon className="w-4 h-4" />
-          <span>새 미션 추가</span>
+          <span>미션 작성</span>
         </button>
       </div>
     </div>

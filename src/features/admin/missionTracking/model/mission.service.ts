@@ -31,7 +31,7 @@ const getMissions = async (cohort: number) => {
 const getStudents = async (cohort: number) => {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, name, nickname')
+    .select('id, name, nickname, avatar_url')
     .eq('cohort', cohort)
     .eq('role', 'student');
 
@@ -169,6 +169,7 @@ export const getOptimizedMissionData = async (cohort: number) => {
     const allStudents: StudentSubmissionDetail[] = students.map((student) => ({
       studentId: student.id,
       studentName: student.nickname || student.name || '알 수 없음',
+      avatarUrl: student.avatar_url,
       submissionStatus: 'not_submitted' as const,
     }));
 

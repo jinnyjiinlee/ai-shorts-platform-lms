@@ -15,7 +15,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 active:bg-blue-800',
+  primary: 'bg-slate-600 text-white hover:bg-slate-700 focus:ring-slate-500 active:bg-slate-800',
 
   secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200 focus:ring-slate-500',
 
@@ -26,7 +26,7 @@ const variantStyles = {
   danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 active:bg-red-800',
 
   gradient:
-    'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl',
+    'bg-gradient-to-r from-slate-500 to-slate-600 text-white hover:from-slate-600 hover:to-slate-700 shadow-lg hover:shadow-xl',
 };
 
 const sizeStyles = {

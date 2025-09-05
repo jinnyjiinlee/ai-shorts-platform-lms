@@ -4,6 +4,7 @@ import { WeeklyData, StudentSubmissionDetail } from '../types';
 import { calculateStudentStats, getStudentSubmissionForWeek } from '../model/mission.calculator';
 import { Pagination } from '@/features/shared/ui/Pagination';
 import { Badge } from '@/features/shared/ui/Badge';
+import UserAvatar from '@/features/shared/ui/UserAvatar/UserAvatar';
 
 type FilterType = 'all' | 'not_started' | 'in_progress' | 'completed';
 
@@ -170,9 +171,15 @@ export default function StudentTable({
                 >
                   {/* 수강생명 */}
                   <div className='font-medium text-slate-900 text-sm flex items-center'>
-                    <div className='w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-xs font-medium mr-3'>
-                      {student.studentName[0]}
-                    </div>
+                    <UserAvatar
+                      user={{
+                        id: student.studentId,
+                        nickname: student.studentName,
+                        avatarUrl: student.avatarUrl,
+                      }}
+                      size='md'
+                      className='mr-3'
+                    />
                     {student.studentName}
                   </div>
 

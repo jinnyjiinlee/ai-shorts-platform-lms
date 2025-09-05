@@ -3,39 +3,39 @@
 import { Badge } from '@/features/shared/ui/Badge';
 import { Button } from '@/features/shared/ui/Button';
 
-// 🎨 세련된 테마 색상 시스템 (눈에 편한 톤다운 버전)
+// 🎨 전문적 slate 기반 + accent 컬러 시스템
 const cardThemes = {
   blue: {
-    gradient: 'from-slate-600 to-slate-700',
+    gradient: 'from-slate-500 to-slate-600',
     shadow: 'shadow-slate-500/15',
-    hoverShadow: 'group-hover:shadow-slate-500/25'
+    hoverShadow: 'group-hover:shadow-slate-500/25',
   },
   emerald: {
-    gradient: 'from-emerald-600 to-emerald-700', 
+    gradient: 'from-emerald-500 to-emerald-600',
     shadow: 'shadow-emerald-500/15',
-    hoverShadow: 'group-hover:shadow-emerald-500/25'
+    hoverShadow: 'group-hover:shadow-emerald-500/25',
   },
   violet: {
-    gradient: 'from-indigo-600 to-indigo-700',
-    shadow: 'shadow-indigo-500/15', 
-    hoverShadow: 'group-hover:shadow-indigo-500/25'
+    gradient: 'from-slate-400 to-slate-500',
+    shadow: 'shadow-slate-400/15',
+    hoverShadow: 'group-hover:shadow-slate-400/25',
   },
   amber: {
-    gradient: 'from-amber-600 to-amber-700',
+    gradient: 'from-amber-500 to-amber-600',
     shadow: 'shadow-amber-500/15',
-    hoverShadow: 'group-hover:shadow-amber-500/25'
+    hoverShadow: 'group-hover:shadow-amber-500/25',
   },
   rose: {
-    gradient: 'from-slate-500 to-slate-600',
-    shadow: 'shadow-slate-400/15',
-    hoverShadow: 'group-hover:shadow-slate-400/25'
-  }
+    gradient: 'from-red-500 to-red-600',
+    shadow: 'shadow-red-400/15',
+    hoverShadow: 'group-hover:shadow-red-400/25',
+  },
 } as const;
 
 interface StatCardProps {
   title: string;
   value: number | string;
-  subtitle?: string;
+
   icon: React.ReactNode;
   theme?: keyof typeof cardThemes; // 🎨 테마 속성 추가
   badge?: {
@@ -45,7 +45,7 @@ interface StatCardProps {
   onClick?: () => void;
 }
 
-export default function StatCard({ title, value, subtitle, icon, theme = 'blue', badge, onClick }: StatCardProps) {
+export default function StatCard({ title, value, icon, theme = 'blue', badge, onClick }: StatCardProps) {
   // 🎨 선택된 테마 가져오기
   const selectedTheme = cardThemes[theme];
 
@@ -57,25 +57,22 @@ export default function StatCard({ title, value, subtitle, icon, theme = 'blue',
     >
       <div className='flex items-center gap-4 w-full'>
         {/* 🎨 동적 테마가 적용된 아이콘 */}
-        <div className={`w-12 h-12 bg-gradient-to-br ${selectedTheme.gradient} rounded-xl flex items-center justify-center text-white shadow-lg ${selectedTheme.shadow} group-hover:shadow-xl ${selectedTheme.hoverShadow} transition-all duration-300`}>
+        <div
+          className={`w-12 h-12 bg-gradient-to-br ${selectedTheme.gradient} rounded-xl flex items-center justify-center text-white shadow-lg ${selectedTheme.shadow} group-hover:shadow-xl ${selectedTheme.hoverShadow} transition-all duration-300`}
+        >
           {icon}
         </div>
 
         {/* 중앙: 정보 - 더 구조적으로 */}
         <div className='flex flex-col items-start flex-1'>
-          <div className='flex items-baseline gap-2'>
-            <span className='text-sm font-medium text-slate-600 group-hover:text-slate-700 transition-colors'>
-              {title}
-            </span>
-            <span className='text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent'>
+          <span className='text-xs font-semibold text-slate-500 group-hover:text-slate-600 transition-colors uppercase tracking-wide'>
+            {title}
+          </span>
+          <div className='mt-1'>
+            <span className='text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent leading-none'>
               {value}
             </span>
           </div>
-          {subtitle && (
-            <span className='text-xs text-slate-500 group-hover:text-slate-600 transition-colors mt-0.5'>
-              {subtitle}
-            </span>
-          )}
         </div>
 
         {/* 오른쪽: 배지 + 화살표 */}
