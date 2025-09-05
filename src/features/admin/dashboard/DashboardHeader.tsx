@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/client';
 import { CohortData } from './types';
 
 interface DashboardHeaderProps {
@@ -17,31 +15,6 @@ export default function DashboardHeader({
   activeCohorts,
   onToggleActiveCohort,
 }: DashboardHeaderProps) {
-  const [userName, setUserName] = useState<string>('');
-
-  useEffect(() => {
-    // 현재 로그인한 사용자 정보 가져오기
-    const getUserProfile = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const { data: profile } = await supabase.from('profiles').select('name, nickname').eq('id', user.id).single();
-
-          if (profile) {
-            setUserName(profile.name || profile.nickname || '관리자');
-          }
-        }
-      } catch (error) {
-        console.error('프로필 조회 오류:', error);
-        // localStorage에서 가져오기 (백업)
-        setUserName(localStorage.getItem('userName') || '관리자');
-      }
-    };
-
-    getUserProfile();
-  }, []);
   return (
     <div className='relative overflow-hidden bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 rounded-xl p-4 text-white shadow-lg'>
       <div className='relative z-10'>

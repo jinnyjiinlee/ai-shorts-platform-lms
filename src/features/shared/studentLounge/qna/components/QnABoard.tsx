@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQnA } from '../hooks/useQnA';
-import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+
 import UniversalBoard, { BoardItem } from '@/features/shared/board/components/UniversalBoard';
 import QuestionCreateModal from './QuestionCreateModal';
 import QuestionDetailModal from './QuestionDetailModal';
+
+import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { Badge } from '@/features/shared/ui/Badge';
-import { supabase } from '@/lib/supabase/client';
+
+import { useCurrentUser } from '@/features/shared/hooks/useCurrentUser';
 
 interface QnABoardProps {
   userRole: 'admin' | 'student';
@@ -15,17 +18,8 @@ interface QnABoardProps {
 }
 
 export default function QnABoard({ userRole, cohort }: QnABoardProps) {
+  const { currentUserId } = useCurrentUser();
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'open' | 'answered'>('all');
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-
-  // 현재 사용자 ID 가져오기
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUserId(user?.id || null);
-    };
-    getCurrentUser();
-  }, []);
 
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
@@ -38,6 +32,7 @@ export default function QnABoard({ userRole, cohort }: QnABoardProps) {
       minute: '2-digit',
     });
   };
+
   // useQnA Hook에서 모든 로직과 데이터 가져오기
   const {
     questions,
@@ -83,8 +78,18 @@ export default function QnABoard({ userRole, cohort }: QnABoardProps) {
   // 필터 옵션 정의
   const filterOptions = [
     { label: '전체', value: 'all', count: questions.length, variant: 'default' as const },
-    { label: '미답변', value: 'open', count: questions.filter((q) => q.status === 'open').length, variant: 'danger' as const },
-    { label: '답변완료', value: 'answered', count: questions.filter((q) => q.status === 'answered').length, variant: 'success' as const },
+    {
+      label: '미답변',
+      value: 'open',
+      count: questions.filter((q) => q.status === 'open').length,
+      variant: 'danger' as const,
+    },
+    {
+      label: '답변완료',
+      value: 'answered',
+      count: questions.filter((q) => q.status === 'answered').length,
+      variant: 'success' as const,
+    },
   ];
 
   // 필터링된 boardItems

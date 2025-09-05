@@ -8,6 +8,8 @@ import { Question } from '@/types/domains/qna';
 import { useAsyncSubmit } from '@/features/shared/hooks/useAsyncSubmit';
 import { useFormState } from '@/features/shared/hooks/useFormState';
 
+import OwnerOnly from '@/features/shared/guards/OwnerOnly';
+
 interface QuestionDetailModalProps {
   show: boolean;
   question: Question | null;
@@ -26,9 +28,15 @@ export default function QuestionDetailModal({
   onEditQuestion,
 }: QuestionDetailModalProps) {
   const [answerContent, setAnswerContent] = useState('');
-  
+
   // 수정 모드 상태 관리
-  const { form: editForm, updateForm, isEditing, startEdit, cancelEdit } = useFormState({
+  const {
+    form: editForm,
+    updateForm,
+    isEditing,
+    startEdit,
+    cancelEdit,
+  } = useFormState({
     title: '',
     content: '',
   });
@@ -162,12 +170,14 @@ export default function QuestionDetailModal({
             <div>
               {/* 학생이고 본인 질문이면 수정 버튼 표시 */}
               {userRole === 'student' && onEditQuestion && (
-                <Button
-                  variant='outline'
-                  onClick={() => startEdit({ title: question.title, content: question.content })}
-                >
-                  수정
-                </Button>
+                <OwnerOnly authorId={question.student_id}>
+                  <Button
+                    variant='outline'
+                    onClick={() => startEdit({ title: question.title, content: question.content })}
+                  >
+                    수정
+                  </Button>
+                </OwnerOnly>
               )}
             </div>
             <div>

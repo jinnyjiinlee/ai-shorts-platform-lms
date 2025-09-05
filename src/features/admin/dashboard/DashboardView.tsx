@@ -7,8 +7,6 @@ import StatCard from './StatCard';
 import WeeklySubmissionChart from './WeeklySubmissionChart';
 import { TrophyIcon, CheckCircleIcon, QuestionMarkCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 import {
-  fetchDashboardStats,
-  fetchCohortData,
   DashboardStats,
   CohortDashboardData,
   getApprovedStudents,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useReview } from '../hooks/useReview';
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import UniversalBoard, { BoardItem, FilterOption } from '@/features/shared/board/components/UniversalBoard';
@@ -8,14 +8,13 @@ import UniversalCreateModal from '@/features/shared/ui/Modal/UniversalCreateModa
 import UniversalDetailModal from '@/features/shared/ui/Modal/UniversalDetailModal';
 import UniversalCardView from '@/features/shared/board/components/UniversalCardView';
 import CohortBadge from '@/features/shared/ui/Badge/CohortBadge';
-import { FormField } from '@/types/ui/universalModal';
 import { Review } from '@/types/domains/review';
-import { supabase } from '@/lib/supabase/client';
+
+import { useCurrentUser } from '@/features/shared/hooks/useCurrentUser';
 
 interface ReviewBoardProps {
   userRole: 'admin' | 'student'; // 사용자 역할
 }
-
 /**
  * ReviewBoard 컴포넌트
  * @param userRole 현재 사용자의 역할 ('admin' 또는 'student')
@@ -23,16 +22,9 @@ interface ReviewBoardProps {
 export default function ReviewBoard({ userRole }: ReviewBoardProps) {
   // 뷰 전환 상태
   const [viewType, setViewType] = useState<'board' | 'card'>('card'); // 카드뷰가 기본
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // 현재 사용자 ID 가져오기
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUserId(user?.id || null);
-    };
-    getCurrentUser();
-  }, []);
+  const { currentUserId } = useCurrentUser();
 
   /**
    * useReview 훅에서 모든 리뷰 관련 로직과 데이터 가져오기
@@ -167,11 +159,11 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
               gradientColors: { from: 'purple-50', to: 'pink-50' },
             }}
             renderBadges={(item) => [
-              <CohortBadge key="cohort" cohort={(item as Review).cohort} size="sm" className="mr-1" />
+              <CohortBadge key='cohort' cohort={(item as Review).cohort} size='sm' className='mr-1' />,
             ]}
           />
         )}
-        cardData={displayReviews.map(review => ({
+        cardData={displayReviews.map((review) => ({
           ...review,
           author: review.student_nickname || '작성자',
           authorId: review.student_id,
@@ -199,7 +191,7 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
       {/* 리뷰 작성 모달 */}
       <UniversalCreateModal
         show={showCreateModal}
-        title="후기 작성"
+        title='후기 작성'
         onClose={() => setShowCreateModal(false)}
         onSubmit={async (formData) => {
           await handleCreateReview({
@@ -233,8 +225,8 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
         show={showDetailModal}
         item={selectedReview}
         userRole={userRole}
-        title="후기 상세보기"
-        editTitle="후기 수정"
+        title='후기 상세보기'
+        editTitle='후기 수정'
         onClose={() => setShowDetailModal(false)}
         onUpdate={async (id: string, formData: Record<string, any>) => {
           await handleUpdateReview(id, {
@@ -259,12 +251,10 @@ export default function ReviewBoard({ userRole }: ReviewBoardProps) {
           },
         ]}
         renderHeader={(item) => (
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-3">
-              <CohortBadge cohort={(item as Review).cohort} size="md" />
-              <span className="text-sm text-slate-600">
-                {(item as Review).student_nickname || '작성자'}
-              </span>
+          <div className='flex items-center justify-between mb-3'>
+            <div className='flex items-center space-x-3'>
+              <CohortBadge cohort={(item as Review).cohort} size='md' />
+              <span className='text-sm text-slate-600'>{(item as Review).student_nickname || '작성자'}</span>
             </div>
           </div>
         )}

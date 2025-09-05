@@ -8,7 +8,7 @@ import ProfileImageSection from './ProfileImageSection';
 import ProfileForm from './ProfileForm';
 import ProfileActions from './ProfileActions';
 
-interface FormData {
+interface ProfileFormData {
   user_id: string;
   email: string;
   name: string;
@@ -29,7 +29,7 @@ export default function ProfileManagement({ userRole = 'student' }: ProfileManag
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ProfileFormData>({
     user_id: '',
     email: '',
     phone: '',

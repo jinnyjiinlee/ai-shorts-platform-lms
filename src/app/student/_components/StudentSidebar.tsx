@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useUserProfile } from '@/features/shared/hooks/useUserProfile';
 import { useRouter, usePathname } from 'next/navigation';
 import {
   HomeIcon,
@@ -11,7 +12,6 @@ import {
   UserCircleIcon,
   Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
-import { supabase } from '@/lib/supabase/client';
 
 interface MenuItem {
   id: string;
@@ -26,42 +26,16 @@ interface StudentSidebarProps {
 }
 
 export default function StudentSidebar({ className = '' }: StudentSidebarProps) {
+  const { profile } = useUserProfile();
+
+  const userProfile = {
+    name: profile?.nickname || profile?.name || '학습자',
+    avatarUrl: profile?.avatar_url || null,
+  };
+
   const router = useRouter();
   const pathname = usePathname();
   const [expandedMenus, setExpandedMenus] = useState<string[]>(['community']);
-  const [userProfile, setUserProfile] = useState<{ name: string; avatarUrl: string | null }>({
-    name: '학습자',
-    avatarUrl: null,
-  });
-
-  useEffect(() => {
-    const getUserProfile = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('name, nickname, avatar_url')
-            .eq('id', user.id)
-            .single();
-
-          if (profile) {
-            const displayName = profile.nickname || profile.name || '학습자';
-            setUserProfile({
-              name: displayName,
-              avatarUrl: profile.avatar_url,
-            });
-          }
-        }
-      } catch (error) {
-        console.error('프로필 조회 오류:', error);
-      }
-    };
-
-    getUserProfile();
-  }, []);
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', name: '대시보드', href: '/student', icon: HomeIcon },

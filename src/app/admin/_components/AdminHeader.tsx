@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase/client';
+
 import {
   ChevronDownIcon,
   UserCircleIcon,
-  Cog6ToothIcon,
   ArrowRightStartOnRectangleIcon as LogoutIcon,
   Bars3Icon,
 } from '@heroicons/react/24/outline';
+
+import { useUserProfile } from '@/features/shared/hooks/useUserProfile';
 
 interface AdminHeaderProps {
   showMobileMenu: boolean;
@@ -17,42 +18,9 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({ onToggleMobileMenu }: AdminHeaderProps) {
+  const { profile } = useUserProfile();
+
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [userName, setUserName] = useState('관리자');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    // hydration 완료 표시
-    setIsMounted(true);
-
-    // 현재 로그인한 사용자 정보 가져오기
-    const getUserProfile = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('name, nickname, avatar_url')
-            .eq('id', user.id)
-            .single();
-
-          if (profile) {
-            setUserName(profile.nickname || profile.name || '관리자');
-            setAvatarUrl(profile.avatar_url);
-          }
-        }
-      } catch (error) {
-        console.error('프로필 조회 오류:', error);
-        // localStorage에서 가져오기 (백업)
-        setUserName(localStorage.getItem('userName') || '관리자');
-      }
-    };
-
-    getUserProfile();
-  }, []);
 
   const logout = () => {
     localStorage.removeItem('userType');
@@ -61,6 +29,9 @@ export default function AdminHeader({ onToggleMobileMenu }: AdminHeaderProps) {
     localStorage.removeItem('loginExpiration');
     window.location.href = '/';
   };
+
+  const userName = profile?.nickname || profile?.name || '관리자';
+  const avatarUrl = profile?.avatar_url;
 
   return (
     <header className='bg-white shadow-sm border-b border-slate-200'>
@@ -83,7 +54,7 @@ export default function AdminHeader({ onToggleMobileMenu }: AdminHeaderProps) {
             className='flex items-center space-x-2 px-2 lg:px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors'
           >
             <div className='w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center shadow-md overflow-hidden'>
-              {isMounted && avatarUrl ? (
+              {avatarUrl ? (
                 <img src={avatarUrl} alt='Profile' className='w-full h-full object-cover' />
               ) : (
                 <span className='text-xs lg:text-sm font-medium text-white'>{userName[0] || '관'}</span>

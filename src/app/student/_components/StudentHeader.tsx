@@ -1,16 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import {
-  UserCircleIcon,
-  Cog6ToothIcon,
-  ArrowRightOnRectangleIcon,
-  Bars3Icon,
-  XMarkIcon,
-  BellIcon,
-} from '@heroicons/react/24/outline';
-import { supabase } from '@/lib/supabase/client';
+import { useState } from 'react';
+import { UserCircleIcon, ArrowRightOnRectangleIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+
+import { useUserProfile } from '@/features/shared/hooks/useUserProfile';
 
 interface StudentHeaderProps {
   showMobileMenu: boolean;
@@ -18,44 +12,14 @@ interface StudentHeaderProps {
 }
 
 export default function StudentHeader({ showMobileMenu, onToggleMobileMenu }: StudentHeaderProps) {
+  const { profile } = useUserProfile();
+
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [userName, setUserName] = useState('사용자');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    // 현재 로그인한 사용자 정보 가져오기
-    const getUserProfile = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('name, nickname, avatar_url')
-            .eq('id', user.id)
-            .single();
-
-          if (profile) {
-            // 닉네임 우선, 없으면 이름 사용
-            const displayName = profile.nickname || profile.name || '사용자';
-            setUserName(displayName);
-            setAvatarUrl(profile.avatar_url);
-            // localStorage에도 저장
-            localStorage.setItem('userName', displayName);
-          }
-        }
-      } catch (error) {
-        console.error('프로필 조회 오류:', error);
-        // localStorage에서 가져오기 (백업)
-        setUserName(localStorage.getItem('userName') || '사용자');
-      }
-    };
-
-    getUserProfile();
-  }, []);
+  const userName = profile?.nickname || profile?.name || '수강생';
+  const avatarUrl = profile?.avatar_url;
 
   const handleLogout = () => {
     if (confirm('로그아웃 하시겠습니까?')) {
