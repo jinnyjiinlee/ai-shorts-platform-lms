@@ -57,7 +57,7 @@ export default function AdminHeader({ onToggleMobileMenu }: AdminHeaderProps) {
               {avatarUrl ? (
                 <img src={avatarUrl} alt='Profile' className='w-full h-full object-cover' />
               ) : (
-                <span className='text-xs lg:text-sm font-medium text-white'>{userName[0] || '관'}</span>
+                <span className='text-xs lg:text-sm font-medium text-white'>{userName[0] || ' '}</span>
               )}
             </div>
             <span className='hidden sm:block text-sm font-medium text-slate-700'>{userName}</span>

@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ClockIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
@@ -12,24 +13,36 @@ interface WeekProgressProps {
   }[];
 }
 
-export default function WeeklyProgress({ weeklyProgress }: WeekProgressProps) {
+function WeeklyProgress({ weeklyProgress }: WeekProgressProps) {
   const router = useRouter();
 
-  // 현재 주차 계산 (가장 높은 주차를 현재 주차로 가정)
-  const currentWeek = weeklyProgress.length > 0 ? Math.max(...weeklyProgress.map((w) => w.week)) : 1;
+  // 🎯 현재 주차 계산 최적화
+  const currentWeek = useMemo(() => {
+    return weeklyProgress.length > 0 ? Math.max(...weeklyProgress.map((w) => w.week)) : 1;
+  }, [weeklyProgress]);
 
-  // 현재 주차 미션만 필터링하고 제목 순으로 정렬
-  const currentWeekMissions = weeklyProgress
-    .filter((week) => week.week === currentWeek)
-    .sort((a, b) => a.title.localeCompare(b.title));
+  // 🎯 현재 주차 미션 계산 최적화
+  const { currentWeekMissions, completedCount, totalCount, completionRate } = useMemo(() => {
+    const missions = weeklyProgress
+      .filter((week) => week.week === currentWeek)
+      .sort((a, b) => a.title.localeCompare(b.title));
+    
+    const completed = missions.filter((week) => week.completed).length;
+    const total = missions.length;
+    const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+    
+    return {
+      currentWeekMissions: missions,
+      completedCount: completed,
+      totalCount: total,
+      completionRate: rate
+    };
+  }, [weeklyProgress, currentWeek]);
 
-  const completedCount = currentWeekMissions.filter((week) => week.completed).length;
-  const totalCount = currentWeekMissions.length;
-  const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-
-  const handleClick = () => {
+  // 🎯 라우터 네비게이션 최적화
+  const handleClick = useCallback(() => {
     router.push('/student/mission');
-  };
+  }, [router]);
 
   return (
     <div
@@ -158,3 +171,21 @@ export default function WeeklyProgress({ weeklyProgress }: WeekProgressProps) {
     </div>
   );
 }
+
+// 🎯 React.memo로 불필요한 리렌더링 방지
+export default React.memo(WeeklyProgress, (prevProps, nextProps) => {
+  // weeklyProgress 배열의 길이와 내용이 같으면 리렌더링 스킵
+  if (prevProps.weeklyProgress.length !== nextProps.weeklyProgress.length) {
+    return false;
+  }
+  
+  return prevProps.weeklyProgress.every((prev, index) => {
+    const next = nextProps.weeklyProgress[index];
+    return (
+      prev.week === next.week &&
+      prev.title === next.title &&
+      prev.completed === next.completed &&
+      prev.dueDate === next.dueDate
+    );
+  });
+});

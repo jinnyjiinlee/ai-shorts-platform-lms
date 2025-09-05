@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChartBarIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { fetchStudentDashboardData } from '@/features/student/dashboard/studentDashboardService';
 import WeeklyProgress from './WeeklyProgress';
-import LoadingState from './components/LoadingState';
 import ErrorState from './components/ErrorState';
+import DashboardSkeleton from './components/DashboardSkeleton';
 
 interface ProgressStats {
   completedMissions: number;
@@ -30,36 +30,68 @@ export default function ProgressDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 현재 주차 계산
-  const currentWeek = stats.weeklyProgress.length > 0 ? Math.max(...stats.weeklyProgress.map((w) => w.week)) : 1;
+  // 🎯 현재 주차 계산 최적화 - useMemo 사용
+  const currentWeek = useMemo(() => {
+    return stats.weeklyProgress.length > 0 ? Math.max(...stats.weeklyProgress.map((w) => w.week)) : 1;
+  }, [stats.weeklyProgress]);
 
-  useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await fetchStudentDashboardData();
-
-        setStats({
-          completedMissions: data.completedMissions,
-          totalMissions: data.totalMissions,
-          completionRate: data.completionRate,
-          streak: data.recentSubmissions.length >= 3 ? 3 : data.recentSubmissions.length,
-          rank: Math.floor(Math.random() * 10) + 1,
-          totalStudents: 25,
-          weeklyProgress: data.weeklyProgress,
-        });
-      } catch (err) {
-        console.error('대시보드 데이터 로드 오류:', err);
-        setError('대시보드 데이터를 불러오는 중 오류가 발생했습니다.');
-      } finally {
-        setIsLoading(false);
+  // 🎯 데이터 로딩 최적화 - useCallback 사용
+  const loadDashboardData = useCallback(async () => {
+    try {
+      // 🎯 캐시 확인
+      const cacheKey = 'studentDashboardData';
+      const cachedData = sessionStorage.getItem(cacheKey);
+      const cacheTimestamp = sessionStorage.getItem(`${cacheKey}_timestamp`);
+      
+      // 5분 내 캐시된 데이터가 있으면 사용
+      if (cachedData && cacheTimestamp) {
+        const now = Date.now();
+        const timestamp = parseInt(cacheTimestamp);
+        if (now - timestamp < 5 * 60 * 1000) { // 5분
+          const data = JSON.parse(cachedData);
+          setStats({
+            completedMissions: data.completedMissions,
+            totalMissions: data.totalMissions,
+            completionRate: data.completionRate,
+            streak: Math.min(data.recentSubmissions.length, 3),
+            rank: Math.floor(Math.random() * 10) + 1,
+            totalStudents: 25,
+            weeklyProgress: data.weeklyProgress,
+          });
+          setIsLoading(false);
+          return;
+        }
       }
-    };
 
-    loadDashboardData();
+      // 캐시가 없거나 만료되었으면 새로 가져오기
+      const data = await fetchStudentDashboardData();
+      
+      // 캐시 저장
+      sessionStorage.setItem(cacheKey, JSON.stringify(data));
+      sessionStorage.setItem(`${cacheKey}_timestamp`, Date.now().toString());
+
+      setStats({
+        completedMissions: data.completedMissions,
+        totalMissions: data.totalMissions,
+        completionRate: data.completionRate,
+        streak: Math.min(data.recentSubmissions.length, 3),
+        rank: Math.floor(Math.random() * 10) + 1,
+        totalStudents: 25,
+        weeklyProgress: data.weeklyProgress,
+      });
+      setIsLoading(false);
+    } catch (err) {
+      console.error('대시보드 데이터 로드 오류:', err);
+      setError('대시보드 데이터를 불러오는 중 오류가 발생했습니다.');
+      setIsLoading(false);
+    }
   }, []);
 
-  if (isLoading) return <LoadingState />;
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
+
+  if (isLoading) return <DashboardSkeleton />;
   if (error) return <ErrorState error={error} />;
 
   return (
