@@ -1,7 +1,6 @@
 // 대시보드 관련 타입 정의
 export interface PerfectStudent {
   id: string;
-  name: string;
   nickname?: string;
 }
 

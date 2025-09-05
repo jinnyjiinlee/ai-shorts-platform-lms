@@ -191,7 +191,6 @@ export default function DashboardView() {
         <StatCard
           title='완벽 수강생'
           value={selectedCohortData?.perfectCompletionCount || 0}
-          subtitle='전체 기간 유지'
           icon={<TrophyIcon className='w-6 h-6 text-white' />}
           theme='amber'
           badge={{
@@ -204,7 +203,6 @@ export default function DashboardView() {
           value={
             selectedCohortData?.weeklySubmissions?.[selectedCohortData?.weeklySubmissions.length - 1]?.submissions || 0
           }
-          subtitle={`${selectedCohortData?.currentWeek || 0}주차`}
           icon={<CheckCircleIcon className='w-6 h-6 text-white' />}
           theme='emerald'
           badge={{
@@ -218,7 +216,6 @@ export default function DashboardView() {
             selectedCohortData?.weeklySubmissions?.find((w) => w.week === (selectedCohortData?.currentWeek || 1) - 1)
               ?.submissions || 0
           }
-          subtitle={`${(selectedCohortData?.currentWeek || 1) - 1}주차`}
           icon={<ChartBarIcon className='w-6 h-6 text-white' />}
           theme='violet'
           badge={{
@@ -229,7 +226,6 @@ export default function DashboardView() {
         <StatCard
           title='승인 대기'
           value={dashboardStats?.pendingApprovals || 0}
-          subtitle='신규 가입'
           icon={<ClockIcon className='w-6 h-6 text-white' />}
           theme='rose'
           badge={{
@@ -292,7 +288,7 @@ export default function DashboardView() {
                     key={student.id}
                     className='bg-white rounded-lg px-3 py-2 text-sm font-medium text-slate-700 shadow-sm border-2 border-slate-300 hover:border-slate-400 transition-colors'
                   >
-                    {student.nickname || student.name}
+                    {student.nickname}
                   </div>
                 ))
               ) : (

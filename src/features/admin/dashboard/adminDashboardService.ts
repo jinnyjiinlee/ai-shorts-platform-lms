@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase/client';
 import { DatabaseService, ErrorService } from '@/lib/service';
 import { dateUtils } from '@/lib/utils';
+import type { PerfectStudent } from './types';
 
 export interface DashboardStats {
   totalActiveStudents: number;
@@ -17,10 +18,6 @@ export interface WeeklySubmissionData {
   perfectStudents: PerfectStudent[]; // 해당 주차 완벽 완료 학생들
 }
 
-export interface PerfectStudent {
-  id: string;
-  nickname?: string;
-}
 
 export interface CohortDashboardData {
   cohort: string;

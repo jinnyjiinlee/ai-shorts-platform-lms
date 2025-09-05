@@ -39,7 +39,7 @@ export default function UserAvatar({
     >
       {shouldShowImage ? (
         <img
-          src={user.avatarUrl}
+          src={user.avatarUrl || ''}
           alt={user.nickname || '사용자'}
           className='w-full h-full object-cover'
           onError={() => setImageError(true)}

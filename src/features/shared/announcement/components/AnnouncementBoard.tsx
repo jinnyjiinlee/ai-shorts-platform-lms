@@ -41,7 +41,6 @@ export default function AnnouncementBoard({ userRole }: AnnouncementBoardProps) 
     currentPage,
     totalPages,
     handlePageChange,
-
     handleCreateAnnouncement,
     handleDeleteAnnouncement,
     handleEditAnnouncement,
