@@ -35,71 +35,71 @@ export const UserTable: React.FC<UserTableProps> = ({
   onDeleteUser,
 }) => {
   return (
-    <div className='overflow-x-auto'>
+    <div className='overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm'>
       <table className='w-full table-fixed'>
-        <thead className='bg-slate-50'>
-          <tr>
+        <thead className='bg-gray-50/60'>
+          <tr className='border-b border-gray-200'>
             {activeTab === 'students' && (
-              <th className='px-4 py-2 text-left w-1/12'>
+              <th className='px-4 py-3 text-left w-1/12'>
                 <input
                   type='checkbox'
                   checked={selectedAllUser}
                   onChange={onSelectAll}
-                  className='w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500'
+                  className='w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2'
                 />
               </th>
             )}
             <SortableHeader
               column='nickname'
-              className='w-1/4'
+              className='w-64'
               sortBy={sortBy}
               sortDirection={sortDirection}
               onSort={onSort}
             >
-              사용자 정보
+              User Info
             </SortableHeader>
             <SortableHeader
               column='role'
-              className='w-1/6'
+              className='w-28'
               sortBy={sortBy}
               sortDirection={sortDirection}
               onSort={onSort}
             >
-              역할
+              Role
             </SortableHeader>
             <SortableHeader
               column='cohort'
-              className='w-1/6'
+              className='w-20'
               sortBy={sortBy}
               sortDirection={sortDirection}
               onSort={onSort}
             >
-              기수
+              Cohort
             </SortableHeader>
             <SortableHeader
               column='status'
-              className='w-1/6'
+              className='w-24'
               sortBy={sortBy}
               sortDirection={sortDirection}
               onSort={onSort}
             >
-              상태
+              Status
             </SortableHeader>
             <SortableHeader
               column='created_at'
-              className='w-1/6'
+              className='w-28'
               sortBy={sortBy}
               sortDirection={sortDirection}
               onSort={onSort}
             >
-              가입일
+              Joined
             </SortableHeader>
-            <th className='w-1/6 px-4 py-2 text-xs font-medium text-slate-500 uppercase tracking-wider'>
-              <div className='flex items-center justify-center'>작업</div>
+            <th className='w-80 px-4 py-3 text-xs font-semibold text-gray-600 tracking-wide'>
+              <div className='flex items-center justify-center'>Actions</div>
             </th>
           </tr>
         </thead>
-        <tbody className='bg-white divide-y divide-slate-200'>
+        <tbody className='bg-white divide-y divide-slate-100'>
           {users.map((user) => (
             <UserTableRow
               key={user.id}

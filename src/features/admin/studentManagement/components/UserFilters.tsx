@@ -82,28 +82,28 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
           {/* 오른쪽: 상태 필터 태그들 */}
           <div className='flex gap-2'>
             <FilterTag
-              label='전체'
+              label='All'
               count={statusCounts.all}
               active={statusFilter === 'all'}
               onClick={() => onStatusFilterChange('all')}
               variant='default'
             />
             <FilterTag
-              label='승인됨'
+              label='Active'
               count={statusCounts.approved}
               active={statusFilter === 'approved'}
               onClick={() => onStatusFilterChange('approved')}
               variant='success'
             />
             <FilterTag
-              label='대기중'
+              label='Pending'
               count={statusCounts.pending}
               active={statusFilter === 'pending'}
               onClick={() => onStatusFilterChange('pending')}
               variant='warning'
             />
             <FilterTag
-              label='거부됨'
+              label='Inactive'
               count={statusCounts.rejected}
               active={statusFilter === 'rejected'}
               onClick={() => onStatusFilterChange('rejected')}
@@ -111,7 +111,7 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
             />
             {statusCounts.unknown > 0 && (
               <FilterTag
-                label='알 수 없음'
+                label='Unknown'
                 count={statusCounts.unknown}
                 active={statusFilter === 'unknown'}
                 onClick={() => onStatusFilterChange('unknown')}

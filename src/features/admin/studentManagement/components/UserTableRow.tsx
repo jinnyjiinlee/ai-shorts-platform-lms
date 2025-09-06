@@ -38,96 +38,129 @@ export const UserTableRow: React.FC<UserTableRowProps> = ({
       setDeleteStep(0);
     }
   };
+
+  // 상태 업데이트 확인 핸들러
+  const handleStatusUpdate = (userId: string, newStatus: string, userName: string) => {
+    const statusText = newStatus === 'approved' ? '승인' : '거부';
+    if (confirm(`${userName}님을 ${statusText}하시겠습니까?`)) {
+      onStatusUpdate(userId, newStatus);
+    }
+  };
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      approved: { text: '승인됨', variant: 'success' as const },
-      pending: { text: '대기중', variant: 'warning' as const },
-      rejected: { text: '거부됨', variant: 'danger' as const },
+      approved: { 
+        text: 'Active', 
+        className: 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium px-3 py-1.5 rounded-full text-xs' 
+      },
+      pending: { 
+        text: 'Pending', 
+        className: 'bg-amber-50 text-amber-700 border border-amber-200 font-medium px-3 py-1.5 rounded-full text-xs' 
+      },
+      rejected: { 
+        text: 'Inactive', 
+        className: 'bg-slate-100 text-slate-600 border border-slate-200 font-medium px-3 py-1.5 rounded-full text-xs' 
+      },
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || {
-      text: '알 수 없음',
-      variant: 'default' as const,
+      text: 'Unknown',
+      className: 'bg-gray-50 text-gray-500 border border-gray-200 font-medium px-3 py-1.5 rounded-full text-xs',
     };
 
     return (
-      <Badge variant={config.variant} size='sm'>
+      <span className={config.className}>
         {config.text}
-      </Badge>
+      </span>
     );
   };
 
   const getRoleBadge = (role: string) => {
     const roleConfig = {
-      admin: { text: '관리자', variant: 'info' as const, icon: ShieldCheckIcon },
-      student: { text: '수강생', variant: 'default' as const, icon: AcademicCapIcon },
+      admin: { 
+        text: 'Admin', 
+        icon: ShieldCheckIcon,
+        className: 'bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium px-3 py-1.5 rounded-lg text-xs inline-flex items-center'
+      },
+      student: { 
+        text: 'Student', 
+        icon: AcademicCapIcon,
+        className: 'bg-blue-50 text-blue-700 border border-blue-200 font-medium px-3 py-1.5 rounded-lg text-xs inline-flex items-center'
+      },
     };
 
     const config = roleConfig[role as keyof typeof roleConfig] || {
-      text: '사용자',
-      variant: 'default' as const,
+      text: 'User',
       icon: UserGroupIcon,
+      className: 'bg-gray-50 text-gray-600 border border-gray-200 font-medium px-3 py-1.5 rounded-lg text-xs inline-flex items-center',
     };
 
     const IconComponent = config.icon;
 
     return (
-      <Badge variant={config.variant} size='sm' className='inline-flex items-center'>
-        <IconComponent className='w-3 h-3 mr-1' />
+      <span className={config.className}>
+        <IconComponent className='w-3 h-3 mr-1.5' />
         {config.text}
-      </Badge>
+      </span>
     );
   };
 
   return (
-    <tr className='hover:bg-slate-50 group'>
+    <tr className='hover:bg-slate-50/50 group transition-colors duration-200 border-b border-slate-100'>
       {activeTab === 'students' && (
-        <td className='px-4 py-2'>
+        <td className='px-4 py-3'>
           <input
             type='checkbox'
             checked={isSelected}
             onChange={() => onSelect(user.id)}
-            className='w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500'
+            className='w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 focus:ring-2'
           />
         </td>
       )}
-      <td className='px-4 py-2'>
-        <div>
-          <div className='text-sm font-bold text-slate-900'>{user.nickname || '닉네임 없음'}</div>
-          <div className='text-xs text-slate-500 space-y-0'>
-            <div>{user.name || '실명 없음'}</div>
-            <div>{user.email}</div>
+      <td className='px-4 py-3'>
+        <div className='space-y-1'>
+          <div className='text-sm font-semibold text-slate-900'>{user.nickname || '닉네임 없음'}</div>
+          <div className='space-y-0.5'>
+            <div className='text-xs text-slate-600 font-medium'>{user.name || '실명 없음'}</div>
+            <div className='text-xs text-slate-500'>{user.email}</div>
           </div>
         </div>
       </td>
-      <td className='px-4 py-2'>{getRoleBadge(user.role || 'student')}</td>
-      <td className='px-4 py-2 text-xs text-slate-900'>{user.cohort ? `${user.cohort}기` : '-'}</td>
-      <td className='px-4 py-2'>{getStatusBadge(user.status)}</td>
-      <td className='px-4 py-2 text-xs text-slate-500'>{new Date(user.created_at).toLocaleDateString('ko-KR')}</td>
+      <td className='px-4 py-3'>{getRoleBadge(user.role || 'student')}</td>
+      <td className='px-4 py-3'>
+        {user.cohort ? (
+          <span className='bg-slate-100 text-slate-700 border border-slate-200 font-medium px-2.5 py-1 rounded-full text-xs'>
+            {user.cohort}
+          </span>
+        ) : (
+          <span className='text-slate-400 text-xs'>-</span>
+        )}
+      </td>
+      <td className='px-4 py-3'>{getStatusBadge(user.status)}</td>
+      <td className='px-4 py-3 text-sm text-slate-600'>{new Date(user.created_at).toLocaleDateString('ko-KR')}</td>
 
-      <td className='px-4 py-2'>
+      <td className='px-4 py-3'>
         <div className='flex items-center justify-center space-x-2'>
           {/* 승인/거부 그룹 */}
           {activeTab === 'students' && (
             <>
               {user.status !== 'approved' && (
                 <Button
-                  onClick={() => onStatusUpdate(user.id, 'approved')}
+                  onClick={() => handleStatusUpdate(user.id, 'approved', user.nickname || user.name || '사용자')}
                   variant='outline'
                   size='xs'
-                  className='border-slate-300 text-green-700 hover:bg-green-50'
+                  className='border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300 font-medium px-2.5 py-1 transition-all duration-200 rounded-md shadow-sm text-xs'
                 >
-                  승인
+                  Approve
                 </Button>
               )}
               {user.status !== 'rejected' && (
                 <Button
-                  onClick={() => onStatusUpdate(user.id, 'rejected')}
+                  onClick={() => handleStatusUpdate(user.id, 'rejected', user.nickname || user.name || '사용자')}
                   variant='outline'
                   size='xs'
-                  className='border-slate-300 text-red-700 hover:bg-red-50'
+                  className='border-slate-300 text-slate-600 hover:bg-slate-50 hover:border-slate-400 font-medium px-2.5 py-1 transition-all duration-200 rounded-md shadow-sm text-xs'
                 >
-                  거부
+                  Decline
                 </Button>
               )}
             </>
@@ -139,9 +172,9 @@ export const UserTableRow: React.FC<UserTableRowProps> = ({
               onClick={() => onMakeAdmin(user)}
               variant='outline'
               size='xs'
-              className='border-slate-300 text-slate-500 hover:bg-slate-50'
+              className='border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 font-medium px-2.5 py-1 transition-all duration-200 rounded-md shadow-sm text-xs'
             >
-              관리자
+              Admin
             </Button>
           )}
 
@@ -151,9 +184,9 @@ export const UserTableRow: React.FC<UserTableRowProps> = ({
               onClick={() => onMakeStudent(user)}
               variant='outline'
               size='xs'
-              className='border-slate-300 text-slate-500 hover:bg-slate-50'
+              className='border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 font-medium px-2.5 py-1 transition-all duration-200 rounded-md shadow-sm text-xs'
             >
-              수강생
+              Student
             </Button>
           )}
 
@@ -162,13 +195,13 @@ export const UserTableRow: React.FC<UserTableRowProps> = ({
             onClick={handleDeleteClick}
             variant='ghost'
             size='xs'
-            className={`transition-all duration-300 ${
+            className={`font-medium px-2 py-1 transition-all duration-300 rounded-md ${
               deleteStep === 0
-                ? 'text-slate-300 hover:text-red-400'
-                : 'text-red-600 bg-red-50 border border-red-200 animate-pulse'
+                ? 'text-slate-400 hover:text-red-500 hover:bg-red-50/70'
+                : 'text-red-600 bg-red-50 border border-red-200 animate-pulse shadow-sm'
             }`}
           >
-            {deleteStep === 0 ? <TrashIcon className='w-3 h-3' /> : <span className='text-xs px-1'>삭제</span>}
+            {deleteStep === 0 ? <TrashIcon className='w-3.5 h-3.5' /> : <span className='text-xs px-0.5'>Delete</span>}
           </Button>
         </div>
       </td>
